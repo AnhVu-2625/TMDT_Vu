@@ -1,0 +1,47 @@
+{
+  "name": "ecommerce-frontend",
+  "version": "1.0.0",
+  "description": "Frontend for E-commerce Platform",
+  "private": true,
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.20.0",
+    "axios": "^1.6.5",
+    "tailwindcss": "^3.4.1",
+    "framer-motion": "^10.16.16",
+    "zustand": "^4.4.7",
+    "react-icons": "^4.13.0",
+    "swiper": "^11.0.3",
+    "react-toastify": "^9.1.3",
+    "socket.io-client": "^4.7.2"
+  },
+  "devDependencies": {
+    "react-scripts": "5.0.1",
+    "@tailwindcss/forms": "^0.5.7",
+    "@tailwindcss/typography": "^0.5.10"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

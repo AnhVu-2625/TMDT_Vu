@@ -1,0 +1,363 @@
+### File này dùng để test API với REST Client extension trong VS Code
+### Hoặc import vào Postman
+
+### Variables
+@baseUrl = http://localhost:5000
+@token = YOUR_TOKEN_HERE
+
+### ============================================
+### HEALTH CHECK
+### ============================================
+
+### Test server đang chạy
+GET {{baseUrl}}/health
+
+### ============================================
+### AUTHENTICATION
+### ============================================
+
+### 1. Đăng ký tài khoản mới
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "hoTen": "Nguyen Van A",
+  "email": "nguyenvana@example.com",
+  "soDienThoai": "0123456789",
+  "matKhau": "123456",
+  "ngaySinh": "1990-01-01",
+  "gioiTinh": "NAM"
+}
+
+### 2. Xác thực OTP (Lấy OTP từ console log hoặc email)
+POST {{baseUrl}}/api/auth/verify-otp
+Content-Type: application/json
+
+{
+  "email": "nguyenvana@example.com",
+  "otp": "123456"
+}
+
+### 3. Gửi lại OTP
+POST {{baseUrl}}/api/auth/resend-otp
+Content-Type: application/json
+
+{
+  "email": "nguyenvana@example.com"
+}
+
+### 4. Đăng nhập
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "emailOrPhone": "nguyenvana@example.com",
+  "matKhau": "123456"
+}
+
+### 5. Quên mật khẩu
+POST {{baseUrl}}/api/auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": "nguyenvana@example.com"
+}
+
+### 6. Đặt lại mật khẩu
+POST {{baseUrl}}/api/auth/reset-password
+Content-Type: application/json
+
+{
+  "email": "nguyenvana@example.com",
+  "otp": "123456",
+  "matKhauMoi": "newpassword123"
+}
+
+### ============================================
+### PRODUCTS
+### ============================================
+
+### 1. Lấy danh sách sản phẩm (Public)
+GET {{baseUrl}}/api/products?page=1&limit=20
+
+### 2. Tìm kiếm sản phẩm
+GET {{baseUrl}}/api/products?search=laptop&page=1&limit=20
+
+### 3. Lọc sản phẩm theo danh mục và giá
+GET {{baseUrl}}/api/products?category=1&minPrice=1000000&maxPrice=5000000
+
+### 4. Sắp xếp sản phẩm
+GET {{baseUrl}}/api/products?sortBy=GiaThapNhat&sortOrder=ASC
+
+### 5. Lấy chi tiết sản phẩm
+GET {{baseUrl}}/api/products/1
+
+### 6. Lấy danh mục sản phẩm
+GET {{baseUrl}}/api/products/categories/all
+
+### 7. Tạo sản phẩm mới (Cần token Seller)
+POST {{baseUrl}}/api/products
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "tenSanPham": "Laptop Dell XPS 13",
+  "moTa": "Laptop cao cấp, hiệu năng mạnh mẽ",
+  "giaGoc": 25000000,
+  "maDanhMuc": 1
+}
+
+### 8. Cập nhật sản phẩm (Cần token Seller)
+PUT {{baseUrl}}/api/products/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "tenSanPham": "Laptop Dell XPS 13 2024",
+  "moTa": "Laptop cao cấp, hiệu năng mạnh mẽ, phiên bản mới nhất",
+  "giaGoc": 27000000,
+  "maDanhMuc": 1,
+  "trangThai": "HOAT_DONG"
+}
+
+### 9. Xóa sản phẩm (Cần token Seller)
+DELETE {{baseUrl}}/api/products/1
+Authorization: Bearer {{token}}
+
+### 10. Thêm phiên bản sản phẩm (Cần token Seller)
+POST {{baseUrl}}/api/products/1/variants
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "mauSac": "Bạc",
+  "kichThuoc": "13 inch",
+  "giaBan": 25000000,
+  "soLuongTonKho": 10
+}
+
+### ============================================
+### CART
+### ============================================
+
+### 1. Lấy giỏ hàng (Cần token)
+GET {{baseUrl}}/api/cart
+Authorization: Bearer {{token}}
+
+### 2. Thêm sản phẩm vào giỏ (Cần token)
+POST {{baseUrl}}/api/cart
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "maPhienBan": 1,
+  "soLuong": 2
+}
+
+### 3. Cập nhật số lượng (Cần token)
+PUT {{baseUrl}}/api/cart/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "soLuong": 3
+}
+
+### 4. Xóa sản phẩm khỏi giỏ (Cần token)
+DELETE {{baseUrl}}/api/cart/1
+Authorization: Bearer {{token}}
+
+### 5. Xóa toàn bộ giỏ hàng (Cần token)
+DELETE {{baseUrl}}/api/cart
+Authorization: Bearer {{token}}
+
+### ============================================
+### ORDERS
+### ============================================
+
+### 1. Tạo đơn hàng (Cần token)
+POST {{baseUrl}}/api/orders
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "maDiaChi": 1,
+  "phuongThucThanhToan": "TIEN_MAT",
+  "danhSachSanPham": [
+    {
+      "maPhienBan": 1,
+      "soLuong": 2
+    }
+  ],
+  "maKhuyenMai": null,
+  "ghiChu": "Giao hàng giờ hành chính"
+}
+
+### 2. Lấy danh sách đơn hàng (Cần token)
+GET {{baseUrl}}/api/orders
+Authorization: Bearer {{token}}
+
+### 3. Lấy chi tiết đơn hàng (Cần token)
+GET {{baseUrl}}/api/orders/1
+Authorization: Bearer {{token}}
+
+### 4. Hủy đơn hàng (Cần token)
+PUT {{baseUrl}}/api/orders/1/cancel
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "lyDo": "Đặt nhầm sản phẩm"
+}
+
+### ============================================
+### USER PROFILE
+### ============================================
+
+### 1. Lấy thông tin profile (Cần token)
+GET {{baseUrl}}/api/users/profile
+Authorization: Bearer {{token}}
+
+### 2. Cập nhật profile (Cần token)
+PUT {{baseUrl}}/api/users/profile
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "hoTen": "Nguyen Van A Updated",
+  "soDienThoai": "0987654321",
+  "ngaySinh": "1990-01-01",
+  "gioiTinh": "NAM"
+}
+
+### 3. Đổi mật khẩu (Cần token)
+PUT {{baseUrl}}/api/users/change-password
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "matKhauCu": "123456",
+  "matKhauMoi": "newpassword123"
+}
+
+### 4. Lấy danh sách địa chỉ (Cần token)
+GET {{baseUrl}}/api/users/addresses
+Authorization: Bearer {{token}}
+
+### 5. Thêm địa chỉ mới (Cần token)
+POST {{baseUrl}}/api/users/addresses
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "tenNguoiNhan": "Nguyen Van A",
+  "sdtNguoiNhan": "0123456789",
+  "diaChiCuThe": "123 Đường ABC",
+  "phuongXa": "Phường 1",
+  "quanHuyen": "Quận 1",
+  "tinhThanh": "TP. Hồ Chí Minh",
+  "laMacDinh": true
+}
+
+### ============================================
+### FAVORITES
+### ============================================
+
+### 1. Lấy danh sách yêu thích (Cần token)
+GET {{baseUrl}}/api/favorites
+Authorization: Bearer {{token}}
+
+### 2. Thêm sản phẩm yêu thích (Cần token)
+POST {{baseUrl}}/api/favorites
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "maSanPham": 1
+}
+
+### 3. Xóa sản phẩm yêu thích (Cần token)
+DELETE {{baseUrl}}/api/favorites/1
+Authorization: Bearer {{token}}
+
+### ============================================
+### NOTIFICATIONS
+### ============================================
+
+### 1. Lấy danh sách thông báo (Cần token)
+GET {{baseUrl}}/api/notifications
+Authorization: Bearer {{token}}
+
+### 2. Đánh dấu đã đọc (Cần token)
+PUT {{baseUrl}}/api/notifications/1/read
+Authorization: Bearer {{token}}
+
+### 3. Đánh dấu tất cả đã đọc (Cần token)
+PUT {{baseUrl}}/api/notifications/read-all
+Authorization: Bearer {{token}}
+
+### ============================================
+### SELLER
+### ============================================
+
+### 1. Đăng ký làm người bán (Cần token)
+POST {{baseUrl}}/api/seller/register
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "tenCuaHang": "Shop Điện Tử ABC",
+  "moTa": "Chuyên cung cấp các sản phẩm điện tử chính hãng"
+}
+
+### 2. Lấy thông tin shop (Cần token Seller)
+GET {{baseUrl}}/api/seller/shop
+Authorization: Bearer {{token}}
+
+### 3. Cập nhật thông tin shop (Cần token Seller)
+PUT {{baseUrl}}/api/seller/shop
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "tenCuaHang": "Shop Điện Tử ABC Updated",
+  "moTa": "Chuyên cung cấp các sản phẩm điện tử chính hãng với giá tốt nhất"
+}
+
+### 4. Lấy danh sách đơn hàng của shop (Cần token Seller)
+GET {{baseUrl}}/api/seller/orders
+Authorization: Bearer {{token}}
+
+### 5. Cập nhật trạng thái đơn hàng (Cần token Seller)
+PUT {{baseUrl}}/api/seller/orders/1/status
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "trangThai": "DA_XAC_NHAN"
+}
+
+### ============================================
+### ADMIN
+### ============================================
+
+### 1. Lấy thống kê tổng quan (Cần token Admin)
+GET {{baseUrl}}/api/admin/statistics
+Authorization: Bearer {{token}}
+
+### 2. Lấy danh sách người dùng (Cần token Admin)
+GET {{baseUrl}}/api/admin/users?page=1&limit=20
+Authorization: Bearer {{token}}
+
+### 3. Khóa tài khoản (Cần token Admin)
+PUT {{baseUrl}}/api/admin/users/1/block
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "lyDo": "Vi phạm chính sách"
+}
+
+### 4. Mở khóa tài khoản (Cần token Admin)
+PUT {{baseUrl}}/api/admin/users/1/unblock
+Authorization: Bearer {{token}}
