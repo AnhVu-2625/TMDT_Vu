@@ -18,6 +18,7 @@ const cartRoutes = require('./routes/cart');
 const orderRoutes = require('./routes/order');
 const sellerRoutes = require('./routes/seller');
 const adminRoutes = require('./routes/admin');
+const adminUsersRoutes = require('./routes/admin-users');
 const chatRoutes = require('./routes/chat');
 const notificationRoutes = require('./routes/notification');
 const favoritesRoutes = require('./routes/favorites');
@@ -56,6 +57,20 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
   swaggerOptions: { persistAuthorization: true }
 }));
 
+// Root route
+app.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'E-commerce API Server',
+    version: '1.0.0',
+    endpoints: {
+      health: '/api/health',
+      docs: '/api-docs',
+      api: '/api'
+    }
+  });
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'API is running ✅', timestamp: new Date(), swagger: 'http://localhost:5000/api-docs' });
@@ -69,6 +84,7 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/sellers', sellerRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/admin/users', adminUsersRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/favorites', favoritesRoutes);   // ← Đã sửa: route favorites bị thiếu
@@ -150,7 +166,7 @@ async function startServer() {
   try {
     await getPool();
     console.log('✅ Database connected successfully');
-    
+
     server.listen(PORT, () => {
       console.log(`\n🚀 Server running on http://localhost:${PORT}`);
       console.log(`   Environment: ${process.env.NODE_ENV || 'development'}`);

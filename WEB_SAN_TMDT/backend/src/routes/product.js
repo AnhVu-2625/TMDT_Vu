@@ -57,13 +57,24 @@ router.get('/', async (req, res) => {
         const pool = await getPool();
 
         let whereClause = "WHERE sp.TrangThai = N'HOAT_DONG'";
-        
+
         if (search) {
             whereClause += ` AND sp.TenSanPham LIKE N'%${search}%'`;
         }
-        
+
         if (category) {
             whereClause += ` AND sp.MaDanhMuc = ${category}`;
+        }
+
+        // Build price filter for WHERE clause
+        let priceFilter = '';
+        if (minPrice > 0 || maxPrice < 999999999) {
+            priceFilter = ` AND EXISTS (
+                SELECT 1 FROM PhienBanSanPham pbsp 
+                WHERE pbsp.MaSanPham = sp.MaSanPham 
+                AND pbsp.GiaBan >= ${minPrice} 
+                AND pbsp.GiaBan <= ${maxPrice}
+            )`;
         }
 
         const query = `
@@ -85,9 +96,7 @@ router.get('/', async (req, res) => {
             FROM SanPham sp
             LEFT JOIN CuaHang ch ON sp.MaCuaHang = ch.MaCuaHang
             LEFT JOIN DanhMucSanPham dm ON sp.MaDanhMuc = dm.MaDanhMuc
-            ${whereClause}
-            HAVING (SELECT MIN(GiaBan) FROM PhienBanSanPham WHERE MaSanPham = sp.MaSanPham) >= ${minPrice}
-                AND (SELECT MAX(GiaBan) FROM PhienBanSanPham WHERE MaSanPham = sp.MaSanPham) <= ${maxPrice}
+            ${whereClause}${priceFilter}
             ORDER BY sp.${sortBy} ${sortOrder}
             OFFSET ${offset} ROWS
             FETCH NEXT ${limit} ROWS ONLY
