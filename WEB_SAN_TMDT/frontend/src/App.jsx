@@ -6,8 +6,10 @@ import 'react-toastify/dist/ReactToastify.css';
 // Layouts
 import MainLayout from './layouts/MainLayout';
 import AuthLayout from './layouts/AuthLayout';
+import AdminLayout from './layouts/AdminLayout';
+import SellerLayout from './layouts/SellerLayout';
 
-// Pages
+// Public Pages
 import Home from './pages/Home';
 import ProductList from './pages/ProductList';
 import ProductDetail from './pages/ProductDetail';
@@ -15,101 +17,112 @@ import Cart from './pages/user/Cart';
 import Checkout from './pages/user/Checkout';
 import Orders from './pages/user/Orders';
 import Profile from './pages/user/Profile';
+import NotFound from './pages/NotFound';
+
+// Auth Pages
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import VerifyOTP from './pages/auth/VerifyOTP';
-import NotFound from './pages/NotFound';
+
+// Admin Pages
+import AdminDashboard from './pages/admin/Dashboard';
+
+// Seller Pages
+import SellerDashboard from './pages/seller/Dashboard';
 
 // Store
 import { useAuthStore } from './store/authStore';
 
-// Protected Route Component
+// ─── Route Guards ───────────────────────────────────────────────────────────
+
+/** Bảo vệ: chỉ user đã đăng nhập */
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated } = useAuthStore();
   return isAuthenticated ? children : <Navigate to="/login" replace />;
 };
 
-// Guest Route Component (chỉ cho phép khi chưa đăng nhập)
-const GuestRoute = ({ children }) => {
-  const { isAuthenticated } = useAuthStore();
-  return !isAuthenticated ? children : <Navigate to="/" replace />;
+/** Chỉ cho QUAN_TRI_VIEN */
+const AdminRoute = ({ children }) => {
+  const { isAuthenticated, user } = useAuthStore();
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (user?.vaiTro !== 'QUAN_TRI_VIEN') return <Navigate to="/" replace />;
+  return children;
 };
+
+/** Chỉ cho user có cửa hàng (shop != null) */
+const SellerRoute = ({ children }) => {
+  const { isAuthenticated, user } = useAuthStore();
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (!user?.shop?.MaCuaHang) return <Navigate to="/" replace />;
+  return children;
+};
+
+/** Chỉ cho khách (chưa đăng nhập). Nếu đã đăng nhập → redirect theo vai trò */
+const GuestRoute = ({ children }) => {
+  const { isAuthenticated, user } = useAuthStore();
+  if (!isAuthenticated) return children;
+  // Redirect đúng dashboard
+  if (user?.vaiTro === 'QUAN_TRI_VIEN') return <Navigate to="/admin/dashboard" replace />;
+  if (user?.shop?.MaCuaHang) return <Navigate to="/seller/dashboard" replace />;
+  return <Navigate to="/" replace />;
+};
+
+// ─── App ─────────────────────────────────────────────────────────────────────
 
 function App() {
   const { initAuth } = useAuthStore();
 
   useEffect(() => {
-    // Khởi tạo auth khi app load
     initAuth();
   }, []);
 
   return (
     <Router>
-      <div className="flex flex-col min-h-screen">
-        <Routes>
-          {/* Public Routes with Main Layout */}
-          <Route element={<MainLayout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/products" element={<ProductList />} />
-            <Route path="/products/:id" element={<ProductDetail />} />
-            <Route path="/cart" element={<Cart />} />
-            
-            {/* Protected Routes */}
-            <Route path="/checkout" element={
-              <ProtectedRoute>
-                <Checkout />
-              </ProtectedRoute>
-            } />
-            <Route path="/orders" element={
-              <ProtectedRoute>
-                <Orders />
-              </ProtectedRoute>
-            } />
-            <Route path="/profile" element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            } />
-          </Route>
+      <Routes>
+        {/* ── Public / User Routes ── */}
+        <Route element={<MainLayout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/products" element={<ProductList />} />
+          <Route path="/products/:id" element={<ProductDetail />} />
+          <Route path="/cart" element={<Cart />} />
 
-          {/* Auth Routes with Auth Layout */}
-          <Route element={<AuthLayout />}>
-            <Route path="/login" element={
-              <GuestRoute>
-                <Login />
-              </GuestRoute>
-            } />
-            <Route path="/register" element={
-              <GuestRoute>
-                <Register />
-              </GuestRoute>
-            } />
-            <Route path="/verify-otp" element={
-              <GuestRoute>
-                <VerifyOTP />
-              </GuestRoute>
-            } />
-          </Route>
+          <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+          <Route path="/orders"   element={<ProtectedRoute><Orders /></ProtectedRoute>} />
+          <Route path="/profile"  element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+        </Route>
 
-          {/* 404 */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        {/* ── Auth Routes ── */}
+        <Route element={<AuthLayout />}>
+          <Route path="/login"      element={<GuestRoute><Login /></GuestRoute>} />
+          <Route path="/register"   element={<GuestRoute><Register /></GuestRoute>} />
+          <Route path="/verify-otp" element={<GuestRoute><VerifyOTP /></GuestRoute>} />
+        </Route>
 
-        {/* Toast Notifications */}
-        <ToastContainer
-          position="top-right"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="dark"
-          toastClassName="bg-gray-900 border border-gray-800"
-        />
-      </div>
+        {/* ── Admin Routes ── */}
+        <Route element={<AdminRoute><AdminLayout /></AdminRoute>}>
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+        </Route>
+
+        {/* ── Seller Routes ── */}
+        <Route element={<SellerRoute><SellerLayout /></SellerRoute>}>
+          <Route path="/seller/dashboard" element={<SellerDashboard />} />
+          <Route path="/seller" element={<Navigate to="/seller/dashboard" replace />} />
+        </Route>
+
+        {/* ── 404 ── */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnHover
+        theme="light"
+      />
     </Router>
   );
 }

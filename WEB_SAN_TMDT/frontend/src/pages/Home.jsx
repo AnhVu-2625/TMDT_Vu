@@ -7,7 +7,7 @@ import { FaArrowRight, FaFire, FaStar, FaChevronRight } from 'react-icons/fa';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-import useProductStore from '../store/productStore';
+import { useProductStore } from '../store/productStore';
 import ProductCard from '../components/ProductCard';
 
 const bannerSlides = [
@@ -41,18 +41,19 @@ const categoryItems = [
 
 const mockProducts = Array.from({ length: 8 }, (_, i) => ({
   MaSanPham: i + 1, TenSanPham: `Sản phẩm mẫu ${i + 1}`, GiaGoc: (i + 1) * 150000 + 50000,
-  DanhGiaTrungBinh: 4 + (i % 2) * 0.5, TenCuaHang: `Shop ${['Alpha','Beta','Gamma','Delta'][i % 4]}`,
+  DanhGiaTrungBinh: 4 + (i % 2) * 0.5, TenCuaHang: `Shop ${['Alpha', 'Beta', 'Gamma', 'Delta'][i % 4]}`,
   isNew: i < 3, isHot: i >= 3 && i < 6,
   variants: [{ MaPhienBan: i + 1, GiaBan: (i + 1) * 130000 + 50000 }],
   images: [],
 }));
 
 function Home() {
-  const { products, getProducts } = useProductStore();
+  const { products, fetchProducts } = useProductStore();
   const navigate = useNavigate();
   const displayProducts = products.length > 0 ? products : mockProducts;
 
-  useEffect(() => { getProducts({ limit: 16, sort: 'newest' }); }, [getProducts]);
+  useEffect(() => { fetchProducts({ limit: 16, sort: 'newest' }); }, [fetchProducts]);
+
 
   return (
     <div className="space-y-16 pb-16">

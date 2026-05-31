@@ -6,8 +6,8 @@ import {
   FaBell, FaHeart, FaStore, FaChevronDown, FaSignOutAlt,
   FaClipboardList, FaCog, FaCrown, FaComments, FaMapMarkerAlt
 } from 'react-icons/fa';
-import useAuthStore from '../store/authStore';
-import useCartStore from '../store/cartStore';
+import { useAuthStore } from '../store/authStore';
+import { useCartStore } from '../store/cartStore';
 
 const categories = [
   { icon: '📱', label: 'Điện tử', path: '/products?category=dien-tu' },

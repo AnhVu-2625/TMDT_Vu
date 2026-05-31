@@ -4,8 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FaStar, FaShoppingCart, FaHeart, FaRegHeart, FaShare, FaStore, FaCheckCircle, FaArrowLeft, FaTruck, FaShieldAlt, FaUndo } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import useCartStore from '../store/cartStore';
-import useAuthStore from '../store/authStore';
+import { useCartStore } from '../store/cartStore';
+import { useAuthStore } from '../store/authStore';
 import ProductCard from '../components/ProductCard';
 
 const API = 'http://localhost:5000/api';

@@ -7,7 +7,7 @@ const { validateRegister, validateLogin, validateOTP } = require('../utils/valid
 const nodemailer = require('nodemailer');
 
 // Cấu hình email
-const transporter = nodemailer.createTransporter({
+const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
     port: process.env.EMAIL_PORT,
     secure: false,
@@ -47,7 +47,45 @@ const sendOTPEmail = async (email, otp, hoTen) => {
     await transporter.sendMail(mailOptions);
 };
 
-// POST /api/auth/register - Đăng ký tài khoản
+/**
+ * @swagger
+ * /api/auth/register:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Đăng ký tài khoản mới
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [hoTen, email, soDienThoai, matKhau]
+ *             properties:
+ *               hoTen:
+ *                 type: string
+ *                 example: Nguyễn Văn A
+ *               email:
+ *                 type: string
+ *                 example: example@gmail.com
+ *               soDienThoai:
+ *                 type: string
+ *                 example: "0901234567"
+ *               matKhau:
+ *                 type: string
+ *                 example: "Password123"
+ *               ngaySinh:
+ *                 type: string
+ *                 format: date
+ *                 example: "2000-01-01"
+ *               gioiTinh:
+ *                 type: string
+ *                 enum: [NAM, NU, KHAC]
+ *     responses:
+ *       201:
+ *         description: Đăng ký thành công
+ *       400:
+ *         description: Email hoặc SĐT đã tồn tại
+ */
 router.post('/register', validateRegister, async (req, res) => {
     try {
         const { hoTen, email, soDienThoai, matKhau, ngaySinh, gioiTinh } = req.body;
@@ -133,7 +171,33 @@ router.post('/register', validateRegister, async (req, res) => {
     }
 });
 
-// POST /api/auth/verify-otp - Xác thực OTP
+/**
+ * @swagger
+ * /api/auth/verify-otp:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Xác thực OTP
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email, otp]
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: example@gmail.com
+ *               otp:
+ *                 type: string
+ *                 example: "123456"
+ *     responses:
+ *       200:
+ *         description: Xác thực thành công
+ *       400:
+ *         description: OTP sai hoặc hết hạn
+ */
 router.post('/verify-otp', validateOTP, async (req, res) => {
     try {
         const { email, otp } = req.body;
@@ -209,7 +273,28 @@ router.post('/verify-otp', validateOTP, async (req, res) => {
     }
 });
 
-// POST /api/auth/resend-otp - Gửi lại OTP
+/**
+ * @swagger
+ * /api/auth/resend-otp:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Gửi lại OTP
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email]
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: example@gmail.com
+ *     responses:
+ *       200:
+ *         description: Đã gửi lại OTP
+ */
 router.post('/resend-otp', async (req, res) => {
     try {
         const { email } = req.body;
@@ -263,7 +348,33 @@ router.post('/resend-otp', async (req, res) => {
     }
 });
 
-// POST /api/auth/login - Đăng nhập
+/**
+ * @swagger
+ * /api/auth/login:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Đăng nhập
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [emailOrPhone, matKhau]
+ *             properties:
+ *               emailOrPhone:
+ *                 type: string
+ *                 example: example@gmail.com
+ *               matKhau:
+ *                 type: string
+ *                 example: Password123
+ *     responses:
+ *       200:
+ *         description: Đăng nhập thành công, trả về JWT token
+ *       401:
+ *         description: Sai thông tin đăng nhập
+ */
 router.post('/login', validateLogin, async (req, res) => {
     try {
         const { emailOrPhone, matKhau } = req.body;
@@ -351,7 +462,28 @@ router.post('/login', validateLogin, async (req, res) => {
     }
 });
 
-// POST /api/auth/forgot-password - Quên mật khẩu
+/**
+ * @swagger
+ * /api/auth/forgot-password:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Quên mật khẩu — gửi OTP
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email]
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: example@gmail.com
+ *     responses:
+ *       200:
+ *         description: Đã gửi OTP về email
+ */
 router.post('/forgot-password', async (req, res) => {
     try {
         const { email } = req.body;
@@ -396,7 +528,34 @@ router.post('/forgot-password', async (req, res) => {
     }
 });
 
-// POST /api/auth/reset-password - Đặt lại mật khẩu
+/**
+ * @swagger
+ * /api/auth/reset-password:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Đặt lại mật khẩu
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email, otp, matKhauMoi]
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: example@gmail.com
+ *               otp:
+ *                 type: string
+ *                 example: "123456"
+ *               matKhauMoi:
+ *                 type: string
+ *                 example: NewPassword123
+ *     responses:
+ *       200:
+ *         description: Đặt lại mật khẩu thành công
+ */
 router.post('/reset-password', async (req, res) => {
     try {
         const { email, otp, matKhauMoi } = req.body;

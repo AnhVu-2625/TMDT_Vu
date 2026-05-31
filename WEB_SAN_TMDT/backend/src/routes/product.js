@@ -4,7 +4,42 @@ const { getPool, sql } = require('../config/database');
 const { authenticateToken, requireSeller } = require('../middleware/auth');
 const { validateProduct, validateProductVariant } = require('../utils/validators');
 
-// GET /api/products - Lấy danh sách sản phẩm (có phân trang, lọc, tìm kiếm)
+/**
+ * @swagger
+ * /api/products:
+ *   get:
+ *     tags: [Products]
+ *     summary: Lấy danh sách sản phẩm
+ *     security: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, default: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 20 }
+ *       - in: query
+ *         name: search
+ *         schema: { type: string }
+ *       - in: query
+ *         name: category
+ *         schema: { type: integer }
+ *       - in: query
+ *         name: minPrice
+ *         schema: { type: number }
+ *       - in: query
+ *         name: maxPrice
+ *         schema: { type: number }
+ *       - in: query
+ *         name: sortBy
+ *         schema: { type: string, default: NgayTao }
+ *       - in: query
+ *         name: sortOrder
+ *         schema: { type: string, enum: [ASC, DESC], default: DESC }
+ *     responses:
+ *       200:
+ *         description: Danh sách sản phẩm có phân trang
+ */
 router.get('/', async (req, res) => {
     try {
         const {
@@ -90,7 +125,36 @@ router.get('/', async (req, res) => {
     }
 });
 
-// GET /api/products/:id - Lấy chi tiết sản phẩm
+/**
+ * @swagger
+ * /api/products/categories/all:
+ *   get:
+ *     tags: [Products]
+ *     summary: Lấy tất cả danh mục sản phẩm
+ *     security: []
+ *     responses:
+ *       200:
+ *         description: Danh sách danh mục
+ */
+/**
+ * @swagger
+ * /api/products/{id}:
+ *   get:
+ *     tags: [Products]
+ *     summary: Lấy chi tiết sản phẩm
+ *     security: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *         description: Mã sản phẩm
+ *     responses:
+ *       200:
+ *         description: Chi tiết sản phẩm kèm hình ảnh, phiên bản, đánh giá
+ *       404:
+ *         description: Không tìm thấy sản phẩm
+ */
 router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -163,7 +227,39 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// POST /api/products - Tạo sản phẩm mới (Người bán)
+/**
+ * @swagger
+ * /api/products:
+ *   post:
+ *     tags: [Products]
+ *     summary: Tạo sản phẩm mới (Seller)
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [tenSanPham, giaGoc]
+ *             properties:
+ *               tenSanPham:
+ *                 type: string
+ *                 example: Áo thún nam
+ *               moTa:
+ *                 type: string
+ *               giaGoc:
+ *                 type: number
+ *                 example: 299000
+ *               maDanhMuc:
+ *                 type: integer
+ *                 example: 1
+ *     responses:
+ *       201:
+ *         description: Tạo sản phẩm thành công
+ *       401:
+ *         description: Chưa xác thực
+ */
 router.post('/', authenticateToken, requireSeller, validateProduct, async (req, res) => {
     try {
         const { tenSanPham, moTa, giaGoc, maDanhMuc } = req.body;

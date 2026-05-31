@@ -1,18 +1,25 @@
--- 1. Tạo Database
+-- ==========================================
+-- SCHEMA MartHub E-Commerce Platform
+-- Phiên bản: 2.0 (chuẩn hóa theo yêu cầu)
+-- ==========================================
+
 USE master;
 GO
 
-ALTER DATABASE ThuongMaiDienTu SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+-- Xóa DB cũ nếu có
+IF EXISTS (SELECT name FROM sys.databases WHERE name = N'ThuongMaiDienTu')
+BEGIN
+    ALTER DATABASE ThuongMaiDienTu SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    DROP DATABASE ThuongMaiDienTu;
+END
 GO
 
-DROP DATABASE IF EXISTS ThuongMaiDienTu
-GO
-
--- Tạo Database
 CREATE DATABASE ThuongMaiDienTu;
 GO
+
 USE ThuongMaiDienTu;
 GO
+
 -- ==========================================
 -- NHÓM QUẢN LÝ NGƯỜI DÙNG & TÀI KHOẢN
 -- ==========================================
@@ -23,6 +30,7 @@ CREATE TABLE HangThanhVien (
     DiemToiThieu INT NOT NULL DEFAULT 0,
     PhanTramGiamGia DECIMAL(5,2) DEFAULT 0
 );
+GO
 
 CREATE TABLE NguoiDung (
     MaNguoiDung INT IDENTITY(1,1) PRIMARY KEY,
@@ -41,6 +49,7 @@ CREATE TABLE NguoiDung (
     NgayCapNhat DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (MaHang) REFERENCES HangThanhVien(MaHang)
 );
+GO
 
 CREATE TABLE XacThucNguoiDung (
     MaXacThuc INT IDENTITY(1,1) PRIMARY KEY,
@@ -50,6 +59,7 @@ CREATE TABLE XacThucNguoiDung (
     DaSuDung BIT DEFAULT 0,
     FOREIGN KEY (MaNguoiDung) REFERENCES NguoiDung(MaNguoiDung)
 );
+GO
 
 CREATE TABLE DiaChiGiaoHang (
     MaDiaChi INT IDENTITY(1,1) PRIMARY KEY,
@@ -63,6 +73,7 @@ CREATE TABLE DiaChiGiaoHang (
     LaMacDinh BIT DEFAULT 0,
     FOREIGN KEY (MaNguoiDung) REFERENCES NguoiDung(MaNguoiDung)
 );
+GO
 
 -- ==========================================
 -- NHÓM QUẢN LÝ CỬA HÀNG & TÀI CHÍNH
@@ -79,6 +90,7 @@ CREATE TABLE CuaHang (
     NgayTao DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (MaNguoiDung) REFERENCES NguoiDung(MaNguoiDung)
 );
+GO
 
 CREATE TABLE YeuCauRutTien (
     MaYeuCau INT IDENTITY(1,1) PRIMARY KEY,
@@ -91,6 +103,7 @@ CREATE TABLE YeuCauRutTien (
     NgayTao DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (MaCuaHang) REFERENCES CuaHang(MaCuaHang)
 );
+GO
 
 -- ==========================================
 -- NHÓM SẢN PHẨM & DANH MỤC
@@ -103,6 +116,7 @@ CREATE TABLE DanhMucSanPham (
     DuongDan NVARCHAR(100) UNIQUE NOT NULL,
     FOREIGN KEY (MaDanhMucCha) REFERENCES DanhMucSanPham(MaDanhMuc)
 );
+GO
 
 CREATE TABLE SanPham (
     MaSanPham INT IDENTITY(1,1) PRIMARY KEY,
@@ -119,6 +133,7 @@ CREATE TABLE SanPham (
     FOREIGN KEY (MaCuaHang) REFERENCES CuaHang(MaCuaHang),
     FOREIGN KEY (MaDanhMuc) REFERENCES DanhMucSanPham(MaDanhMuc)
 );
+GO
 
 CREATE TABLE HinhAnhSanPham (
     MaHinhAnh INT IDENTITY(1,1) PRIMARY KEY,
@@ -127,6 +142,7 @@ CREATE TABLE HinhAnhSanPham (
     LaAnhChinh BIT DEFAULT 0,
     FOREIGN KEY (MaSanPham) REFERENCES SanPham(MaSanPham)
 );
+GO
 
 CREATE TABLE PhienBanSanPham (
     MaPhienBan INT IDENTITY(1,1) PRIMARY KEY,
@@ -137,6 +153,7 @@ CREATE TABLE PhienBanSanPham (
     SoLuongTonKho INT NOT NULL CHECK (SoLuongTonKho >= 0),
     FOREIGN KEY (MaSanPham) REFERENCES SanPham(MaSanPham)
 );
+GO
 
 -- ==========================================
 -- NHÓM MUA SẮM, TÌM KIẾM & KHUYẾN MÃI
@@ -152,6 +169,7 @@ CREATE TABLE ChiTietGioHang (
     FOREIGN KEY (MaPhienBan) REFERENCES PhienBanSanPham(MaPhienBan),
     UNIQUE(MaNguoiDung, MaPhienBan)
 );
+GO
 
 CREATE TABLE DanhSachYeuThich (
     MaYeuThich INT IDENTITY(1,1) PRIMARY KEY,
@@ -162,6 +180,7 @@ CREATE TABLE DanhSachYeuThich (
     FOREIGN KEY (MaSanPham) REFERENCES SanPham(MaSanPham),
     UNIQUE(MaNguoiDung, MaSanPham)
 );
+GO
 
 CREATE TABLE LichSuTimKiem (
     MaTimKiem INT IDENTITY(1,1) PRIMARY KEY,
@@ -170,6 +189,7 @@ CREATE TABLE LichSuTimKiem (
     NgayTimKiem DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (MaNguoiDung) REFERENCES NguoiDung(MaNguoiDung)
 );
+GO
 
 CREATE TABLE MaKhuyenMai (
     MaKhuyenMai INT IDENTITY(1,1) PRIMARY KEY,
@@ -185,6 +205,7 @@ CREATE TABLE MaKhuyenMai (
     DaSuDung INT DEFAULT 0,
     FOREIGN KEY (MaCuaHang) REFERENCES CuaHang(MaCuaHang)
 );
+GO
 
 -- ==========================================
 -- NHÓM ĐƠN HÀNG & ĐÁNH GIÁ
@@ -210,6 +231,7 @@ CREATE TABLE DonHang (
     FOREIGN KEY (MaDiaChi) REFERENCES DiaChiGiaoHang(MaDiaChi),
     FOREIGN KEY (MaKhuyenMai) REFERENCES MaKhuyenMai(MaKhuyenMai)
 );
+GO
 
 CREATE TABLE ChiTietDonHang (
     MaChiTietDonHang INT IDENTITY(1,1) PRIMARY KEY,
@@ -220,6 +242,7 @@ CREATE TABLE ChiTietDonHang (
     FOREIGN KEY (MaDonHang) REFERENCES DonHang(MaDonHang),
     FOREIGN KEY (MaPhienBan) REFERENCES PhienBanSanPham(MaPhienBan)
 );
+GO
 
 CREATE TABLE DanhGiaSanPham (
     MaDanhGia INT IDENTITY(1,1) PRIMARY KEY,
@@ -234,6 +257,7 @@ CREATE TABLE DanhGiaSanPham (
     FOREIGN KEY (MaSanPham) REFERENCES SanPham(MaSanPham),
     FOREIGN KEY (MaDonHang) REFERENCES DonHang(MaDonHang)
 );
+GO
 
 CREATE TABLE YeuCauDoiTra (
     MaDoiTra INT IDENTITY(1,1) PRIMARY KEY,
@@ -245,6 +269,7 @@ CREATE TABLE YeuCauDoiTra (
     NgayTao DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (MaDonHang) REFERENCES DonHang(MaDonHang)
 );
+GO
 
 -- ==========================================
 -- NHÓM TƯƠNG TÁC (CHAT & THÔNG BÁO)
@@ -259,6 +284,7 @@ CREATE TABLE PhongChat (
     FOREIGN KEY (MaCuaHang) REFERENCES CuaHang(MaCuaHang),
     UNIQUE(MaNguoiDung, MaCuaHang)
 );
+GO
 
 CREATE TABLE TinNhanChat (
     MaTinNhan INT IDENTITY(1,1) PRIMARY KEY,
@@ -269,6 +295,7 @@ CREATE TABLE TinNhanChat (
     NgayTao DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (MaPhongChat) REFERENCES PhongChat(MaPhongChat)
 );
+GO
 
 CREATE TABLE ThongBao (
     MaThongBao INT IDENTITY(1,1) PRIMARY KEY,
@@ -281,28 +308,23 @@ CREATE TABLE ThongBao (
     NgayTao DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (MaNguoiDung) REFERENCES NguoiDung(MaNguoiDung)
 );
+GO
 
 -- ==========================================
--- INDEXES & THÊM DỮ LIỆU MẪU
+-- INDEXES (tối ưu hiệu năng)
 -- ==========================================
-
--- Tạo indexes để tối ưu hiệu năng
 CREATE INDEX IX_NguoiDung_Email ON NguoiDung(Email);
 CREATE INDEX IX_NguoiDung_SoDienThoai ON NguoiDung(SoDienThoai);
 CREATE INDEX IX_SanPham_MaCuaHang ON SanPham(MaCuaHang);
 CREATE INDEX IX_SanPham_MaDanhMuc ON SanPham(MaDanhMuc);
+CREATE INDEX IX_SanPham_TrangThai ON SanPham(TrangThai);
 CREATE INDEX IX_DonHang_MaNguoiDung ON DonHang(MaNguoiDung);
 CREATE INDEX IX_DonHang_MaCuaHang ON DonHang(MaCuaHang);
 CREATE INDEX IX_DonHang_TrangThaiDonHang ON DonHang(TrangThaiDonHang);
 CREATE INDEX IX_ChiTietGioHang_MaNguoiDung ON ChiTietGioHang(MaNguoiDung);
 CREATE INDEX IX_DanhGiaSanPham_MaSanPham ON DanhGiaSanPham(MaSanPham);
+CREATE INDEX IX_ThongBao_MaNguoiDung ON ThongBao(MaNguoiDung);
+GO
 
--- Thêm dữ liệu mẫu cho HangThanhVien
-INSERT INTO HangThanhVien (TenHang, DiemToiThieu, PhanTramGiamGia)
-VALUES 
-    (N'Thường', 0, 0),
-    (N'Bạc', 500, 5),
-    (N'Vàng', 1000, 10),
-    (N'Bạch Kim', 2000, 15);
-
-PRINT 'Database schema created successfully!'
+PRINT 'Schema ThuongMaiDienTu created successfully!'
+GO

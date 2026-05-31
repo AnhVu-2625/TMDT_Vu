@@ -3,19 +3,28 @@ import { motion } from 'framer-motion';
 import { FaStar, FaShoppingCart, FaHeart, FaRegHeart, FaEye } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import useCartStore from '../store/cartStore';
-import useAuthStore from '../store/authStore';
+import { useCartStore } from '../store/cartStore';
+import { useAuthStore } from '../store/authStore';
 
 function ProductCard({ product, index = 0 }) {
   const { addItem } = useCartStore();
   const { isAuthenticated } = useAuthStore();
 
-  const minPrice = product.variants?.reduce((min, v) => Math.min(min, v.GiaBan), Infinity) || product.GiaGoc;
-  const maxPrice = product.variants?.reduce((max, v) => Math.max(max, v.GiaBan), 0) || product.GiaGoc;
-  const hasDiscount = product.GiaGoc > minPrice;
-  const discountPct = hasDiscount ? Math.round(((product.GiaGoc - minPrice) / product.GiaGoc) * 100) : 0;
+  // Tính giá từ variants hoặc fallback về GiaGoc / GiaThapNhat
+  const basePrice = product.GiaGoc || product.GiaThapNhat || 0;
+  const rawMin = product.variants?.length > 0
+    ? product.variants.reduce((min, v) => Math.min(min, v.GiaBan || basePrice), Infinity)
+    : (product.GiaThapNhat || basePrice);
+  const rawMax = product.variants?.length > 0
+    ? product.variants.reduce((max, v) => Math.max(max, v.GiaBan || basePrice), 0)
+    : (product.GiaCaoNhat || basePrice);
+  const minPrice = isFinite(rawMin) && rawMin > 0 ? rawMin : basePrice;
+  const maxPrice = isFinite(rawMax) && rawMax > 0 ? rawMax : basePrice;
+  const hasDiscount = basePrice > 0 && minPrice < basePrice;
+  const discountPct = hasDiscount ? Math.round(((basePrice - minPrice) / basePrice) * 100) : 0;
 
-  const handleAddToCart = async (e) => {
+
+  const handleAddToCart = (e) => {
     e.preventDefault();
     e.stopPropagation();
     if (!isAuthenticated) {
@@ -27,13 +36,18 @@ function ProductCard({ product, index = 0 }) {
       toast.error('Sản phẩm chưa có phiên bản');
       return;
     }
-    try {
-      await addItem(defaultVariant.MaPhienBan, 1);
-      toast.success(`Đã thêm "${product.TenSanPham}" vào giỏ hàng!`, { autoClose: 2000 });
-    } catch {
-      toast.error('Không thể thêm vào giỏ hàng');
-    }
+    addItem({
+      maPhienBan: defaultVariant.MaPhienBan,
+      maSanPham: product.MaSanPham,
+      tenSanPham: product.TenSanPham,
+      giaBan: defaultVariant.GiaBan || minPrice,
+      anhSanPham: product.images?.[0]?.DuongDanAnh || null,
+      tenCuaHang: product.TenCuaHang,
+      soLuong: 1,
+    });
+    toast.success(`Đã thêm "${product.TenSanPham}" vào giỏ hàng!`, { autoClose: 2000 });
   };
+
 
   return (
     <motion.div
@@ -158,7 +172,7 @@ function ProductCard({ product, index = 0 }) {
             </span>
             {hasDiscount && (
               <span className="text-xs text-slate-500 line-through">
-                ₫{product.GiaGoc.toLocaleString('vi-VN')}
+                ₫{basePrice.toLocaleString('vi-VN')}
               </span>
             )}
           </div>

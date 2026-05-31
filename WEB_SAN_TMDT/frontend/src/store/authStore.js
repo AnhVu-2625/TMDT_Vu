@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const useAuthStore = create(
   persist(
@@ -12,6 +12,14 @@ const useAuthStore = create(
       isAuthenticated: false,
       loading: false,
       error: null,
+      redirectPath: null,
+
+      // Helpers kiểm tra vai trò (theo schema DB)
+      // Admin: VaiTro = 'QUAN_TRI_VIEN'
+      // Seller: có cửa hàng (user.shop != null) - không phụ thuộc VaiTro
+      isAdmin: () => get().user?.vaiTro === 'QUAN_TRI_VIEN',
+      isSeller: () => !!(get().user?.shop?.MaCuaHang),
+
 
       // Đăng ký
       register: async (userData) => {
@@ -66,6 +74,17 @@ const useAuthStore = create(
           
           const { token, user } = response.data.data;
           
+          // Tính redirect dựa theo schema:
+          // - QUAN_TRI_VIEN → /admin/dashboard
+          // - NGUOI_DUNG + có shop → /seller/dashboard
+          // - NGUOI_DUNG + không shop → / (trang chủ)
+          let redirectPath = '/';
+          if (user.vaiTro === 'QUAN_TRI_VIEN') {
+            redirectPath = '/admin/dashboard';
+          } else if (user.shop && user.shop.MaCuaHang) {
+            redirectPath = '/seller/dashboard';
+          }
+
           // Lưu token vào axios defaults
           axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
           
@@ -74,16 +93,18 @@ const useAuthStore = create(
             token,
             isAuthenticated: true,
             loading: false,
-            error: null
+            error: null,
+            redirectPath,
           });
           
-          return response.data;
+          return { ...response.data, redirectPath };
         } catch (error) {
           const errorMessage = error.response?.data?.message || 'Đăng nhập thất bại';
           set({ loading: false, error: errorMessage });
           throw new Error(errorMessage);
         }
       },
+
 
       // Đăng xuất
       logout: () => {
@@ -167,7 +188,8 @@ const useAuthStore = create(
       partialize: (state) => ({
         user: state.user,
         token: state.token,
-        isAuthenticated: state.isAuthenticated
+        isAuthenticated: state.isAuthenticated,
+        redirectPath: state.redirectPath,
       })
     }
   )

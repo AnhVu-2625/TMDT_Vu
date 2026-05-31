@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaShoppingCart, FaTrash, FaMinus, FaPlus, FaArrowRight, FaTag } from 'react-icons/fa';
 import { toast } from 'react-toastify';
-import useCartStore from '../../store/cartStore';
+import { useCartStore } from '../../store/cartStore';
 
 export default function Cart() {
   const { items, updateItem, removeItem, clearCart } = useCartStore();

@@ -23,11 +23,11 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
     try {
-      await login(formData.emailOrPhone, formData.matKhau);
+      const result = await login(formData.emailOrPhone, formData.matKhau);
       toast.success('Đăng nhập thành công!');
-      navigate('/');
+      // Điều hướng theo vai trò: Admin → /admin/dashboard, Seller → /seller/dashboard, User → /
+      navigate(result?.redirectPath || '/');
     } catch (error) {
       if (error.message.includes('kích hoạt')) {
         navigate('/verify-otp', { state: { email: formData.emailOrPhone } });
@@ -36,6 +36,7 @@ const Login = () => {
       }
     }
   };
+
 
   return (
     <motion.div

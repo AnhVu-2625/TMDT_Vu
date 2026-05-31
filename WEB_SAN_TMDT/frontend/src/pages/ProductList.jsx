@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaFilter, FaSearch, FaSlidersH, FaTimes, FaChevronDown, FaStar, FaThLarge, FaList } from 'react-icons/fa';
-import useProductStore from '../store/productStore';
+import { useProductStore } from '../store/productStore';
 import ProductCard from '../components/ProductCard';
 
 const sortOptions = [
@@ -57,12 +57,13 @@ export default function ProductList() {
   const currentCategory = searchParams.get('category') || '';
   const currentSort = searchParams.get('sort') || 'newest';
 
-  const { products, getProducts, loading } = useProductStore();
+  const { products, fetchProducts, loading } = useProductStore();
   const displayProducts = products.length > 0 ? products : mockProducts;
 
   useEffect(() => {
-    getProducts({ search: currentSearch, category: currentCategory, sort: currentSort, limit: 20 });
-  }, [currentSearch, currentCategory, currentSort, getProducts]);
+    fetchProducts({ search: currentSearch, category: currentCategory, sort: currentSort, limit: 20 });
+  }, [currentSearch, currentCategory, currentSort, fetchProducts]);
+
 
   const handleSearch = (e) => {
     e.preventDefault();
