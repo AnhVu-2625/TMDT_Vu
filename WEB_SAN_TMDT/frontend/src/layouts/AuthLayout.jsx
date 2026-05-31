@@ -4,10 +4,13 @@ import { motion } from 'framer-motion';
 
 const AuthLayout = () => {
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex bg-gradient-to-br from-black via-slate-900 to-black">
       {/* Left Side - Form */}
-      <div className="flex-1 flex items-center justify-center p-8">
-        <div className="w-full max-w-md">
+      <div className="flex-1 flex items-center justify-center p-8 relative overflow-hidden">
+        {/* Decorative blur elements */}
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-red-600/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl"></div>
+        <div className="w-full max-w-md relative z-10">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 mb-8">
             <motion.div
@@ -15,9 +18,9 @@ const AuthLayout = () => {
               className="flex items-center space-x-2"
             >
               <div className="w-12 h-12 bg-gradient-to-br from-red-600 to-red-800 rounded-xl flex items-center justify-center glow-red">
-                <span className="text-white font-bold text-2xl">E</span>
+                <span className="text-white font-bold text-2xl">M</span>
               </div>
-              <span className="text-2xl font-bold gradient-text">ECommerce</span>
+              <span className="text-2xl font-bold text-white">MartHub</span>
             </motion.div>
           </Link>
 

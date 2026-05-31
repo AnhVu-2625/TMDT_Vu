@@ -22,6 +22,8 @@ const chatRoutes = require('./routes/chat');
 const notificationRoutes = require('./routes/notification');
 const favoritesRoutes = require('./routes/favorites');
 const reviewRoutes = require('./routes/review');
+const disputeRoutes = require('./routes/dispute');
+const settlementRoutes = require('./routes/settlement');
 
 const app = express();
 const server = http.createServer(app);
@@ -45,6 +47,41 @@ app.use(cors({
 }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
+
+// Đảm bảo response luôn UTF-8
+app.use((req, res, next) => {
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  next();
+});
+
+// Fix encoding cho dữ liệu từ SQL Server (mssql v9 bug với Vietnamese)
+const fixEncoding = (obj) => {
+  if (typeof obj === 'string') {
+    try {
+      // Thử decode lại nếu bị lỗi Latin-1 → UTF-8
+      const bytes = Buffer.from(obj, 'latin1');
+      const decoded = bytes.toString('utf8');
+      // Chỉ dùng decoded nếu có ký tự tiếng Việt hợp lệ
+      if (/[àáâãèéêìíòóôõùúýăđơưạảấầẩẫậắằẳẵặẹẻẽếềểễệỉịọỏốồổỗộớờởỡợụủứừửữựỳỵỷỹ]/i.test(decoded)) {
+        return decoded;
+      }
+    } catch {}
+    return obj;
+  }
+  if (Array.isArray(obj)) return obj.map(fixEncoding);
+  if (obj && typeof obj === 'object') {
+    const fixed = {};
+    for (const key of Object.keys(obj)) fixed[key] = fixEncoding(obj[key]);
+    return fixed;
+  }
+  return obj;
+};
+
+app.use((req, res, next) => {
+  const originalJson = res.json.bind(res);
+  res.json = (data) => originalJson(fixEncoding(data));
+  next();
+});
 
 // Static files – phục vụ ảnh upload
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
@@ -73,6 +110,8 @@ app.use('/api/chat', chatRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/favorites', favoritesRoutes);   // ← Đã sửa: route favorites bị thiếu
 app.use('/api/reviews', reviewRoutes);         // ← Mới: route reviews
+app.use('/api/disputes', disputeRoutes);       // ← Mới: route giải quyết tranh chấp
+app.use('/api/settlements', settlementRoutes); // ← Mới: route đối soát & chia tiền
 
 // ─── Socket.IO – Real-time Chat & Notifications ─────────────────────────────
 const connectedUsers = new Map(); // userId → socketId

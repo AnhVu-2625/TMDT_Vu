@@ -228,3 +228,112 @@ PRINT ''
 PRINT 'Shop Seller: "Tech Store Official" (HOAT_DONG)'
 PRINT 'Có 4 sản phẩm mẫu + mã khuyến mãi: WELCOME10, SALE50K, VIP20'
 GO
+
+-- ==========================================
+-- 9. GÓI DỊCH VỤ VIP
+-- ==========================================
+IF NOT EXISTS (SELECT 1 FROM GiaDichVuVIP)
+BEGIN
+    INSERT INTO GiaDichVuVIP (TenGoi, MoTa, GiaTien, ThoiGianDangKy, LoiIch)
+    VALUES 
+        (N'VIP Bạc', 
+         N'Gói VIP cơ bản - Thích hợp cho người mua hàng thường xuyên',
+         99000, 30,
+         N'Giảm 5% trên mọi đơn hàng
+- Ưu tiên hỗ trợ khách hàng
+- Tích lũy 100 điểm bonus
+- Miễn phí vận chuyển cho đơn từ 500K'),
+
+        (N'VIP Vàng',
+         N'Gói VIP tiêu chuẩn - Lợi ích cao',
+         199000, 30,
+         N'Giảm 10% trên mọi đơn hàng
+- Ưu tiên hỗ trợ VIP 24/7
+- Tích lũy 200 điểm bonus
+- Miễn phí vận chuyển toàn quốc
+- Ưu tiên trả góp 0%'),
+
+        (N'VIP Bạch Kim',
+         N'Gói VIP cao cấp - Quyền lợi tối đa',
+         399000, 30,
+         N'Giảm 15% trên mọi đơn hàng
+- Hỗ trợ VIP 24/7 riêng biệt
+- Tích lũy 500 điểm bonus
+- Miễn phí vận chuyển toàn quốc
+- Trả góp 0% không điều kiện
+- Hàng chính hãng 100% hoặc trả tiền'),
+
+        (N'VIP Ngàn Sao',
+         N'Gói VIP tối cao - Đặc quyền hoàng gia',
+         999000, 30,
+         N'Giảm 20% trên mọi đơn hàng
+- Hỗ trợ VIP 24/7 riêng biệt với Priority
+- Tích lũy 1000 điểm bonus
+- Miễn phí vận chuyển + hoàn phí nếu hỏng
+- Trả góp 0% không điều kiện
+- Hàng chính hãng 100% hoặc hoàn tiền x2
+- Tham gia flash sale độc quyền
+- Gift voucher hàng tháng');
+END
+GO
+
+-- ==========================================
+-- 10. CHÍNH SÁCH HỆ THỐNG
+-- ==========================================
+IF NOT EXISTS (SELECT 1 FROM ChinhSachHeThong)
+BEGIN
+    INSERT INTO ChinhSachHeThong (TenChinhSach, NoiDung, LoaiChinhSach)
+    VALUES 
+        (N'Chính sách thanh toán',
+         N'Tất cả giao dịch trên nền tảng MartHub đều được bảo vệ bởi hệ thống thanh toán an toàn và mã hóa. Người dùng có thể chọn nhiều phương thức thanh toán: thẻ tín dụng, ví điện tử, chuyển khoản ngân hàng.',
+         N'CHI_TRA'),
+
+        (N'Chính sách bảo mật',
+         N'Thông tin cá nhân của người dùng được bảo vệ tuyệt đối theo tiêu chuẩn GDPR. Không bao giờ chia sẻ thông tin với bên thứ ba mà không có sự đồng ý.',
+         N'BAO_MAT'),
+
+        (N'Chính sách khiếu nại',
+         N'Người dùng có quyền khiếu nại về chất lượng sản phẩm, dịch vụ trong vòng 30 ngày. Admin sẽ xem xét và có phán quyết trong vòng 7 ngày làm việc.',
+         N'KHIEU_NAI'),
+
+        (N'Chính sách hoàn trả',
+         N'Hàng hóa có thể được trả lại trong vòng 7 ngày nếu chưa sử dụng. Phí vận chuyển sẽ được hoàn nếu lỗi của người bán.',
+         N'CHI_TRA');
+END
+GO
+
+-- ==========================================
+-- 11. LỊCH SỬ THAY ĐỔI ĐIỂM MẪU
+-- ==========================================
+DECLARE @UserID INT = (SELECT MaNguoiDung FROM NguoiDung WHERE Email = 'user@marthub.vn');
+IF @UserID IS NOT NULL AND NOT EXISTS (SELECT 1 FROM LichSuThayDoiDiem WHERE MaNguoiDung = @UserID)
+BEGIN
+    INSERT INTO LichSuThayDoiDiem (MaNguoiDung, DiemThanh, LoaiThay, LyDo, LoaiMaThamChieu)
+    VALUES 
+        (@UserID, 50,   1, N'Hoàn thành đơn hàng',     N'DON_HANG'),
+        (@UserID, 10,   1, N'Đánh giá sản phẩm 5 sao', N'DANH_GIA'),
+        (@UserID, 5,    1, N'Referral bạn bè',          N'HE_THONG'),
+        (@UserID, 100,  1, N'Đăng ký VIP Vàng',         N'HE_THONG');
+END
+GO
+
+PRINT '============================================'
+PRINT 'ADMIN & USER FEATURES SEED DATA INSERTED!'
+PRINT '============================================'
+PRINT ''
+PRINT '=== GÓI VIP AVAILABLE ==='
+PRINT 'VIP Bạc     : 99,000 VNĐ   - Giảm 5%'
+PRINT 'VIP Vàng    : 199,000 VNĐ  - Giảm 10%'
+PRINT 'VIP Bạch Kim: 399,000 VNĐ  - Giảm 15%'
+PRINT 'VIP Ngàn Sao: 999,000 VNĐ  - Giảm 20%'
+PRINT ''
+PRINT 'Đã thêm các bảng mới:'
+PRINT '- BaoCao (báo cáo vi phạm)'
+PRINT '- GiaiQuyetTrancChap (xử lý tranh chấp)'
+PRINT '- DichVuVIPNguoiDung (VIP membership)'
+PRINT '- LichSuThayDoiDiem (điểm tích lũy)'
+PRINT '- BoLocDaLuu (bộ lọc tìm kiếm)'
+PRINT '- KhuyenMaiNguoiDung (khuyến mãi user)'
+PRINT '- ChinhSachHeThong (chính sách)'
+GO
+

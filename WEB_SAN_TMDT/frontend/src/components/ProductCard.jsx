@@ -114,16 +114,19 @@ function ProductCard({ product, index = 0 }) {
           >
             <FaRegHeart size={14} className="text-red-400" />
           </motion.button>
-          <Link to={`/products/${product.MaSanPham}`}>
-            <motion.div
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              className="w-10 h-10 bg-slate-800/90 hover:bg-slate-700 rounded-full flex items-center justify-center shadow-lg"
-              title="Xem chi tiết"
-            >
-              <FaEye size={14} className="text-slate-300" />
-            </motion.div>
-          </Link>
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              window.location.href = `/products/${product.MaSanPham}`;
+            }}
+            className="w-10 h-10 bg-slate-800/90 hover:bg-slate-700 rounded-full flex items-center justify-center shadow-lg"
+            title="Xem chi tiết"
+          >
+            <FaEye size={14} className="text-slate-300" />
+          </motion.button>
         </motion.div>
       </Link>
 

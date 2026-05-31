@@ -67,12 +67,12 @@ export default function Checkout() {
       <div className="grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           {/* Step 1: Address */}
-          <div className={`bg-slate-900/70 rounded-xl border p-5 transition-all ${step === 1 ? 'border-red-500/40' : 'border-slate-800/50'}`}>
+          <div className={`bg-gradient-to-br from-slate-900 to-black rounded-xl border p-5 transition-all shadow-xl ${step === 1 ? 'border-red-500/40 shadow-red-600/20' : 'border-slate-800/50'}`}>
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-bold text-white flex items-center gap-2"><FaMapMarkerAlt className="text-red-400" /> Địa chỉ giao hàng</h2>
-              {step !== 1 && <button onClick={() => setStep(1)} className="text-xs text-red-400 hover:text-red-300">Thay đổi</button>}
+              {step !== 1 && <button onClick={() => setStep(1)} className="text-xs text-red-400 hover:text-red-300 transition">Thay đổi</button>}
             </div>
-            <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700/50">
+            <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700/50 hover:border-slate-600/50 transition">
               <div className="flex items-start justify-between">
                 <div>
                   <p className="font-semibold text-white">{mockAddress.TenNguoiNhan} <span className="text-slate-400">|</span> {mockAddress.SDTNguoiNhan}</p>
@@ -80,23 +80,23 @@ export default function Checkout() {
                     {[mockAddress.DiaChiCuThe, mockAddress.PhuongXa, mockAddress.QuanHuyen, mockAddress.TinhThanh].join(', ')}
                   </p>
                 </div>
-                <span className="badge-red ml-2 flex-shrink-0">Mặc định</span>
+                <span className="bg-red-600/20 border border-red-500/30 text-red-300 px-3 py-1 text-xs rounded-full ml-2 flex-shrink-0">Mặc định</span>
               </div>
             </div>
             <button className="mt-3 flex items-center gap-2 text-sm text-slate-400 hover:text-white transition">
               <FaPlus size={12} className="text-red-400" /> Thêm địa chỉ mới
             </button>
             {step === 1 && (
-              <button onClick={() => setStep(2)} className="mt-4 btn-primary w-full">Tiếp tục</button>
+              <button onClick={() => setStep(2)} className="mt-4 w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-lg transition shadow-lg shadow-red-600/30">Tiếp tục</button>
             )}
           </div>
 
           {/* Step 2: Payment */}
           {step >= 2 && (
-            <div className={`bg-slate-900/70 rounded-xl border p-5 transition-all ${step === 2 ? 'border-red-500/40' : 'border-slate-800/50'}`}>
+            <div className={`bg-gradient-to-br from-slate-900 to-black rounded-xl border p-5 transition-all shadow-xl ${step === 2 ? 'border-red-500/40 shadow-red-600/20' : 'border-slate-800/50'}`}>
               <div className="flex items-center justify-between mb-4">
                 <h2 className="font-bold text-white flex items-center gap-2"><FaCreditCard className="text-red-400" /> Phương thức thanh toán</h2>
-                {step !== 2 && <button onClick={() => setStep(2)} className="text-xs text-red-400 hover:text-red-300">Thay đổi</button>}
+                {step !== 2 && <button onClick={() => setStep(2)} className="text-xs text-red-400 hover:text-red-300 transition">Thay đổi</button>}
               </div>
               <div className="space-y-3">
                 {payMethods.map(m => (

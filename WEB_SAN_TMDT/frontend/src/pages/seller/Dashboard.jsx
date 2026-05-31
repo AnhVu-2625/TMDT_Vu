@@ -18,3 +18,5 @@ export const Orders = () => (
     <h1 className="text-3xl font-bold">Seller Orders</h1>
   </motion.div>
 );
+
+export default Dashboard;

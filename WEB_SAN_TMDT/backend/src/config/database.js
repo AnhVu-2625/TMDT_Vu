@@ -9,18 +9,21 @@ const buildConfig = () => {
   const useWindowsAuth = !process.env.DB_USER;
 
   if (useWindowsAuth) {
-    // Windows Authentication – dùng cho môi trường local (LAPTOP-ANHVU)
+    // Windows Authentication – dùng cho môi trường local
     return {
-      server: process.env.DB_SERVER || 'localhost',
+      server: process.env.DB_SERVER + ',1433' || 'localhost,1433',
       database: process.env.DB_DATABASE || 'ThuongMaiDienTu',
       options: {
-        encrypt: process.env.DB_ENCRYPT === 'true' || false,
-        trustServerCertificate: process.env.DB_TRUST_SERVER_CERTIFICATE !== 'false',
+        encrypt: false,
+        trustServerCertificate: true,
         enableArithAbort: true,
-        trustedConnection: true
+        trustedConnection: true,
+        authentication: {
+          type: 'default'
+        }
       },
-      connectionTimeout: 30000,
-      requestTimeout: 30000
+      connectionTimeout: 15000,
+      requestTimeout: 15000
     };
   }
 
@@ -32,12 +35,14 @@ const buildConfig = () => {
     database: process.env.DB_DATABASE || 'ThuongMaiDienTu',
     port: parseInt(process.env.DB_PORT || '1433'),
     options: {
-      encrypt: process.env.DB_ENCRYPT === 'true' || false,
-      trustServerCertificate: process.env.DB_TRUST_SERVER_CERTIFICATE !== 'false',
-      enableArithAbort: true
+      encrypt: false,
+      trustServerCertificate: true,
+      enableArithAbort: true,
+      useUTC: false,
+      charset: 'UTF-8',
     },
-    connectionTimeout: 30000,
-    requestTimeout: 30000
+    connectionTimeout: 15000,
+    requestTimeout: 15000
   };
 };
 

@@ -86,8 +86,10 @@ router.get('/', async (req, res) => {
             LEFT JOIN CuaHang ch ON sp.MaCuaHang = ch.MaCuaHang
             LEFT JOIN DanhMucSanPham dm ON sp.MaDanhMuc = dm.MaDanhMuc
             ${whereClause}
-            HAVING (SELECT MIN(GiaBan) FROM PhienBanSanPham WHERE MaSanPham = sp.MaSanPham) >= ${minPrice}
-                AND (SELECT MAX(GiaBan) FROM PhienBanSanPham WHERE MaSanPham = sp.MaSanPham) <= ${maxPrice}
+            AND EXISTS (
+                SELECT 1 FROM PhienBanSanPham WHERE MaSanPham = sp.MaSanPham 
+                AND GiaBan >= ${minPrice} AND GiaBan <= ${maxPrice}
+            )
             ORDER BY sp.${sortBy} ${sortOrder}
             OFFSET ${offset} ROWS
             FETCH NEXT ${limit} ROWS ONLY
