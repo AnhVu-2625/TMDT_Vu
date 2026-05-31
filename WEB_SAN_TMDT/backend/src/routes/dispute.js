@@ -208,7 +208,14 @@ router.post('/:id/resolve',
             const disputeResult = await transaction.request()
                 .input('maDoiTra', sql.Int, id)
                 .query(`
-                    SELECT dt.*, dh.MaDonHang, dh.TienThanhToan, dh.MaCuaHang, dh.MaNguoiDung
+                    SELECT 
+                        dt.MaDoiTra,
+                        dt.MaDonHang,
+                        dt.LyDo,
+                        dt.TrangThai,
+                        dh.TienThanhToan,
+                        dh.MaCuaHang,
+                        dh.MaNguoiDung
                     FROM YeuCauDoiTra dt
                     INNER JOIN DonHang dh ON dt.MaDonHang = dh.MaDonHang
                     WHERE dt.MaDoiTra = @maDoiTra
@@ -243,6 +250,7 @@ router.post('/:id/resolve',
                 `);
 
             // Xử lý tiền theo quyết định
+            console.log('🔥 CODE MỚI - Đang xử lý quyết định:', quyetDinh, 'cho đơn hàng:', dispute.MaDonHang);
             if (quyetDinh === 'DONG_Y_HOAN_TIEN') {
                 // Hoàn tiền cho người mua
                 await transaction.request()
@@ -255,12 +263,32 @@ router.post('/:id/resolve',
                     `);
 
                 // Ghi log: Trừ tiền từ ví người bán (nếu đã được cộng)
+                // TODO: Uncomment khi stored procedure hoạt động
+                /*
+                await transaction.request()
+                    .input('MaCuaHang', sql.Int, dispute.MaCuaHang)
+                    .input('SoTien', sql.Decimal(15, 2), dispute.TienThanhToan)
+                    .input('LoaiGiaoDich', sql.NVarChar, 'HOAN_TIEN')
+                    .input('MoTa', sql.NVarChar, `Hoàn tiền đơn hàng #${dispute.MaDonHang} do tranh chấp`)
+                    .input('MaThamChieu', sql.Int, dispute.MaDonHang)
+                    .input('LoaiThamChieu', sql.NVarChar, 'DON_HANG')
+                    .execute('sp_CapNhatViCuaHang');
+                */
+
+                // Tạm thời ghi log trực tiếp vào bảng (không qua stored procedure)
                 await transaction.request()
                     .input('maCuaHang', sql.Int, dispute.MaCuaHang)
+                    .input('loaiGiaoDich', sql.NVarChar, 'HOAN_TIEN')
                     .input('soTien', sql.Decimal(15, 2), dispute.TienThanhToan)
+                    .input('soDuTruoc', sql.Decimal(15, 2), 0)
+                    .input('soDuSau', sql.Decimal(15, 2), 0)
                     .input('moTa', sql.NVarChar, `Hoàn tiền đơn hàng #${dispute.MaDonHang} do tranh chấp`)
-                    .input('maDonHang', sql.Int, dispute.MaDonHang)
-                    .execute('sp_CapNhatViCuaHang');
+                    .input('maThamChieu', sql.Int, dispute.MaDonHang)
+                    .input('loaiThamChieu', sql.NVarChar, 'DON_HANG')
+                    .query(`
+                        INSERT INTO LichSuGiaoDichVi (MaCuaHang, LoaiGiaoDich, SoTien, SoDuTruoc, SoDuSau, MoTa, MaThamChieu, LoaiThamChieu)
+                        VALUES (@maCuaHang, @loaiGiaoDich, @soTien, @soDuTruoc, @soDuSau, @moTa, @maThamChieu, @loaiThamChieu)
+                    `);
 
             } else {
                 // Từ chối hoàn tiền - tiền thuộc về người bán
@@ -273,12 +301,32 @@ router.post('/:id/resolve',
                     `);
 
                 // Đảm bảo tiền được chuyển cho người bán
+                // TODO: Uncomment khi stored procedure hoạt động
+                /*
+                await transaction.request()
+                    .input('MaCuaHang', sql.Int, dispute.MaCuaHang)
+                    .input('SoTien', sql.Decimal(15, 2), dispute.TienThanhToan)
+                    .input('LoaiGiaoDich', sql.NVarChar, 'CONG_TIEN')
+                    .input('MoTa', sql.NVarChar, `Xác nhận thanh toán đơn hàng #${dispute.MaDonHang} sau tranh chấp`)
+                    .input('MaThamChieu', sql.Int, dispute.MaDonHang)
+                    .input('LoaiThamChieu', sql.NVarChar, 'DON_HANG')
+                    .execute('sp_CapNhatViCuaHang');
+                */
+
+                // Tạm thời ghi log trực tiếp vào bảng
                 await transaction.request()
                     .input('maCuaHang', sql.Int, dispute.MaCuaHang)
+                    .input('loaiGiaoDich', sql.NVarChar, 'CONG_TIEN')
                     .input('soTien', sql.Decimal(15, 2), dispute.TienThanhToan)
+                    .input('soDuTruoc', sql.Decimal(15, 2), 0)
+                    .input('soDuSau', sql.Decimal(15, 2), 0)
                     .input('moTa', sql.NVarChar, `Xác nhận thanh toán đơn hàng #${dispute.MaDonHang} sau tranh chấp`)
-                    .input('maDonHang', sql.Int, dispute.MaDonHang)
-                    .execute('sp_CapNhatViCuaHang');
+                    .input('maThamChieu', sql.Int, dispute.MaDonHang)
+                    .input('loaiThamChieu', sql.NVarChar, 'DON_HANG')
+                    .query(`
+                        INSERT INTO LichSuGiaoDichVi (MaCuaHang, LoaiGiaoDich, SoTien, SoDuTruoc, SoDuSau, MoTa, MaThamChieu, LoaiThamChieu)
+                        VALUES (@maCuaHang, @loaiGiaoDich, @soTien, @soDuTruoc, @soDuSau, @moTa, @maThamChieu, @loaiThamChieu)
+                    `);
             }
 
             // Ghi lịch sử

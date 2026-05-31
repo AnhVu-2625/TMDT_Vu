@@ -79,9 +79,19 @@ router.get('/eligible-orders', authenticateToken, requireAdmin, async (req, res)
 
         const result = await request.query(query);
 
+        // Debug: Log dữ liệu trả về
+        console.log('🔍 Eligible orders data:', JSON.stringify(result.recordset.slice(0, 2), null, 2));
+
+        // Format ngày tháng cho frontend
+        const formattedOrders = result.recordset.map(order => ({
+            ...order,
+            NgayGiaoHang: order.NgayGiaoHang ? order.NgayGiaoHang.toISOString() : null,
+            NgayHetHanDoiTra: order.NgayHetHanDoiTra ? order.NgayHetHanDoiTra.toISOString() : null
+        }));
+
         // Tính tổng
-        const tongDonHang = result.recordset.length;
-        const tongDoanhThu = result.recordset.reduce((sum, order) => sum + parseFloat(order.TienThanhToan), 0);
+        const tongDonHang = formattedOrders.length;
+        const tongDoanhThu = formattedOrders.reduce((sum, order) => sum + parseFloat(order.TienThanhToan), 0);
 
         // Lấy phí sàn
         const phiSanResult = await pool.request()
@@ -94,7 +104,7 @@ router.get('/eligible-orders', authenticateToken, requireAdmin, async (req, res)
         res.json({
             success: true,
             data: {
-                orders: result.recordset,
+                orders: formattedOrders,
                 summary: {
                     tongDonHang,
                     tongDoanhThu: tongDoanhThu.toFixed(2),
@@ -304,9 +314,18 @@ router.get('/', authenticateToken, requireAdmin, async (req, res) => {
             .input('trangThai', sql.NVarChar, trangThai)
             .query(countQuery);
 
+        // Format ngày tháng cho frontend
+        const formattedSessions = result.recordset.map(session => ({
+            ...session,
+            TuNgay: session.TuNgay ? session.TuNgay.toISOString() : null,
+            DenNgay: session.DenNgay ? session.DenNgay.toISOString() : null,
+            NgayTao: session.NgayTao ? session.NgayTao.toISOString() : null,
+            NgayHoanThanh: session.NgayHoanThanh ? session.NgayHoanThanh.toISOString() : null
+        }));
+
         res.json({
             success: true,
-            data: result.recordset,
+            data: formattedSessions,
             pagination: {
                 page: parseInt(page),
                 limit: parseInt(limit),
@@ -475,13 +494,32 @@ router.post('/:id/execute',
             // Thực hiện chi trả cho từng cửa hàng
             for (const chiTiet of chiTietList) {
                 // Cộng tiền vào ví cửa hàng
+                // TODO: Uncomment khi stored procedure hoạt động
+                /*
+                await transaction.request()
+                    .input('MaCuaHang', sql.Int, chiTiet.MaCuaHang)
+                    .input('SoTien', sql.Decimal(15, 2), chiTiet.TienThucNhan)
+                    .input('LoaiGiaoDich', sql.NVarChar, 'CONG_TIEN')
+                    .input('MoTa', sql.NVarChar, `Đối soát phiên #${id} - Đơn hàng #${chiTiet.MaDonHang}`)
+                    .input('MaThamChieu', sql.Int, id)
+                    .input('LoaiThamChieu', sql.NVarChar, 'PHIEN_DOI_SOAT')
+                    .execute('sp_CapNhatViCuaHang');
+                */
+
+                // Tạm thời ghi log trực tiếp
                 await transaction.request()
                     .input('maCuaHang', sql.Int, chiTiet.MaCuaHang)
+                    .input('loaiGiaoDich', sql.NVarChar, 'CONG_TIEN')
                     .input('soTien', sql.Decimal(15, 2), chiTiet.TienThucNhan)
+                    .input('soDuTruoc', sql.Decimal(15, 2), 0)
+                    .input('soDuSau', sql.Decimal(15, 2), 0)
                     .input('moTa', sql.NVarChar, `Đối soát phiên #${id} - Đơn hàng #${chiTiet.MaDonHang}`)
                     .input('maThamChieu', sql.Int, id)
                     .input('loaiThamChieu', sql.NVarChar, 'PHIEN_DOI_SOAT')
-                    .execute('sp_CapNhatViCuaHang');
+                    .query(`
+                        INSERT INTO LichSuGiaoDichVi (MaCuaHang, LoaiGiaoDich, SoTien, SoDuTruoc, SoDuSau, MoTa, MaThamChieu, LoaiThamChieu)
+                        VALUES (@maCuaHang, @loaiGiaoDich, @soTien, @soDuTruoc, @soDuSau, @moTa, @maThamChieu, @loaiThamChieu)
+                    `);
 
                 // Cập nhật trạng thái chi tiết
                 await transaction.request()

@@ -154,8 +154,8 @@ export default function AdminSettlement() {
                         <td className="px-4 py-3 text-gray-300">#{o.MaDonHang}</td>
                         <td className="px-4 py-3 text-gray-300">{o.TenCuaHang}</td>
                         <td className="px-4 py-3 text-right text-white font-medium">{fmtMoney(o.TienThanhToan)}</td>
-                        <td className="px-4 py-3 text-xs text-gray-500">{new Date(o.NgayGiaoHang).toLocaleDateString('vi-VN')}</td>
-                        <td className="px-4 py-3 text-xs text-gray-500">{new Date(o.NgayHetHanDoiTra).toLocaleDateString('vi-VN')}</td>
+                        <td className="px-4 py-3 text-xs text-gray-500">{o.NgayGiaoHang ? new Date(o.NgayGiaoHang).toLocaleDateString('vi-VN') : '-'}</td>
+                        <td className="px-4 py-3 text-xs text-gray-500">{o.NgayHetHanDoiTra ? new Date(o.NgayHetHanDoiTra).toLocaleDateString('vi-VN') : '-'}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -200,7 +200,7 @@ export default function AdminSettlement() {
                         ))}
                       </div>
                       <p className="text-xs text-gray-600 mt-2">
-                        {new Date(s.TuNgay).toLocaleDateString('vi-VN')} → {new Date(s.DenNgay).toLocaleDateString('vi-VN')}
+                        {s.TuNgay ? new Date(s.TuNgay).toLocaleDateString('vi-VN') : '-'} → {s.DenNgay ? new Date(s.DenNgay).toLocaleDateString('vi-VN') : '-'}
                         {s.TenNguoiThucHien && ` · Bởi ${s.TenNguoiThucHien}`}
                       </p>
                     </div>

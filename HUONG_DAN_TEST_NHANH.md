@@ -1,128 +1,62 @@
-# 🚀 HƯỚNG DẪN TEST NHANH
+# ⚡ HƯỚNG DẪN TEST NHANH 2 CHỨC NĂNG
 
-## ✅ Đã chuẩn bị sẵn
+## 🔧 ĐÃ SỬA GÌ?
 
-- ✅ Database đã có đủ bảng
-- ✅ Dữ liệu test đã được tạo:
-  - 2 tranh chấp (1 shop từ chối, 1 đang chờ admin)
-  - 5 đơn hàng đủ điều kiện đối soát
-  - Tổng tiền: 2,500,000 VNĐ
-- ✅ Backend đang chạy: http://localhost:5000
-
-## 📝 Cách test (3 bước đơn giản)
-
-### Bước 1: Mở file test
-
-Mở file: `backend/test-quick-start.http`
-
-### Bước 2: Lấy admin token
-
-1. Tìm section "BƯỚC 1: LOGIN VÀ LẤY TOKEN"
-2. Click vào "Send Request" (hoặc Ctrl+Alt+R) ở dòng:
-   ```http
-   POST {{baseUrl}}/auth/login
-   ```
-3. Copy token từ response (phần `"token": "eyJhbGc..."`)
-4. Paste vào dòng:
-   ```http
-   @adminToken = YOUR_TOKEN_HERE
-   ```
-
-**Thông tin login:**
-- Email: `admin@marthub.vn`
-- Password: `Admin@123`
-
-### Bước 3: Test các API
-
-Bây giờ bạn có thể test tất cả API:
-
-#### Test Dispute (Tranh chấp)
-```http
-# Xem danh sách
-GET {{baseUrl}}/disputes
-
-# Xem chi tiết
-GET {{baseUrl}}/disputes/1
-
-# Admin giải quyết
-POST {{baseUrl}}/disputes/2/resolve
-```
-
-#### Test Settlement (Đối soát)
-```http
-# Xem đơn hàng đủ điều kiện
-GET {{baseUrl}}/settlements/eligible-orders
-
-# Tạo phiên đối soát
-POST {{baseUrl}}/settlements
-
-# Thực hiện chi trả
-POST {{baseUrl}}/settlements/1/execute
-```
-
-## 🎯 Kết quả mong đợi
-
-### Dispute API
-- Danh sách: Trả về 2 tranh chấp
-- Chi tiết: Có đầy đủ thông tin người mua, người bán, video
-- Giải quyết: Thành công, tự động xử lý tiền
-
-### Settlement API
-- Eligible orders: 5 đơn hàng, tổng 2,500,000 VNĐ
-- Tạo phiên: Thành công, tính phí sàn 5% = 125,000 VNĐ
-- Chi trả: Thành công, cộng 2,375,000 VNĐ vào ví shop
-
-## 🐛 Nếu gặp lỗi
-
-### Lỗi 401 Unauthorized
-→ Token chưa đúng hoặc đã hết hạn
-→ Chạy lại login và lấy token mới
-
-### Lỗi 404 Not Found
-→ Kiểm tra URL có đúng không
-→ Backend có đang chạy không (http://localhost:5000)
-
-### Lỗi 500 Internal Server Error
-→ Xem backend logs
-→ Kiểm tra database có chạy không
-
-## 📊 Kiểm tra dữ liệu
-
-### Xem tranh chấp trong database
-```sql
-SELECT * FROM YeuCauDoiTra;
-SELECT * FROM LichSuTrancChap;
-```
-
-### Xem đơn hàng đủ điều kiện
-```sql
-SELECT * FROM DonHang 
-WHERE TrangThaiDonHang = N'DA_GIAO' 
-AND DaDoiSoat = 0 
-AND NgayHetHanDoiTra < GETDATE();
-```
-
-### Xem phiên đối soát
-```sql
-SELECT * FROM PhienDoiSoat;
-SELECT * FROM ChiTietDoiSoat;
-```
-
-## 🎓 Tài liệu chi tiết
-
-- `TOM_TAT_TINH_NANG.md` - Tóm tắt tính năng
-- `DISPUTE_SETTLEMENT_README.md` - Hướng dẫn đầy đủ
-- `docs/DISPUTE_SETTLEMENT_FEATURES.md` - API documentation
-
-## ✨ Tips
-
-1. **Dùng VS Code REST Client extension** để test file .http
-2. **Xem Swagger UI** tại http://localhost:5000/api-docs
-3. **Xem backend logs** để debug
-4. **Test từng API một** theo thứ tự trong file
+1. ✅ **Backend đã RESTART hoàn toàn** (Terminal ID: 10)
+2. ✅ **Code mới đã được load** (không còn dùng stored procedure có lỗi)
+3. ✅ **Sửa lỗi hiển thị ngày** trong trang Đối soát
 
 ---
 
-**Chúc bạn test thành công! 🎉**
+## 🧪 TEST NGAY
 
-Nếu vẫn gặp vấn đề, hãy cho mình biết lỗi cụ thể là gì nhé!
+### 1️⃣ Đăng nhập Admin
+- URL: http://localhost:3000
+- Email: `admin@test.com`
+- Password: `Admin@123`
+
+### 2️⃣ Test Giải quyết tranh chấp
+1. Vào menu **"Quản lý tranh chấp"**
+2. Click vào một tranh chấp
+3. Chọn quyết định + Nhập lý do
+4. Click **"Xác nhận"**
+5. ✅ **Kiểm tra**: Không còn lỗi 500, thông báo thành công
+
+### 3️⃣ Test Đối soát & Chia tiền
+1. Vào menu **"Đối soát & Chia tiền"**
+2. Tab **"Đơn hàng đủ điều kiện"**
+3. ✅ **Kiểm tra**: Cột "Ngày giao hàng" và "Hết hạn đổi trả" hiển thị đúng (không còn "Invalid Date")
+4. Click **"Tạo phiên đối soát"**
+5. Điền thông tin → Click **"Tạo phiên"**
+6. ✅ **Kiểm tra**: Không còn lỗi 500, tạo thành công
+7. Click vào phiên vừa tạo → Click **"Thực hiện chi trả"**
+8. ✅ **Kiểm tra**: Không còn lỗi 500, chi trả thành công
+
+---
+
+## ✅ KẾT QUẢ MONG ĐỢI
+
+- ✅ Không còn lỗi 500 Internal Server Error
+- ✅ Giải quyết tranh chấp thành công
+- ✅ Đối soát & chia tiền thành công
+- ✅ Hiển thị ngày tháng đúng
+
+---
+
+## ❌ NẾU VẪN LỖI
+
+1. Mở Developer Tools (F12)
+2. Tab Network → Xem request bị lỗi
+3. Copy lỗi và báo lại
+
+---
+
+## 📄 TÀI LIỆU CHI TIẾT
+
+- `TEST_NHANH.md` - Checklist test từng bước
+- `LAN_CUOI_CUNG.md` - Giải thích chi tiết đã sửa gì
+- `CUOI_CUNG_TEST_LAI.md` - Hướng dẫn test đầy đủ
+
+---
+
+**Hãy test ngay và báo kết quả nhé! 🚀**

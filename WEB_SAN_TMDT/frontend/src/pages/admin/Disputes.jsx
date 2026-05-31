@@ -92,18 +92,18 @@ export default function AdminDisputes() {
               className="bg-gray-900 border border-gray-800 rounded-xl p-4">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs text-gray-500">Đơn #{d.MaDonHang}</span>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-sm text-gray-400 font-medium">Đơn #{d.MaDonHang}</span>
                     <Badge status={d.TrangThai} />
-                    <span className="text-xs font-semibold text-white">{fmtMoney(d.TienThanhToan)}</span>
+                    <span className="text-sm font-bold text-white">{fmtMoney(d.TienThanhToan)}</span>
                   </div>
-                  <p className="text-sm text-gray-300 mb-1 line-clamp-2">{d.LyDo}</p>
-                  <div className="flex items-center gap-3 text-xs text-gray-500">
-                    <span>Người mua: <span className="text-gray-300">{d.TenNguoiMua}</span></span>
+                  <p className="text-base text-gray-100 mb-2 line-clamp-2 leading-relaxed">{d.LyDo}</p>
+                  <div className="flex items-center gap-3 text-sm text-gray-400">
+                    <span>Người mua: <span className="text-gray-200 font-medium">{d.TenNguoiMua}</span></span>
                     <span>·</span>
-                    <span>Shop: <span className="text-gray-300">{d.TenCuaHang}</span></span>
+                    <span>Shop: <span className="text-gray-200 font-medium">{d.TenCuaHang}</span></span>
                     <span>·</span>
-                    <span>{new Date(d.NgayTao).toLocaleDateString('vi-VN')}</span>
+                    <span className="text-gray-400">{new Date(d.NgayTao).toLocaleDateString('vi-VN')}</span>
                   </div>
                 </div>
                 <button
@@ -137,41 +137,41 @@ export default function AdminDisputes() {
                 <div className="p-5 space-y-4">
                   {/* Parties */}
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-gray-800 rounded-lg p-3">
-                      <p className="text-xs text-gray-500 mb-1">Người mua</p>
-                      <p className="text-sm text-white font-medium">{detail.dispute.TenNguoiMua}</p>
-                      <p className="text-xs text-gray-400">{detail.dispute.EmailNguoiMua}</p>
-                      <p className="text-xs text-gray-400">{detail.dispute.SDTNguoiMua}</p>
+                    <div className="bg-gray-800 rounded-lg p-4">
+                      <p className="text-sm text-gray-400 mb-2 font-medium">Người mua</p>
+                      <p className="text-base text-white font-semibold mb-1.5">{detail.dispute.TenNguoiMua}</p>
+                      <p className="text-sm text-gray-300 mb-0.5">{detail.dispute.EmailNguoiMua}</p>
+                      <p className="text-sm text-gray-300">{detail.dispute.SDTNguoiMua}</p>
                     </div>
-                    <div className="bg-gray-800 rounded-lg p-3">
-                      <p className="text-xs text-gray-500 mb-1">Người bán</p>
-                      <p className="text-sm text-white font-medium">{detail.dispute.TenCuaHang}</p>
-                      <p className="text-xs text-gray-400">{detail.dispute.EmailNguoiBan}</p>
-                      <p className="text-xs text-gray-400">{detail.dispute.SDTNguoiBan}</p>
+                    <div className="bg-gray-800 rounded-lg p-4">
+                      <p className="text-sm text-gray-400 mb-2 font-medium">Người bán</p>
+                      <p className="text-base text-white font-semibold mb-1.5">{detail.dispute.TenCuaHang}</p>
+                      <p className="text-sm text-gray-300 mb-0.5">{detail.dispute.EmailNguoiBan}</p>
+                      <p className="text-sm text-gray-300">{detail.dispute.SDTNguoiBan}</p>
                     </div>
                   </div>
 
                   {/* Dispute info */}
-                  <div className="bg-gray-800 rounded-lg p-3">
-                    <p className="text-xs text-gray-500 mb-1">Lý do tranh chấp</p>
-                    <p className="text-sm text-gray-200">{detail.dispute.LyDo}</p>
-                    <p className="text-xs text-gray-500 mt-2">
-                      Giá trị đơn hàng: <span className="text-white font-semibold">{fmtMoney(detail.dispute.TienThanhToan)}</span>
+                  <div className="bg-gray-800 rounded-lg p-4">
+                    <p className="text-sm text-gray-400 mb-2 font-medium">Lý do tranh chấp</p>
+                    <p className="text-base text-gray-100 leading-relaxed mb-3">{detail.dispute.LyDo}</p>
+                    <p className="text-sm text-gray-400">
+                      Giá trị đơn hàng: <span className="text-white font-bold text-base">{fmtMoney(detail.dispute.TienThanhToan)}</span>
                     </p>
                   </div>
 
                   {/* Videos */}
                   {detail.videos?.length > 0 && (
                     <div>
-                      <p className="text-xs text-gray-500 mb-2">Bằng chứng video</p>
-                      <div className="grid grid-cols-2 gap-2">
+                      <p className="text-sm text-gray-400 mb-3 font-medium">Bằng chứng video</p>
+                      <div className="grid grid-cols-2 gap-3">
                         {detail.videos.map(v => (
                           <a key={v.MaBangChung} href={v.DuongDanVideo} target="_blank" rel="noreferrer"
-                            className="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 rounded-lg p-3 transition-colors">
-                            <FiVideo size={16} className="text-blue-400 shrink-0" />
+                            className="flex items-center gap-3 bg-gray-800 hover:bg-gray-700 rounded-lg p-4 transition-colors">
+                            <FiVideo size={20} className="text-blue-400 shrink-0" />
                             <div>
-                              <p className="text-xs text-white">{v.LoaiVideo === 'DONG_HANG' ? 'Video đóng hàng' : 'Video mở hàng'}</p>
-                              <p className="text-xs text-gray-500">{new Date(v.NgayTai).toLocaleDateString('vi-VN')}</p>
+                              <p className="text-sm text-white font-medium">{v.LoaiVideo === 'DONG_HANG' ? 'Video đóng hàng' : 'Video mở hàng'}</p>
+                              <p className="text-xs text-gray-400 mt-0.5">{new Date(v.NgayTai).toLocaleDateString('vi-VN')}</p>
                             </div>
                           </a>
                         ))}
@@ -182,14 +182,14 @@ export default function AdminDisputes() {
                   {/* History */}
                   {detail.history?.length > 0 && (
                     <div>
-                      <p className="text-xs text-gray-500 mb-2">Lịch sử xử lý</p>
+                      <p className="text-sm text-gray-400 mb-3 font-medium">Lịch sử xử lý</p>
                       <div className="space-y-2">
                         {detail.history.map(h => (
-                          <div key={h.MaLichSu} className="flex gap-3 text-xs">
-                            <span className="text-gray-600 shrink-0">{new Date(h.NgayThucHien).toLocaleDateString('vi-VN')}</span>
+                          <div key={h.MaLichSu} className="flex gap-3 text-sm">
+                            <span className="text-gray-500 shrink-0 font-medium">{new Date(h.NgayThucHien).toLocaleDateString('vi-VN')}</span>
                             <div>
-                              <span className="text-gray-300">{h.HanhDong}</span>
-                              {h.GhiChu && <p className="text-gray-500 mt-0.5">{h.GhiChu}</p>}
+                              <span className="text-gray-200">{h.HanhDong}</span>
+                              {h.GhiChu && <p className="text-gray-400 mt-1">{h.GhiChu}</p>}
                             </div>
                           </div>
                         ))}
@@ -199,27 +199,27 @@ export default function AdminDisputes() {
 
                   {/* Verdict */}
                   {detail.dispute.TrangThai !== 'DA_GIAI_QUYET' && (
-                    <div className="border-t border-gray-800 pt-4">
-                      <p className="text-sm text-white font-medium mb-2">Phán quyết của Admin</p>
+                    <div className="border-t border-gray-800 pt-5">
+                      <p className="text-base text-white font-semibold mb-3">Phán quyết của Admin</p>
                       <textarea
                         value={reason}
                         onChange={e => setReason(e.target.value)}
                         placeholder="Nhập lý do quyết định..."
                         rows={3}
-                        className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-red-500 mb-3 resize-none"
+                        className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-red-500 mb-4 resize-none leading-relaxed"
                       />
                       <div className="flex gap-3">
                         <button
                           onClick={() => handleResolve('TU_CHOI_HOAN_TIEN')}
                           disabled={submitting}
-                          className="flex-1 py-2 text-sm bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors disabled:opacity-50"
+                          className="flex-1 py-3 text-sm font-medium bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors disabled:opacity-50"
                         >
                           Từ chối hoàn tiền (tiền về shop)
                         </button>
                         <button
                           onClick={() => handleResolve('DONG_Y_HOAN_TIEN')}
                           disabled={submitting}
-                          className="flex-1 py-2 text-sm bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors disabled:opacity-50"
+                          className="flex-1 py-3 text-sm font-medium bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors disabled:opacity-50"
                         >
                           Đồng ý hoàn tiền (tiền về người mua)
                         </button>

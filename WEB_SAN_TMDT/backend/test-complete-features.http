@@ -1,0 +1,176 @@
+### ============================================
+### TEST 2 CHỨC NĂNG CHÍNH
+### 1. Giải quyết tranh chấp đổi trả
+### 2. Đối soát & Chia tiền
+### ============================================
+
+@baseUrl = http://localhost:5000/api
+@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInZhaVRybyI6IlFVQU5fVFJJX1ZJRU4iLCJpYXQiOjE3ODAyMTI5NzksImV4cCI6MTc4MDgxNzc3OX0.fMXlnnwmbmqw4yipHGrj-vh2L4t19zv3jzqjjW44_ys
+
+### ============================================
+### PHẦN 1: GIẢI QUYẾT TRANH CHẤP ĐỔI TRẢ
+### ============================================
+
+### 1.1 Lấy danh sách tranh chấp (tất cả)
+GET {{baseUrl}}/disputes
+Authorization: Bearer {{adminToken}}
+
+### 1.2 Lấy tranh chấp chờ phán quyết
+GET {{baseUrl}}/disputes?trangThai=KHIEU_NAI_ADMIN
+Authorization: Bearer {{adminToken}}
+
+### 1.3 Lấy tranh chấp shop từ chối
+GET {{baseUrl}}/disputes?trangThai=SHOP_TU_CHOI
+Authorization: Bearer {{adminToken}}
+
+### 1.4 Lấy tranh chấp đã giải quyết
+GET {{baseUrl}}/disputes?trangThai=DA_GIAI_QUYET
+Authorization: Bearer {{adminToken}}
+
+### 1.5 Xem chi tiết tranh chấp (thay {id} bằng MaDoiTra thực tế)
+GET {{baseUrl}}/disputes/1
+Authorization: Bearer {{adminToken}}
+
+### 1.6 Admin phán quyết: ĐỒNG Ý HOÀN TIỀN cho người mua
+POST {{baseUrl}}/disputes/1/resolve
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "quyetDinh": "DONG_Y_HOAN_TIEN",
+  "lyDo": "Sau khi xem video đóng hàng và mở hàng, xác nhận sản phẩm bị hỏng trong quá trình vận chuyển. Người bán đóng gói không cẩn thận. Đồng ý hoàn tiền cho người mua."
+}
+
+### 1.7 Admin phán quyết: TỪ CHỐI HOÀN TIỀN (tiền về shop)
+POST {{baseUrl}}/disputes/2/resolve
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "quyetDinh": "TU_CHOI_HOAN_TIEN",
+  "lyDo": "Sau khi xem video, phát hiện người mua cố tình làm hỏng sản phẩm để đòi hoàn tiền. Video đóng hàng của shop cho thấy sản phẩm nguyên vẹn. Từ chối hoàn tiền, tiền thuộc về người bán."
+}
+
+### ============================================
+### PHẦN 2: ĐỐI SOÁT & CHIA TIỀN
+### ============================================
+
+### 2.1 Lấy danh sách đơn hàng đủ điều kiện đối soát
+GET {{baseUrl}}/settlements/eligible-orders
+Authorization: Bearer {{adminToken}}
+
+### 2.2 Lấy đơn hàng đủ điều kiện theo khoảng thời gian
+GET {{baseUrl}}/settlements/eligible-orders?tuNgay=2026-05-01&denNgay=2026-05-31
+Authorization: Bearer {{adminToken}}
+
+### 2.3 Lấy đơn hàng đủ điều kiện của một cửa hàng
+GET {{baseUrl}}/settlements/eligible-orders?maCuaHang=1
+Authorization: Bearer {{adminToken}}
+
+### 2.4 Tạo phiên đối soát mới
+POST {{baseUrl}}/settlements
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "tenPhien": "Đối soát tháng 5/2026",
+  "tuNgay": "2026-05-01T00:00:00",
+  "denNgay": "2026-05-31T23:59:59",
+  "ghiChu": "Đối soát định kỳ cuối tháng 5"
+}
+
+### 2.5 Lấy danh sách phiên đối soát
+GET {{baseUrl}}/settlements
+Authorization: Bearer {{adminToken}}
+
+### 2.6 Lấy phiên đối soát đang xử lý
+GET {{baseUrl}}/settlements?trangThai=DANG_XU_LY
+Authorization: Bearer {{adminToken}}
+
+### 2.7 Lấy phiên đối soát đã hoàn thành
+GET {{baseUrl}}/settlements?trangThai=HOAN_THANH
+Authorization: Bearer {{adminToken}}
+
+### 2.8 Xem chi tiết phiên đối soát (thay {id} bằng MaPhienDoiSoat thực tế)
+GET {{baseUrl}}/settlements/1
+Authorization: Bearer {{adminToken}}
+
+### 2.9 Thực hiện chi trả tiền cho người bán
+POST {{baseUrl}}/settlements/1/execute
+Authorization: Bearer {{adminToken}}
+
+### 2.10 Lấy cấu hình hệ thống
+GET {{baseUrl}}/settlements/config/system
+Authorization: Bearer {{adminToken}}
+
+### 2.11 Cập nhật phí sàn (%)
+PUT {{baseUrl}}/settlements/config/system
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "tenCauHinh": "PHI_SAN_PHAN_TRAM",
+  "giaTri": "5"
+}
+
+### 2.12 Cập nhật số ngày đổi trả
+PUT {{baseUrl}}/settlements/config/system
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "tenCauHinh": "SO_NGAY_DOI_TRA",
+  "giaTri": "7"
+}
+
+### ============================================
+### TEST CASE: EXCEPTION FLOW
+### ============================================
+
+### 3.1 Test: Số liệu âm (Exception flow của Đối soát)
+# Hệ thống sẽ phát hiện và chặn lại nếu có số liệu bị âm
+POST {{baseUrl}}/settlements/1/execute
+Authorization: Bearer {{adminToken}}
+
+### 3.2 Test: Tranh chấp đã giải quyết (không thể phán quyết lại)
+POST {{baseUrl}}/disputes/1/resolve
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "quyetDinh": "DONG_Y_HOAN_TIEN",
+  "lyDo": "Test lại"
+}
+
+### ============================================
+### KIỂM TRA KẾT QUẢ
+### ============================================
+
+### 4.1 Kiểm tra ví cửa hàng sau khi đối soát
+# Cần implement API lấy thông tin ví cửa hàng
+
+### 4.2 Kiểm tra trạng thái đơn hàng sau tranh chấp
+# Kiểm tra xem đơn hàng có được cập nhật đúng trạng thái không
+
+### ============================================
+### GHI CHÚ
+### ============================================
+# 
+# USE CASE 1: GIẢI QUYẾT TRANH CHẤP
+# - Admin xem danh sách tranh chấp
+# - Xem chi tiết: thông tin 2 bên, video bằng chứng, lịch sử
+# - Phán quyết: Đồng ý hoàn tiền HOẶC Từ chối hoàn tiền
+# - Hệ thống tự động xử lý tiền theo quyết định
+# - Gửi thông báo cho người mua và người bán
+#
+# USE CASE 2: ĐỐI SOÁT & CHIA TIỀN
+# - Admin xem đơn hàng đủ điều kiện (đã giao + hết hạn đổi trả)
+# - Hệ thống tự động tính: Doanh thu - Phí sàn = Tiền trả shop
+# - Tạo phiên đối soát theo khoảng thời gian
+# - Admin xác nhận chi trả
+# - Hệ thống cộng tiền vào ví người bán
+# - Kiểm tra số liệu âm → Chặn lại nếu có lỗi
+#
+# ALTERNATIVE FLOW:
+# - Có thể cài đặt tự động đối soát định kỳ (chưa implement)
+#
