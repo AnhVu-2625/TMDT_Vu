@@ -247,7 +247,7 @@ function Header() {
                           </Link>
                         ))}
 
-                        {user?.vaiTro === 'QUAN_TRI_VIEN' && (
+                        {['QUAN_TRI_VIEN', 'QuanTriVien', 'Admin', 'admin'].includes(user?.vaiTro) && (
                           <Link
                             to="/admin/dashboard"
                             onClick={() => setIsUserMenuOpen(false)}
@@ -258,16 +258,34 @@ function Header() {
                           </Link>
                         )}
 
-                        {user?.shop && (
-                          <Link
-                            to="/seller/dashboard"
-                            onClick={() => setIsUserMenuOpen(false)}
-                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-orange-400 hover:bg-orange-600/10 hover:text-orange-300 transition-all"
-                          >
-                            <FaStore size={14} />
-                            Kênh người bán
-                          </Link>
-                        )}
+                        {(() => {
+                          const isAdmin = ['QUAN_TRI_VIEN', 'QuanTriVien', 'Admin', 'admin'].includes(user?.vaiTro);
+                          if (user?.shop && user?.shop?.TrangThai === 'HOAT_DONG') {
+                            return (
+                              <Link to="/seller/dashboard" onClick={() => setIsUserMenuOpen(false)}
+                                className="flex items-center gap-3 px-4 py-2.5 text-sm text-orange-400 hover:bg-orange-600/10 hover:text-orange-300 transition-all">
+                                <FaStore size={14} /> Kênh người bán
+                              </Link>
+                            );
+                          }
+                          if (user?.shop && user?.shop?.TrangThai === 'CHO_DUYET') {
+                            return (
+                              <Link to="/seller/pending" onClick={() => setIsUserMenuOpen(false)}
+                                className="flex items-center gap-3 px-4 py-2.5 text-sm text-yellow-400 hover:bg-yellow-600/10 hover:text-yellow-300 transition-all">
+                                <FaStore size={14} /> Shop đang chờ duyệt
+                              </Link>
+                            );
+                          }
+                          if (!isAdmin) {
+                            return (
+                              <Link to="/seller/register" onClick={() => setIsUserMenuOpen(false)}
+                                className="flex items-center gap-3 px-4 py-2.5 text-sm text-emerald-400 hover:bg-emerald-600/10 hover:text-emerald-300 transition-all">
+                                <FaStore size={14} /> Đăng ký bán hàng
+                              </Link>
+                            );
+                          }
+                          return null;
+                        })()}
                       </div>
                       <div className="border-t border-slate-700/50 py-1">
                         <button

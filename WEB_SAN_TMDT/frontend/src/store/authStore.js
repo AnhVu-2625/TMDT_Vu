@@ -4,6 +4,10 @@ import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
+// Helper: kiểm tra admin role (support nhiều format DB)
+const ADMIN_ROLES = ['QUAN_TRI_VIEN', 'QuanTriVien', 'Admin', 'admin'];
+const isAdminRole = (role) => ADMIN_ROLES.includes(role);
+
 const useAuthStore = create(
   persist(
     (set, get) => ({
@@ -79,9 +83,11 @@ const useAuthStore = create(
           // - NGUOI_DUNG + có shop → /seller/dashboard
           // - NGUOI_DUNG + không shop → / (trang chủ)
           let redirectPath = '/';
-          if (user.vaiTro === 'QUAN_TRI_VIEN') {
+          if (isAdminRole(user.vaiTro)) {
             redirectPath = '/admin/dashboard';
-          } else if (user.shop && user.shop.MaCuaHang) {
+          } else if (user.shop && user.shop.TrangThai === 'CHO_DUYET') {
+            redirectPath = '/seller/pending';
+          } else if (user.shop && user.shop.MaCuaHang && user.shop.TrangThai === 'HOAT_DONG') {
             redirectPath = '/seller/dashboard';
           }
 

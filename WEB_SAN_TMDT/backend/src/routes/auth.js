@@ -398,20 +398,11 @@ router.post('/login', validateLogin, async (req, res) => {
 
         const user = result.recordset[0];
 
-        // Kiểm tra trạng thái tài khoản
+        // Kiểm tra trạng thái tài khoản — chỉ chặn tài khoản bị khóa
         if (user.TrangThai === 'BI_KHOA') {
             return res.status(403).json({
                 success: false,
                 message: 'Tài khoản đã bị khóa'
-            });
-        }
-
-        if (user.TrangThai === 'CHUA_KICH_HOAT') {
-            return res.status(403).json({
-                success: false,
-                message: 'Vui lòng kích hoạt tài khoản trước khi đăng nhập',
-                requireOTP: true,
-                email: user.Email
             });
         }
 
@@ -454,10 +445,12 @@ router.post('/login', validateLogin, async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Lỗi đăng nhập:', error);
+        console.error('❌ Lỗi đăng nhập chi tiết:', error.message);
+        console.error('   Stack:', error.stack);
         res.status(500).json({
             success: false,
-            message: 'Lỗi đăng nhập'
+            message: 'Lỗi đăng nhập',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
 });

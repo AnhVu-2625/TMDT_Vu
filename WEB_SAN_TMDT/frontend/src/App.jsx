@@ -25,10 +25,15 @@ import Register from './pages/auth/Register';
 import VerifyOTP from './pages/auth/VerifyOTP';
 
 // Admin Pages
-import AdminDashboard from './pages/admin/Dashboard';
+import { Dashboard as AdminDashboard } from './pages/admin/Dashboard.jsx';
 
 // Seller Pages
-import SellerDashboard from './pages/seller/Dashboard';
+import { Dashboard as SellerDashboard } from './pages/seller/Dashboard.jsx';
+import ShopRegister from './pages/seller/ShopRegister.jsx';
+import ShopPending from './pages/seller/ShopPending.jsx';
+import SellerProducts from './pages/seller/Products.jsx';
+import SellerProductForm from './pages/seller/ProductForm.jsx';
+import SellerOrders from './pages/seller/SellerOrders.jsx';
 
 // Store
 import { useAuthStore } from './store/authStore';
@@ -49,11 +54,13 @@ const AdminRoute = ({ children }) => {
   return children;
 };
 
-/** Chỉ cho user có cửa hàng (shop != null) */
+/** Chỉ cho user có cửa hàng HOAT_DONG */
 const SellerRoute = ({ children }) => {
   const { isAuthenticated, user } = useAuthStore();
   if (!isAuthenticated) return <Navigate to="/login" replace />;
-  if (!user?.shop?.MaCuaHang) return <Navigate to="/" replace />;
+  if (!user?.shop?.MaCuaHang || user?.shop?.TrangThai !== 'HOAT_DONG') {
+    return <Navigate to="/seller/register" replace />;
+  }
   return children;
 };
 
@@ -63,7 +70,7 @@ const GuestRoute = ({ children }) => {
   if (!isAuthenticated) return children;
   // Redirect đúng dashboard
   if (user?.vaiTro === 'QUAN_TRI_VIEN') return <Navigate to="/admin/dashboard" replace />;
-  if (user?.shop?.MaCuaHang) return <Navigate to="/seller/dashboard" replace />;
+  if (user?.shop?.MaCuaHang && user?.shop?.TrangThai === 'HOAT_DONG') return <Navigate to="/seller/dashboard" replace />;
   return <Navigate to="/" replace />;
 };
 
@@ -98,15 +105,23 @@ function App() {
           <Route path="/verify-otp" element={<GuestRoute><VerifyOTP /></GuestRoute>} />
         </Route>
 
+        {/* ── Seller Registration (User đã login, chưa có shop) ── */}
+        <Route path="/seller/register" element={<ProtectedRoute><ShopRegister /></ProtectedRoute>} />
+        <Route path="/seller/pending"  element={<ProtectedRoute><ShopPending /></ProtectedRoute>} />
+
         {/* ── Admin Routes ── */}
         <Route element={<AdminRoute><AdminLayout /></AdminRoute>}>
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
         </Route>
 
-        {/* ── Seller Routes ── */}
+        {/* ── Seller Routes (Shop HOAT_DONG) ── */}
         <Route element={<SellerRoute><SellerLayout /></SellerRoute>}>
           <Route path="/seller/dashboard" element={<SellerDashboard />} />
+          <Route path="/seller/products" element={<SellerProducts />} />
+          <Route path="/seller/products/new" element={<SellerProductForm />} />
+          <Route path="/seller/products/:id/edit" element={<SellerProductForm />} />
+          <Route path="/seller/orders" element={<SellerOrders />} />
           <Route path="/seller" element={<Navigate to="/seller/dashboard" replace />} />
         </Route>
 
@@ -121,7 +136,7 @@ function App() {
         newestOnTop
         closeOnClick
         pauseOnHover
-        theme="light"
+        theme="dark"
       />
     </Router>
   );
