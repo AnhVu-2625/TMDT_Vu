@@ -28,17 +28,85 @@ router.get('/profile', authenticateToken, async (req, res) => {
   }
 });
 
+const multer = require('multer');
+const fs = require('fs');
+const path = require('path');
+
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, '..', '..', 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+// Multer storage configuration
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadsDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname);
+    cb(null, `avatar-${req.userId}-${uniqueSuffix}${ext}`);
+  }
+});
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Chỉ được tải lên file ảnh!'));
+    }
+  }
+});
+
+// Upload avatar endpoint
+router.post('/upload-avatar', authenticateToken, upload.single('avatar'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'Vui lòng chọn file ảnh để tải lên' });
+    }
+    
+    // Serve file URL
+    const fileUrl = `http://localhost:5000/uploads/${req.file.filename}`;
+    res.json({
+      success: true,
+      message: 'Tải ảnh lên thành công',
+      data: { url: fileUrl }
+    });
+  } catch (error) {
+    console.error('Upload avatar error:', error);
+    res.status(500).json({ success: false, message: 'Không thể tải ảnh lên' });
+  }
+});
+
 // Update user profile
 router.put('/profile', authenticateToken, async (req, res) => {
   try {
     const { hoTen, ngaySinh, gioiTinh, anhDaiDien } = req.body;
     const pool = await getPool();
 
+    // Validate birthdate to prevent SQL Server out-of-bounds date crashes (must be within 1900 - 2100)
+    let formattedNgaySinh = null;
+    if (ngaySinh) {
+      const parsedDate = new Date(ngaySinh);
+      if (isNaN(parsedDate.getTime())) {
+        return res.status(400).json({ success: false, message: 'Ngày sinh không hợp lệ!' });
+      }
+      const year = parsedDate.getFullYear();
+      if (year < 1900 || year > 2100) {
+        return res.status(400).json({ success: false, message: 'Năm sinh phải nằm trong khoảng từ 1900 đến 2100!' });
+      }
+      formattedNgaySinh = ngaySinh;
+    }
+
     await pool
       .request()
       .input('userId', sql.Int, req.userId)
       .input('hoTen', sql.NVarChar, hoTen)
-      .input('ngaySinh', sql.Date, ngaySinh)
+      .input('ngaySinh', sql.Date, formattedNgaySinh)
       .input('gioiTinh', sql.NVarChar, gioiTinh)
       .input('anhDaiDien', sql.NVarChar, anhDaiDien)
       .query(`
@@ -48,7 +116,11 @@ router.put('/profile', authenticateToken, async (req, res) => {
         WHERE MaNguoiDung = @userId
       `);
 
-    res.json({ success: true, message: 'Profile updated successfully' });
+    res.json({
+      success: true,
+      message: 'Profile updated successfully',
+      data: { hoTen, ngaySinh, gioiTinh, anhDaiDien }
+    });
   } catch (error) {
     console.error('Update profile error:', error);
     res.status(500).json({ success: false, message: 'Server error' });
@@ -97,9 +169,9 @@ router.post('/addresses', authenticateToken, async (req, res) => {
       .query(`
         INSERT INTO DiaChiGiaoHang (MaNguoiDung, TenNguoiNhan, SDTNguoiNhan, 
           DiaChiCuThe, PhuongXa, QuanHuyen, TinhThanh, LaMacDinh)
+        OUTPUT INSERTED.MaDiaChi
         VALUES (@userId, @tenNguoiNhan, @sdtNguoiNhan, @diaChiCuThe, 
           @phuongXa, @quanHuyen, @tinhThanh, @laMacDinh)
-        SELECT @@IDENTITY as MaDiaChi
       `);
 
     res.status(201).json({
@@ -112,6 +184,103 @@ router.post('/addresses', authenticateToken, async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });
+
+// Update delivery address
+router.put('/addresses/:addressId', authenticateToken, async (req, res) => {
+  try {
+    const { addressId } = req.params;
+    const { tenNguoiNhan, sdtNguoiNhan, diaChiCuThe, phuongXa, quanHuyen, tinhThanh, laMacDinh } = req.body;
+    const pool = await getPool();
+
+    // Check ownership
+    const check = await pool
+      .request()
+      .input('addressId', sql.Int, addressId)
+      .input('userId', sql.Int, req.userId)
+      .query('SELECT MaDiaChi FROM DiaChiGiaoHang WHERE MaDiaChi = @addressId AND MaNguoiDung = @userId');
+
+    if (check.recordset.length === 0) {
+      return res.status(404).json({ success: false, message: 'Address not found or unauthorized' });
+    }
+
+    if (laMacDinh) {
+      await pool
+        .request()
+        .input('userId', sql.Int, req.userId)
+        .query('UPDATE DiaChiGiaoHang SET LaMacDinh = 0 WHERE MaNguoiDung = @userId');
+    }
+
+    await pool
+      .request()
+      .input('addressId', sql.Int, addressId)
+      .input('tenNguoiNhan', sql.NVarChar, tenNguoiNhan)
+      .input('sdtNguoiNhan', sql.NVarChar, sdtNguoiNhan)
+      .input('diaChiCuThe', sql.NVarChar, diaChiCuThe)
+      .input('phuongXa', sql.NVarChar, phuongXa)
+      .input('quanHuyen', sql.NVarChar, quanHuyen)
+      .input('tinhThanh', sql.NVarChar, tinhThanh)
+      .input('laMacDinh', sql.Bit, laMacDinh ? 1 : 0)
+      .query(`
+        UPDATE DiaChiGiaoHang
+        SET TenNguoiNhan = @tenNguoiNhan, SDTNguoiNhan = @sdtNguoiNhan,
+            DiaChiCuThe = @diaChiCuThe, PhuongXa = @phuongXa,
+            QuanHuyen = @quanHuyen, TinhThanh = @tinhThanh, LaMacDinh = @laMacDinh
+        WHERE MaDiaChi = @addressId
+      `);
+
+    res.json({ success: true, message: 'Address updated successfully' });
+  } catch (error) {
+    console.error('Update address error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Delete delivery address
+router.delete('/addresses/:addressId', authenticateToken, async (req, res) => {
+  try {
+    const { addressId } = req.params;
+    const pool = await getPool();
+
+    // Check ownership
+    const check = await pool
+      .request()
+      .input('addressId', sql.Int, addressId)
+      .input('userId', sql.Int, req.userId)
+      .query('SELECT MaDiaChi, LaMacDinh FROM DiaChiGiaoHang WHERE MaDiaChi = @addressId AND MaNguoiDung = @userId');
+
+    if (check.recordset.length === 0) {
+      return res.status(404).json({ success: false, message: 'Address not found or unauthorized' });
+    }
+
+    const wasDefault = check.recordset[0].LaMacDinh;
+
+    await pool
+      .request()
+      .input('addressId', sql.Int, addressId)
+      .query('DELETE FROM DiaChiGiaoHang WHERE MaDiaChi = @addressId');
+
+    // If we deleted the default address, make another one default
+    if (wasDefault) {
+      const remaining = await pool
+        .request()
+        .input('userId', sql.Int, req.userId)
+        .query('SELECT TOP 1 MaDiaChi FROM DiaChiGiaoHang WHERE MaNguoiDung = @userId ORDER BY MaDiaChi DESC');
+      
+      if (remaining.recordset.length > 0) {
+        await pool
+          .request()
+          .input('addressId', sql.Int, remaining.recordset[0].MaDiaChi)
+          .query('UPDATE DiaChiGiaoHang SET LaMacDinh = 1 WHERE MaDiaChi = @addressId');
+      }
+    }
+
+    res.json({ success: true, message: 'Address deleted successfully' });
+  } catch (error) {
+    console.error('Delete address error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
 
 // Get notifications
 router.get('/notifications', authenticateToken, async (req, res) => {
@@ -403,9 +572,9 @@ router.post('/filters', authenticateToken, async (req, res) => {
       .query(`
         INSERT INTO BoLocDaLuu (MaNguoiDung, TenBoLoc, DanhMucId, GiaToiThieu, GiaToiDa, 
                                DiemDanhGiaToiThieu, MauSac, KichThuoc, SapXep)
+        OUTPUT INSERTED.MaBoLoc
         VALUES (@userId, @tenBoLoc, @danhMucId, @giaToiThieu, @giaToiDa,
                 @diemDanhGiaToiThieu, @mauSac, @kichThuoc, @sapXep)
-        SELECT @@IDENTITY as MaBoLoc
       `);
 
     res.status(201).json({
@@ -511,7 +680,7 @@ router.get('/my-promotions', authenticateToken, async (req, res) => {
     const myPromotions = await pool.request()
       .input('userId', sql.Int, req.userId)
       .query(`
-        SELECT kmn.MaKhuyenMaiNguoiDung, mk.MaCode, mk.LoaiGiamGia, mk.GiaTriGiam,
+        SELECT kmn.MaKhuyenMaiNguoiDung, mk.MaKhuyenMai, mk.MaCode, mk.LoaiGiamGia, mk.GiaTriGiam,
                mk.DonHangToiThieu, mk.GiamToiDa, mk.TuNgay, mk.DenNgay,
                kmn.TrangThai, kmn.NgayNhan
         FROM KhuyenMaiNguoiDung kmn

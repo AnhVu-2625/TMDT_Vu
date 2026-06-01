@@ -337,3 +337,23 @@ PRINT '- KhuyenMaiNguoiDung (khuyến mãi user)'
 PRINT '- ChinhSachHeThong (chính sách)'
 GO
 
+IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name = 'KhuyenMaiNguoiDung')
+CREATE TABLE KhuyenMaiNguoiDung (
+    MaKhuyenMaiNguoiDung INT IDENTITY(1,1) PRIMARY KEY,
+    MaNguoiDung INT NOT NULL,
+    MaKhuyenMai INT NOT NULL,
+    TrangThai NVARCHAR(20) DEFAULT N'CHUA_SU_DUNG',
+    NgayNhan DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (MaNguoiDung) REFERENCES NguoiDung(MaNguoiDung),
+    FOREIGN KEY (MaKhuyenMai) REFERENCES MaKhuyenMai(MaKhuyenMai),
+    UNIQUE(MaNguoiDung, MaKhuyenMai)
+);
+
+-- Gán voucher cho user
+INSERT INTO KhuyenMaiNguoiDung (MaNguoiDung, MaKhuyenMai, TrangThai)
+SELECT 2, MaKhuyenMai, N'CHUA_SU_DUNG' FROM MaKhuyenMai WHERE MaCode IN ('MARTHUB10', 'SALE50K')
+AND NOT EXISTS (SELECT 1 FROM KhuyenMaiNguoiDung WHERE MaNguoiDung = 2 AND MaKhuyenMai = MaKhuyenMai.MaKhuyenMai);
+
+INSERT INTO KhuyenMaiNguoiDung (MaNguoiDung, MaKhuyenMai, TrangThai)
+SELECT 1, MaKhuyenMai, N'CHUA_SU_DUNG' FROM MaKhuyenMai WHERE MaCode IN ('MARTHUB10', 'SALE50K', 'NEWUSER')
+AND NOT EXISTS (SELECT 1 FROM KhuyenMaiNguoiDung WHERE MaNguoiDung = 1 AND MaKhuyenMai = MaKhuyenMai.MaKhuyenMai);

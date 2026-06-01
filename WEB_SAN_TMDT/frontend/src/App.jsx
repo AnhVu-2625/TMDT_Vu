@@ -17,6 +17,8 @@ import Cart from './pages/user/Cart';
 import Checkout from './pages/user/Checkout';
 import Orders from './pages/user/Orders';
 import Profile from './pages/user/Profile';
+import Favorites from './pages/user/Favorites';
+import Notifications from './pages/user/Notifications';
 import NotFound from './pages/NotFound';
 
 // Auth Pages
@@ -95,9 +97,11 @@ function App() {
           <Route path="/products/:id" element={<ProductDetail />} />
           <Route path="/cart" element={<Cart />} />
 
-          <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
-          <Route path="/orders"   element={<ProtectedRoute><Orders /></ProtectedRoute>} />
-          <Route path="/profile"  element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path="/checkout"     element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+          <Route path="/orders"       element={<ProtectedRoute><Orders /></ProtectedRoute>} />
+          <Route path="/profile"      element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path="/favorites"    element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
+          <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
         </Route>
 
         {/* ── Auth Routes ── */}

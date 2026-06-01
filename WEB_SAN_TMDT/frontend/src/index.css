@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Bebas+Neue&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -231,3 +230,645 @@ body {
   @apply bg-white rounded-xl p-5 border border-slate-100 shadow-sm
          hover:shadow-md transition-shadow duration-200;
 }
+
+/* =====================
+   Homepage extras
+   ===================== */
+.dot-pattern {
+  background-image: radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.dot-pattern-sm {
+  background-image: radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+.gradient-border {
+  position: relative;
+}
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(220,38,38,0.4), transparent, rgba(220,38,38,0.2));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(220,38,38,0.2), rgba(220,38,38,0.4), rgba(220,38,38,0.2), transparent);
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%      { transform: translateY(-12px); }
+}
+.animate-float { animation: float 4s ease-in-out infinite; }
+
+@keyframes float-delayed {
+  0%, 100% { transform: translateY(0px); }
+  50%      { transform: translateY(-8px); }
+}
+.animate-float-delayed { animation: float-delayed 5s ease-in-out infinite; }
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 0.4; }
+  50%      { opacity: 0.8; }
+}
+.animate-pulse-soft { animation: pulse-soft 3s ease-in-out infinite; }
+
+@keyframes ping-slow {
+  0%   { transform: scale(1); opacity: 0.5; }
+  50%  { transform: scale(1.5); opacity: 0.1; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+.animate-ping-slow { animation: ping-slow 3s cubic-bezier(0, 0, 0.2, 1) infinite; }
+
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-marquee { animation: marquee 30s linear infinite; }
+
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-count { animation: countUp 0.6s ease-out forwards; }
+
+.timer-glow {
+  box-shadow: 0 0 20px rgba(220, 38, 38, 0.15), inset 0 0 20px rgba(220, 38, 38, 0.05);
+}
+
+@keyframes flash-price {
+  0%   { color: #f87171; }
+  50%  { color: #ef4444; }
+  100% { color: #f87171; }
+}
+.animate-flash-price { animation: flash-price 1.5s ease-in-out infinite; }
+
+@keyframes banner-progress {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+.animate-banner-progress {
+  animation: banner-progress 6s linear forwards;
+}
+
+/* =====================
+   Extra animations
+   ===================== */
+@keyframes drift {
+  0%, 100% { transform: translate(0, 0); }
+  33%      { transform: translate(25px, -18px); }
+  66%      { transform: translate(-15px, 12px); }
+}
+.animate-drift { animation: drift 8s ease-in-out infinite; }
+.animate-drift-slower { animation: drift 12s ease-in-out infinite; }
+.animate-drift-reverse { animation: drift 10s ease-in-out infinite reverse; }
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.animate-spin-slow { animation: spin-slow 25s linear infinite; }
+.animate-spin-slower { animation: spin-slow 40s linear infinite reverse; }
+
+@keyframes scale-pulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.06); }
+}
+.animate-scale-pulse { animation: scale-pulse 2s ease-in-out infinite; }
+
+@keyframes shimmer-slide {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.animate-shimmer-slide {
+  background-size: 200% auto;
+  animation: shimmer-slide 3s linear infinite;
+}
+
+@keyframes bounce-gentle {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+.animate-bounce-gentle { animation: bounce-gentle 3s ease-in-out infinite; }
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(220,38,38,0.15); }
+  50%      { box-shadow: 0 0 40px rgba(220,38,38,0.3); }
+}
+.animate-glow-pulse { animation: glow-pulse 2s ease-in-out infinite; }
+
+@keyframes rotate-icon {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.group:hover .animate-rotate-on-hover { animation: rotate-icon 0.6s ease-in-out; }
+
+@keyframes reveal-up {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-reveal-up { animation: reveal-up 0.6s ease-out forwards; }
+
+@keyframes border-glow-rotate {
+  0%   { border-color: rgba(220,38,38,0.3); }
+  50%  { border-color: rgba(220,38,38,0.6); }
+  100% { border-color: rgba(220,38,38,0.3); }
+}
+.animate-border-glow-pulse { animation: border-glow-rotate 2s ease-in-out infinite; }
+
+/* =====================
+   Space / Planetary
+   ===================== */
+@keyframes twinkle {
+  0%, 100% { opacity: 0.2; transform: scale(0.8); }
+  50%      { opacity: 1;   transform: scale(1.2); }
+}
+.animate-twinkle { animation: twinkle 3s ease-in-out infinite; }
+.animate-twinkle-slow { animation: twinkle 5s ease-in-out infinite; }
+.animate-twinkle-fast { animation: twinkle 1.5s ease-in-out infinite; }
+
+@keyframes shooting-star {
+  0%   { transform: translateX(0) translateY(0); opacity: 0; }
+  5%   { opacity: 1; }
+  15%  { transform: translateX(-300px) translateY(300px); opacity: 1; }
+  25%  { opacity: 0; }
+  100% { opacity: 0; transform: translateX(-400px) translateY(400px); }
+}
+.animate-shooting-star { animation: shooting-star 8s ease-in-out infinite; }
+.animate-shooting-star-2 { animation: shooting-star 12s ease-in-out infinite 3s; }
+.animate-shooting-star-3 { animation: shooting-star 15s ease-in-out infinite 6s; }
+
+@keyframes orbit-spin {
+  from { transform: rotateX(65deg) rotateZ(0deg); }
+  to   { transform: rotateX(65deg) rotateZ(360deg); }
+}
+.animate-orbit { animation: orbit-spin 20s linear infinite; }
+.animate-orbit-slow { animation: orbit-spin 35s linear infinite reverse; }
+.animate-orbit-fast { animation: orbit-spin 12s linear infinite; }
+
+@keyframes planet-glow {
+  0%, 100% { box-shadow: 0 0 60px rgba(220,38,38,0.15), inset 0 0 80px rgba(220,38,38,0.05); }
+  50%      { box-shadow: 0 0 100px rgba(220,38,38,0.25), inset 0 0 120px rgba(220,38,38,0.08); }
+}
+.animate-planet-glow { animation: planet-glow 4s ease-in-out infinite; }
+.animate-planet-glow-2 { animation: planet-glow 6s ease-in-out infinite 1s; }
+.animate-planet-glow-3 { animation: planet-glow 5s ease-in-out infinite 2s; }
+
+@keyframes nebula-pulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50%      { opacity: 0.6; transform: scale(1.05); }
+}
+.animate-nebula { animation: nebula-pulse 8s ease-in-out infinite; }
+.animate-nebula-2 { animation: nebula-pulse 12s ease-in-out infinite reverse; }
+
+@keyframes ripple-expand {
+  0%   { width: 0; height: 0; opacity: 0.6; border-width: 3px; }
+  100% { width: 200px; height: 200px; opacity: 0; border-width: 1px; transform: translate(-100px, -100px); }
+}
+
+@keyframes float-up {
+  0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
+  10%      { opacity: 0.5; }
+  90%      { opacity: 0.3; }
+  100%     { transform: translateY(-200px) translateX(30px); opacity: 0; }
+}
+
+@keyframes float-drift {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0; }
+  10%      { opacity: 0.4; }
+  50%      { transform: translate(40px, -30px) scale(1.5); opacity: 0.2; }
+  90%      { opacity: 0.3; }
+  100%     { transform: translate(-20px, -80px) scale(0.5); opacity: 0; }
+}
+
+/* =====================
+   Advanced Planetary Motion
+   ===================== */
+@keyframes planet-drift-1 {
+  0%   { transform: translate(0, 0) scale(1) rotate(0deg); }
+  25%  { transform: translate(15px, -20px) scale(1.02) rotate(2deg); }
+  50%  { transform: translate(25px, 10px) scale(0.98) rotate(-1deg); }
+  75%  { transform: translate(-10px, 15px) scale(1.01) rotate(3deg); }
+  100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+}
+.animate-planet-motion-1 { animation: planet-drift-1 18s ease-in-out infinite; }
+
+@keyframes planet-drift-2 {
+  0%   { transform: translate(0, 0) rotate(0deg); }
+  20%  { transform: translate(-18px, -12px) rotate(-3deg); }
+  40%  { transform: translate(-5px, 20px) rotate(1deg); }
+  60%  { transform: translate(20px, 5px) rotate(-2deg); }
+  80%  { transform: translate(8px, -15px) rotate(4deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+.animate-planet-motion-2 { animation: planet-drift-2 22s ease-in-out infinite; }
+
+@keyframes planet-drift-3 {
+  0%   { transform: translate(0, 0) scale(1); }
+  33%  { transform: translate(20px, -25px) scale(1.03); }
+  66%  { transform: translate(-15px, 15px) scale(0.97); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+.animate-planet-motion-3 { animation: planet-drift-3 15s ease-in-out infinite; }
+
+@keyframes planet-drift-4 {
+  0%   { transform: translate(0, 0) rotate(0deg); }
+  30%  { transform: translate(-10px, -22px) rotate(5deg); }
+  60%  { transform: translate(18px, 8px) rotate(-3deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+.animate-planet-motion-4 { animation: planet-drift-4 20s ease-in-out infinite; }
+
+/* Surface rotation for planet details */
+@keyframes surface-spin {
+  from { transform: rotate(0deg) scale(1.2); }
+  to   { transform: rotate(360deg) scale(1.2); }
+}
+.animate-surface-spin { animation: surface-spin 30s linear infinite; }
+.animate-surface-spin-slow { animation: surface-spin 50s linear infinite reverse; }
+
+/* Atmosphere shimmer */
+@keyframes atmosphere-pulse {
+  0%, 100% { opacity: 0.3; }
+  25%      { opacity: 0.5; }
+  50%      { opacity: 0.2; }
+  75%      { opacity: 0.4; }
+}
+.animate-atmosphere { animation: atmosphere-pulse 6s ease-in-out infinite; }
+.animate-atmosphere-2 { animation: atmosphere-pulse 8s ease-in-out infinite reverse; }
+
+/* Planet glow breathing */
+@keyframes glow-breathe {
+  0%, 100% { filter: blur(0px) brightness(1); }
+  25%      { filter: blur(1px) brightness(1.1); }
+  50%      { filter: blur(0px) brightness(0.9); }
+  75%      { filter: blur(0.5px) brightness(1.05); }
+}
+.animate-glow-breathe { animation: glow-breathe 10s ease-in-out infinite; }
+
+/* Ring shimmer */
+@keyframes ring-shimmer {
+  0%, 100% { opacity: 0.15; }
+  50%      { opacity: 0.35; }
+}
+.animate-ring-shimmer { animation: ring-shimmer 7s ease-in-out infinite; }
+.animate-ring-shimmer-2 { animation: ring-shimmer 9s ease-in-out infinite reverse; }
+
+/* Complex orbit path for moons */
+@keyframes moon-orbit {
+  from { transform: rotate(0deg) translateX(60px) rotate(0deg); }
+  to   { transform: rotate(360deg) translateX(60px) rotate(-360deg); }
+}
+.animate-moon { animation: moon-orbit 12s linear infinite; }
+.animate-moon-2 { animation: moon-orbit 18s linear infinite reverse; }
+
+/* =====================
+   Advanced FX
+   ===================== */
+/* Day/night terminator */
+@keyframes terminator {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.animate-terminator { animation: terminator 25s linear infinite; }
+.animate-terminator-fast { animation: terminator 18s linear infinite reverse; }
+.animate-terminator-slow { animation: terminator 35s linear infinite; }
+
+/* Solar corona rings */
+@keyframes corona-expand {
+  0%   { transform: scale(0.8); opacity: 0.4; }
+  50%  { transform: scale(1.3); opacity: 0.1; }
+  100% { transform: scale(0.8); opacity: 0.4; }
+}
+.animate-corona { animation: corona-expand 4s ease-in-out infinite; }
+.animate-corona-2 { animation: corona-expand 6s ease-in-out infinite 1s; }
+.animate-corona-3 { animation: corona-expand 3.5s ease-in-out infinite 2s; }
+
+/* Flare burst */
+@keyframes flare-burst {
+  0%   { transform: scale(0.5); opacity: 0; }
+  20%  { opacity: 0.8; }
+  40%  { transform: scale(2.5); opacity: 0; }
+  100% { transform: scale(3); opacity: 0; }
+}
+.animate-flare { animation: flare-burst 8s ease-out infinite; }
+.animate-flare-2 { animation: flare-burst 11s ease-out infinite 2.5s; }
+.animate-flare-3 { animation: flare-burst 9s ease-out infinite 5s; }
+
+/* Comet */
+@keyframes comet-flight {
+  0%   { transform: translate(0, 0); opacity: 0; }
+  5%   { opacity: 1; }
+  30%  { transform: translate(-450px, 350px); opacity: 1; }
+  40%  { opacity: 0; }
+  100% { transform: translate(-600px, 500px); opacity: 0; }
+}
+.animate-comet { animation: comet-flight 12s linear infinite; }
+.animate-comet-2 { animation: comet-flight 18s linear infinite 6s; }
+.animate-comet-3 { animation: comet-flight 15s linear infinite 10s; }
+
+/* Asteroid drift */
+@keyframes asteroid-drift {
+  0%   { transform: translate(0, 0) scale(0.5); opacity: 0; }
+  10%  { opacity: 0.6; }
+  50%  { transform: translate(-200px, 150px) scale(1); opacity: 0.4; }
+  90%  { opacity: 0.5; }
+  100% { transform: translate(-300px, 250px) scale(0.3); opacity: 0; }
+}
+.animate-asteroid { animation: asteroid-drift 20s linear infinite; }
+.animate-asteroid-2 { animation: asteroid-drift 25s linear infinite 5s; }
+.animate-asteroid-3 { animation: asteroid-drift 18s linear infinite 10s; }
+.animate-asteroid-4 { animation: asteroid-drift 22s linear infinite 15s; }
+
+/* Gravity ring accretion disk */
+@keyframes accretion-spin {
+  from { transform: rotateX(75deg) rotateZ(0deg); }
+  to   { transform: rotateX(75deg) rotateZ(360deg); }
+}
+.animate-accretion { animation: accretion-spin 15s linear infinite; }
+.animate-accretion-reverse { animation: accretion-spin 20s linear infinite reverse; }
+
+/* Magnetic field lines */
+@keyframes field-line {
+  0%   { clip-path: polygon(30% 0, 70% 0, 55% 50%, 45% 50%); opacity: 0.1; }
+  25%  { clip-path: polygon(25% 0, 75% 0, 60% 50%, 40% 50%); opacity: 0.3; }
+  50%  { clip-path: polygon(20% 0, 80% 0, 65% 50%, 35% 50%); opacity: 0.2; }
+  75%  { clip-path: polygon(25% 0, 75% 0, 60% 50%, 40% 50%); opacity: 0.3; }
+  100% { clip-path: polygon(30% 0, 70% 0, 55% 50%, 45% 50%); opacity: 0.1; }
+}
+.animate-field { animation: field-line 6s ease-in-out infinite; }
+.animate-field-2 { animation: field-line 8s ease-in-out infinite reverse; }
+
+/* Wormhole ripple */
+@keyframes wormhole-ripple {
+  0%   { transform: scale(0.8) rotate(0deg); opacity: 0.4; border-width: 2px; }
+  50%  { transform: scale(1.5) rotate(180deg); opacity: 0.1; border-width: 1px; }
+  100% { transform: scale(0.8) rotate(360deg); opacity: 0.4; border-width: 2px; }
+}
+.animate-wormhole { animation: wormhole-ripple 8s ease-in-out infinite; }
+.animate-wormhole-2 { animation: wormhole-ripple 12s ease-in-out infinite 2s reverse; }
+
+/* Planet surface convection (fluid movement) */
+@keyframes convection {
+  0%   { transform: translate(0, 0) scale(1); }
+  25%  { transform: translate(3px, -5px) scale(1.01); }
+  50%  { transform: translate(-2px, 3px) scale(0.99); }
+  75%  { transform: translate(4px, 2px) scale(1.005); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+.animate-convection { animation: convection 6s ease-in-out infinite; }
+.animate-convection-2 { animation: convection 8s ease-in-out infinite reverse; }
+
+/* 3D wobble */
+@keyframes wobble-3d {
+  0%   { transform: rotateX(0deg) rotateY(0deg); }
+  25%  { transform: rotateX(3deg) rotateY(-5deg); }
+  50%  { transform: rotateX(-2deg) rotateY(4deg); }
+  75%  { transform: rotateX(4deg) rotateY(-3deg); }
+  100% { transform: rotateX(0deg) rotateY(0deg); }
+}
+.animate-wobble-3d { animation: wobble-3d 12s ease-in-out infinite; }
+.animate-wobble-3d-2 { animation: wobble-3d 15s ease-in-out infinite reverse; }
+
+/* Storm vortex */
+@keyframes vortex-spin {
+  from { transform: rotate(0deg) scale(0.8); }
+  to   { transform: rotate(360deg) scale(0.8); }
+}
+.animate-vortex { animation: vortex-spin 20s linear infinite; }
+
+/* Planet scale pulse with more drama */
+@keyframes scale-drama {
+  0%, 100% { transform: scale(1); filter: brightness(1); }
+  30%  { transform: scale(1.04); filter: brightness(1.15); }
+  60%  { transform: scale(0.97); filter: brightness(0.85); }
+}
+.animate-scale-drama { animation: scale-drama 14s ease-in-out infinite; }
+.animate-scale-drama-2 { animation: scale-drama 18s ease-in-out infinite 3s; }
+
+/* Meteor shower — mưa sao băng */
+@keyframes meteor-shower {
+  0%   { transform: translateX(0) translateY(0); opacity: 0; }
+  3%   { opacity: 1; }
+  12%  { transform: translateX(-250px) translateY(280px); opacity: 1; }
+  18%  { opacity: 0; }
+  100% { opacity: 0; transform: translateX(-350px) translateY(400px); }
+}
+@keyframes meteor-shower-2 {
+  0%   { transform: translateX(0) translateY(0); opacity: 0; }
+  3%   { opacity: 1; }
+  12%  { transform: translateX(-200px) translateY(320px); opacity: 1; }
+  18%  { opacity: 0; }
+  100% { opacity: 0; transform: translateX(-300px) translateY(450px); }
+}
+@keyframes meteor-shower-3 {
+  0%   { transform: translateX(0) translateY(0); opacity: 0; }
+  3%   { opacity: 1; }
+  12%  { transform: translateX(-300px) translateY(250px); opacity: 1; }
+  18%  { opacity: 0; }
+  100% { opacity: 0; transform: translateX(-400px) translateY(380px); }
+}
+.animate-meteor { animation: meteor-shower 6s ease-in-out infinite; }
+.animate-meteor-2 { animation: meteor-shower-2 8s ease-in-out infinite; }
+.animate-meteor-3 { animation: meteor-shower-3 7s ease-in-out infinite; }
+
+/* Meteor ngang (bay từ trái sang phải) */
+@keyframes meteor-cross {
+  0%   { transform: translateX(0) translateY(0); opacity: 0; }
+  3%   { opacity: 0.9; }
+  15%  { transform: translateX(350px) translateY(-60px); opacity: 0.9; }
+  22%  { opacity: 0; }
+  100% { opacity: 0; transform: translateX(500px) translateY(-100px); }
+}
+@keyframes meteor-cross-2 {
+  0%   { transform: translateX(0) translateY(0); opacity: 0; }
+  3%   { opacity: 0.8; }
+  15%  { transform: translateX(300px) translateY(40px); opacity: 0.8; }
+  22%  { opacity: 0; }
+  100% { opacity: 0; transform: translateX(450px) translateY(80px); }
+}
+.animate-meteor-cross { animation: meteor-cross 9s ease-in-out infinite; }
+.animate-meteor-cross-2 { animation: meteor-cross-2 11s ease-in-out infinite; }
+
+/* Sao băng bay lên (từ dưới lên trên) */
+@keyframes meteor-up {
+  0%   { transform: translateX(0) translateY(0); opacity: 0; }
+  4%   { opacity: 0.8; }
+  18%  { transform: translateX(-80px) translateY(-320px); opacity: 0.8; }
+  25%  { opacity: 0; }
+  100% { opacity: 0; transform: translateX(-120px) translateY(-450px); }
+}
+.animate-meteor-up { animation: meteor-up 10s ease-in-out infinite; }
+
+/* Đá vụn trôi nổi (debris drift) */
+@keyframes debris-drift {
+  0%   { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+  10%  { opacity: 0.5; }
+  50%  { transform: translate(80px, -60px) rotate(180deg); opacity: 0.3; }
+  90%  { opacity: 0.4; }
+  100% { transform: translate(120px, -100px) rotate(360deg); opacity: 0; }
+}
+@keyframes debris-drift-2 {
+  0%   { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+  10%  { opacity: 0.4; }
+  50%  { transform: translate(-70px, 50px) rotate(-180deg); opacity: 0.3; }
+  90%  { opacity: 0.35; }
+  100% { transform: translate(-110px, 90px) rotate(-360deg); opacity: 0; }
+}
+@keyframes debris-drift-3 {
+  0%   { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+  10%  { opacity: 0.45; }
+  50%  { transform: translate(60px, 80px) rotate(120deg); opacity: 0.3; }
+  90%  { opacity: 0.35; }
+  100% { transform: translate(100px, 140px) rotate(240deg); opacity: 0; }
+}
+.animate-debris { animation: debris-drift 18s ease-in-out infinite; }
+.animate-debris-2 { animation: debris-drift-2 22s ease-in-out infinite; }
+.animate-debris-3 { animation: debris-drift-3 25s ease-in-out infinite; }
+
+/* Pha lê lấp lánh */
+@keyframes gem-float {
+  0%, 100% { transform: translateY(0) rotate(0deg) scale(1); opacity: 0; }
+  15% { opacity: 0.6; }
+  50% { transform: translateY(-30px) rotate(180deg) scale(1.15); opacity: 0.4; }
+  85% { opacity: 0.5; }
+  100% { transform: translateY(-50px) rotate(360deg) scale(0.8); opacity: 0; }
+}
+.animate-gem { animation: gem-float 14s ease-in-out infinite; }
+
+/* Tia sáng bắn ra (sparkle burst) */
+@keyframes sparkle-burst {
+  0%   { transform: scale(0) rotate(0deg); opacity: 0; }
+  20%  { opacity: 0.7; transform: scale(1.3) rotate(180deg); }
+  50%  { transform: scale(0.8) rotate(360deg); opacity: 0.3; }
+  80%  { opacity: 0.5; transform: scale(1.1) rotate(540deg); }
+  100% { transform: scale(0) rotate(720deg); opacity: 0; }
+}
+.animate-sparkle { animation: sparkle-burst 5s ease-in-out infinite; }
+
+/* Vệt bụi phát sáng (dust trail) */
+@keyframes dust-trail {
+  0%   { transform: translateX(0) scaleX(1); opacity: 0; width: 0; }
+  10%  { opacity: 0.5; width: 80px; }
+  50%  { transform: translateX(-40px) scaleX(0.7); opacity: 0.3; width: 60px; }
+  90%  { opacity: 0.2; width: 30px; }
+  100% { transform: translateX(-60px) scaleX(0.3); opacity: 0; width: 0; }
+}
+.animate-dust-trail { animation: dust-trail 8s ease-in-out infinite; }
+
+/* Lục giác trôi */
+@keyframes hex-float {
+  0%   { transform: translateY(0) rotate(0deg); opacity: 0; }
+  15%  { opacity: 0.35; }
+  50%  { transform: translateY(-80px) rotate(180deg); opacity: 0.2; }
+  85%  { opacity: 0.25; }
+  100% { transform: translateY(-140px) rotate(360deg); opacity: 0; }
+}
+.animate-hex { animation: hex-float 25s ease-in-out infinite; }
+
+/* Vòng năng lượng lan rộng */
+@keyframes energy-ring {
+  0%   { transform: scale(0.3); opacity: 0; }
+  15%  { opacity: 0.25; }
+  50%  { transform: scale(1.2); opacity: 0.1; }
+  85%  { opacity: 0.05; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+.animate-energy-ring { animation: energy-ring 8s ease-out infinite; }
+
+/* Chấm sáng nhấp nháy */
+@keyframes dot-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.2; }
+  30% { transform: scale(1.8); opacity: 0.6; }
+  60% { transform: scale(0.7); opacity: 0.15; }
+}
+.animate-dot-pulse { animation: dot-pulse 4s ease-in-out infinite; }
+
+/* Hạt ánh sáng bay zigzag */
+@keyframes zigzag {
+  0%   { transform: translate(0, 0); opacity: 0; }
+  10%  { opacity: 0.5; }
+  30%  { transform: translate(30px, -40px); opacity: 0.3; }
+  55%  { transform: translate(-20px, -80px); opacity: 0.4; }
+  80%  { transform: translate(25px, -130px); opacity: 0.2; }
+  100% { transform: translate(-15px, -180px); opacity: 0; }
+}
+.animate-zigzag { animation: zigzag 12s ease-in-out infinite; }
+
+/* Ánh sáng rẽ quạt (light fan) */
+@keyframes light-fan {
+  0%   { transform: rotate(0deg) scaleY(0.5); opacity: 0; }
+  10%  { opacity: 0.2; }
+  50%  { transform: rotate(180deg) scaleY(1); opacity: 0.1; }
+  90%  { opacity: 0.15; }
+  100% { transform: rotate(360deg) scaleY(0.5); opacity: 0; }
+}
+.animate-light-fan { animation: light-fan 20s linear infinite; }
+
+/* Phi thuyền trôi */
+@keyframes spaceship-drift {
+  0%   { transform: translate(0, 0) rotate(-5deg); opacity: 0; }
+  8%   { opacity: 0.7; }
+  40%  { transform: translate(120px, -60px) rotate(3deg); opacity: 0.5; }
+  70%  { transform: translate(200px, -140px) rotate(-2deg); opacity: 0.4; }
+  90%  { opacity: 0.3; }
+  100% { transform: translate(280px, -220px) rotate(5deg); opacity: 0; }
+}
+@keyframes spaceship-drift-2 {
+  0%   { transform: translate(0, 0) rotate(8deg); opacity: 0; }
+  8%   { opacity: 0.6; }
+  40%  { transform: translate(-100px, 80px) rotate(-4deg); opacity: 0.4; }
+  70%  { transform: translate(-180px, 160px) rotate(2deg); opacity: 0.3; }
+  90%  { opacity: 0.25; }
+  100% { transform: translate(-260px, 240px) rotate(-6deg); opacity: 0; }
+}
+@keyframes spaceship-drift-3 {
+  0%   { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+  8%   { opacity: 0.5; }
+  50%  { transform: translate(80px, 100px) rotate(-8deg); opacity: 0.35; }
+  80%  { transform: translate(160px, 180px) rotate(4deg); opacity: 0.25; }
+  100% { transform: translate(220px, 260px) rotate(-3deg); opacity: 0; }
+}
+.animate-spaceship { animation: spaceship-drift 30s ease-in-out infinite; }
+.animate-spaceship-2 { animation: spaceship-drift-2 35s ease-in-out infinite; }
+.animate-spaceship-3 { animation: spaceship-drift-3 40s ease-in-out infinite; }
+
+/* Vệ tinh trôi + nhấp nháy */
+@keyframes satellite-drift {
+  0%   { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+  5%   { opacity: 0.6; }
+  30%  { transform: translate(-60px, -40px) rotate(15deg); opacity: 0.4; }
+  60%  { transform: translate(-140px, -90px) rotate(-10deg); opacity: 0.3; }
+  85%  { opacity: 0.2; }
+  100% { transform: translate(-200px, -150px) rotate(20deg); opacity: 0; }
+}
+@keyframes satellite-drift-2 {
+  0%   { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+  5%   { opacity: 0.5; }
+  30%  { transform: translate(50px, 30px) rotate(-12deg); opacity: 0.35; }
+  60%  { transform: translate(120px, 70px) rotate(8deg); opacity: 0.25; }
+  85%  { opacity: 0.2; }
+  100% { transform: translate(180px, 120px) rotate(-15deg); opacity: 0; }
+}
+.animate-satellite { animation: satellite-drift 28s ease-in-out infinite; }
+.animate-satellite-2 { animation: satellite-drift-2 32s ease-in-out infinite; }
+
+/* Đèn nhấp nháy trên vệ tinh */
+@keyframes blink-light {
+  0%, 100% { opacity: 0; box-shadow: 0 0 0 transparent; }
+  15% { opacity: 1; box-shadow: 0 0 4px 2px rgba(100,200,255,0.5); }
+  30% { opacity: 0.2; box-shadow: 0 0 2px 1px rgba(100,200,255,0.2); }
+  45% { opacity: 1; box-shadow: 0 0 4px 2px rgba(100,200,255,0.5); }
+  60% { opacity: 0; box-shadow: 0 0 0 transparent; }
+}
+.animate-blink-light { animation: blink-light 3s ease-in-out infinite; }

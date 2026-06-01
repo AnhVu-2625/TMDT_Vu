@@ -84,8 +84,8 @@ router.post('/report', authenticateToken, async (req, res) => {
       .input('loaiMaThamChieu', sql.NVarChar, loaiMaThamChieu || null)
       .query(`
         INSERT INTO BaoCao (MaNguoiDungBaoCao, LoaiBaoCao, MoTaChiTiet, MaThamChieu, LoaiMaThamChieu, TrangThai)
+        OUTPUT INSERTED.MaBaoCao
         VALUES (@userId, @loaiBaoCao, @moTaChiTiet, @maThamChieu, @loaiMaThamChieu, N'CHO_XU_LY')
-        SELECT @@IDENTITY as MaBaoCao
       `);
 
     res.status(201).json({
@@ -130,8 +130,8 @@ router.post('/dispute', authenticateToken, async (req, res) => {
       .query(`
         INSERT INTO GiaiQuyetTrancChap 
         (MaDonHang, MaNguoiDungKhieu, MaNguoiDungDoiPhuong, LoaiTrancChap, MoTaChiTiet, TrangThai)
+        OUTPUT INSERTED.MaTrancChap
         VALUES (@orderId, @buyerId, @sellerId, @loaiTrancChap, @moTaChiTiet, N'CHO_XU_LY')
-        SELECT @@IDENTITY as MaTrancChap
       `);
 
     res.status(201).json({

@@ -1,0 +1,256 @@
+L뿯ẽp h뿯ẽc ph뿯ẽn                	: 225ECM01਍ഀ
+CH뿯ƽ뿯ƽNG 1. M뿯ẽ Đ뿯ẽU
+2.1. Đ뿯ẽc t뿯ẽ y뿯½u c뿯ẽu ph뿯ẽn m뿯ẽm (Software Requirements)
+2.1.2. Ng뿯ƽ뿯ẽi d뿯½ng
+2.1.4. Kh뿯½ch h뿯½ng th뿯½n thi뿯ẽt
+2.5. K뿯ẽch b뿯ẽn cho Use-case
+2.5.2. Actor ng뿯ƽ뿯ẽi d뿯½ng
+2.5.4. Actor kh뿯½ch h뿯½ng th뿯½n thi뿯ẽt
+2.6.1. Actor ng뿯ƽ뿯ẽi mua
+B뿯ẽng 1: K뿯ẽch b뿯ẽn usecase đăng nh뿯ẽp
+B뿯ẽng 3: K뿯ẽch b뿯ẽn usecase x뿯½c th뿯ẽc t뿯½i kho뿯ẽn
+B뿯ẽng 5: K뿯ẽch b뿯ẽn usecase xem chi ti뿯ẽt s뿯ẽn ph뿯ẽm
+B뿯ẽng 7: K뿯ẽch b뿯ẽn usecase đăng xu뿯ẽt
+B뿯ẽng 9: K뿯ẽch b뿯ẽn usecase chat v뿯ẽi ng뿯ƽ뿯ẽi kh뿯½c
+B뿯ẽng 11: K뿯ẽch b뿯ẽn usecase t뿯½m ki뿯ẽm s뿯ẽn ph뿯ẽm
+B뿯ẽng 13: K뿯ẽch b뿯ẽn usecase qu뿯ẽn l뿯½ gi뿯ẽ h뿯½ng
+B뿯ẽng 15: K뿯ẽch b뿯ẽn usecase mua h뿯½ng
+B뿯ẽng 17: K뿯ẽch b뿯ẽn usecase thanh to뿯½n qua s뿯½n
+B뿯ẽng 19:K뿯ẽch b뿯ẽn usecase xem tr뿯ẽng th뿯½i đ뿯ƽn h뿯½ng
+B뿯ẽng 21: K뿯ẽch b뿯ẽn usecase h뿯ẽy đ뿯ƽn
+B뿯ẽng 23: K뿯ẽch b뿯ẽn usecase l뿯ƽu b뿯ẽ l뿯ẽc t뿯½m ki뿯ẽm
+B뿯ẽng 25: K뿯ẽch b뿯ẽn usecase tham gia ch뿯ƽ뿯ƽng tr뿯½nh VIP
+B뿯ẽng 27: K뿯ẽch b뿯ẽn usecase xem h뿯ẽng th뿯½nh vi뿯½n
+B뿯ẽng 29: K뿯ẽch b뿯ẽn usecase đăng s뿯ẽn ph뿯ẽm m뿯ẽi
+B뿯ẽng 31: K뿯ẽch b뿯ẽn usecase qu뿯ẽn l뿯½ khuy뿯ẽn m뿯½i
+B뿯ẽng 33: K뿯ẽch b뿯ẽn usecase qu뿯ẽn l뿯½ t뿯½i ch뿯½nh
+B뿯ẽng 35: K뿯ẽch b뿯ẽn usecase xem đ뿯ƽn đ뿯½ b뿯½n
+B뿯ẽng 37: K뿯ẽch b뿯ẽn usecase qu뿯ẽn l뿯½ t뿯½i kho뿯ẽn ng뿯ƽ뿯ẽi d뿯½ng
+B뿯ẽng 39: K뿯ẽch b뿯ẽn usecase kh뿯½a t뿯½i kho뿯ẽn vi ph뿯ẽm
+B뿯ẽng 41: K뿯ẽch b뿯ẽn usecase x뿯ẽ l뿯½ b뿯½o c뿯½o vi ph뿯ẽm
+B뿯ẽng 43: K뿯ẽch b뿯ẽn usecase gi뿯ẽi quy뿯ẽt tranh ch뿯ẽp đ뿯ẽi tr뿯ẽ
+B뿯ẽng 45: K뿯ẽch b뿯ẽn usecase c뿯ẽp nh뿯ẽt ch뿯½nh s뿯½ch s뿯ẽ d뿯ẽng
+H뿯½nh 1. 2: Sequence usecase mua h뿯½ng v뿯½ 뿯½p m뿯½ khuy뿯ẽn m뿯½i
+H뿯½nh 1. 4: Giao di뿯ẽn gi뿯ẽ h뿯½ng
+H뿯½nh 1. 6: Giao di뿯ẽn check th뿯½ng tin v뿯½ 뿯½p m뿯½ gi뿯ẽm gi뿯½
+H뿯½nh 1. 8: Giao di뿯ẽn đ뿯ẽt h뿯½ng th뿯½nh c뿯½ng
+H뿯½nh 2. 1: Activity usecase đăng s뿯ẽn ph뿯ẽm m뿯ẽi
+H뿯½nh 2. 3: Giao di뿯ẽn ch뿯½nh c뿯ẽa usecase đăng s뿯ẽn ph뿯ẽm m뿯ẽi
+H뿯½nh 2. 5: Giao di뿯ẽn ch뿯ẽnh s뿯ẽa s뿯ẽn ph뿯ẽm đ뿯½ đăng
+H뿯½nh 3. 1: Activity usecase qu뿯ẽn l뿯½ đ뿯ƽn h뿯½ng
+H뿯½nh 3. 3: Giao di뿯ẽn ch뿯½nh c뿯ẽa usecase qu뿯ẽn l뿯½ đ뿯ƽn h뿯½ng
+H뿯½nh 3. 5: Giao di뿯ẽn khi in phi뿯ẽu đ뿯ƽn h뿯½ng
+H뿯½nh 4. 1: Activity usecase qu뿯ẽn l뿯½ tranh ch뿯ẽp đ뿯ẽi tr뿯ẽ
+H뿯½nh 4. 3: Giao di뿯ẽn ch뿯½nh c뿯ẽa usecase qu뿯ẽn l뿯½ tranh ch뿯ẽp đ뿯ẽi tr뿯ẽ
+H뿯½nh 4. 5: Giao di뿯ẽn t뿯ẽ ch뿯ẽi đ뿯ẽi tr뿯ẽ
+H뿯½nh 5. 1: Giao di뿯ẽn ch뿯½nh usecase đ뿯ẽi so뿯½t v뿯½ chia ti뿯ẽn
+Website th뿯ƽ뿯ƽng m뿯ẽi đi뿯ẽn t뿯ẽ c뿯½ m뿯½ h뿯½nh k뿯ẽt n뿯ẽi l뿯½ trang Web trung t뿯½m;਍䴀붿挞 琀椀붿甀ഀ
+X뿯½y d뿯ẽng m뿯ẽt h뿯ẽ th뿯ẽng website th뿯ƽ뿯ƽng m뿯ẽi đi뿯ẽn t뿯ẽ d뿯ẽng trung t뿯½m cho ph뿯½p:਍䬀붿琞 渀붿椞 渀最붿붿椞 洀甀愀 瘀붿 渀最붿붿椞 戀붿渀㬀ഀ
+Đ뿯ẽc t뿯ẽ y뿯½u c뿯ẽu ph뿯ẽn m뿯ẽm (Software Requirements)਍䬀栀붿挀栀 瘀붿渀最 氀愀椀ഀ
+Xem chi ti뿯ẽt s뿯ẽn ph뿯ẽm;਍䰀붿挞㬀 ഀ
+Xem chi ti뿯ẽt s뿯ẽn ph뿯ẽm;਍一最붿붿椞 洀甀愀 ഀ
+S뿯ƽ đ뿯ẽ ERD਍Āഀ
+b. Th뿯½ng tin sai: Backend tr뿯ẽ v뿯ẽ l뿯ẽi 401; Frontend b뿯½o "T뿯½i kho뿯ẽn ho뿯ẽc m뿯ẽt kh뿯ẽu kh뿯½ng ch뿯½nh x뿯½c".਍܀܀܀ഀ
+SEQ B뿯ẽng \* ARABIC
+: K뿯ẽch b뿯ẽn usecase đăng nh뿯ẽp਍ഀ
+2: Frontend validate d뿯ẽ li뿯ẽu (đ뿯ẽ d뿯½i m뿯ẽt kh뿯ẽu, kh뿯ẽp m뿯ẽt kh뿯ẽu);਍㌀㨀 䜀붿椞 䄀倀䤀 ᄀ́渁最 欀붿 氀붿渀 䈀愀挀欀攀渀搀㬀ഀ
+Email/SĐT đ뿯½ t뿯ẽn t뿯ẽi: Backend tr뿯ẽ v뿯ẽ l뿯ẽi 409 Conflict; Frontend b뿯½o "Email/SĐT đ뿯½ đ뿯ƽ뿯ẽc s뿯ẽ d뿯ẽng"
+L뿯ẽi k뿯ẽt n뿯ẽi DB khi đang l뿯ƽu th뿯½ng tin (Transaction th뿯ẽt b뿯ẽi): Backend b뿯½o l뿯ẽi 500; Frontend b뿯½o "H뿯ẽ th뿯ẽng b뿯ẽn, vui l뿯½ng th뿯ẽ l뿯ẽi"
+SEQ B뿯ẽng \* ARABIC
+: K뿯ẽch b뿯ẽn usecase đăng k뿯½ t뿯½i kho뿯ẽn਍ഀ
+b. Actor nh뿯ẽn "G뿯ẽi l뿯ẽi m뿯½": H뿯ẽ th뿯ẽng l뿯ẽp l뿯ẽi b뿯ƽ뿯ẽc 1 v뿯½ 2.
+Truy xu뿯ẽt danh s뿯½ch s뿯ẽn ph뿯ẽm d뿯ẽa tr뿯½n t뿯ẽ kh뿯½a ng뿯ƽ뿯ẽi d뿯½ng nh뿯ẽp
+Chu뿯ẽi t뿯ẽ kh뿯½a (Keyword) t뿯ẽ thanh t뿯½m ki뿯ẽm
+Danh s뿯½ch s뿯ẽn ph뿯ẽm (c뿯½ ph뿯½n trang) ph뿯½ h뿯ẽp v뿯ẽi t뿯ẽ kh뿯½a
+b. DB kh뿯½ng c뿯½ k뿯ẽt qu뿯ẽ: Backend tr뿯ẽ v뿯ẽ m뿯ẽng r뿯ẽng []; Frontend hi뿯ẽn th뿯ẽ UI "Kh뿯½ng t뿯½m th뿯ẽy s뿯ẽn ph뿯ẽm n뿯½o"
+T뿯ẽi v뿯½ hi뿯ẽn th뿯ẽ to뿯½n b뿯ẽ th뿯½ng tin c뿯ẽa m뿯ẽt s뿯ẽn ph뿯ẽm c뿯ẽ th뿯ẽ
+ID ho뿯ẽc Slug c뿯ẽa s뿯ẽn ph뿯ẽm (truy뿯ẽn qua URL)
+Giao di뿯ẽn chi ti뿯ẽt v뿯ẽi H뿯½nh 뿯ẽnh, T뿯½n, Gi뿯½, M뿯½ t뿯ẽ, Th뿯½ng tin Shop v뿯½ Comment/Review
+S뿯ẽn ph뿯ẽm c뿯½ nhi뿯ẽu bi뿯ẽn th뿯ẽ (Color, Size): Backend tr뿯ẽ th뿯½m m뿯ẽng Variants; Frontend b뿯ẽt bu뿯ẽc Actor ph뿯ẽi ch뿯ẽn Bi뿯ẽn th뿯ẽ tr뿯ƽ뿯ẽc khi b뿯ẽm "Th뿯½m v뿯½o gi뿯ẽ h뿯½ng"
+Ch뿯ẽc năng m뿯ẽ r뿯ẽng gi뿯½p thu h뿯ẽp k뿯ẽt qu뿯ẽ t뿯½m ki뿯ẽm d뿯ẽa tr뿯½n c뿯½c ti뿯½u ch뿯½ (Gi뿯½, Th뿯ƽ뿯ƽng hi뿯ẽu, Đ뿯½nh gi뿯½)
+C뿯½c đi뿯ẽu ki뿯ẽn l뿯ẽc (parameters) do Actor tick ch뿯ẽn
+Danh s뿯½ch s뿯ẽn ph뿯ẽm m뿯ẽi đ뿯½ đ뿯ƽ뿯ẽc l뿯ẽc
+5: Frontend c뿯ẽp nh뿯ẽt l뿯ẽi l뿯ƽ뿯ẽi hi뿯ẽn th뿯ẽ s뿯ẽn ph뿯ẽm.
+L뿯ẽi Parameter: Actor c뿯ẽ t뿯½nh s뿯ẽa URL v뿯ẽi tham s뿯ẽ sai logic (VD: price_min > price_max); Backend ch뿯ẽn v뿯½ tr뿯ẽ v뿯ẽ l뿯ẽi 400 Bad Request
+SEQ B뿯ẽng \* ARABIC
+: K뿯ẽch b뿯ẽn usecase l뿯ẽc s뿯ẽn ph뿯ẽm਍ഀ
+H뿯ẽy phi뿯½n l뿯½m vi뿯ẽc hi뿯ẽn t뿯ẽi c뿯ẽa ng뿯ƽ뿯ẽi d뿯½ng, đ뿯ƽa h뿯ẽ th뿯ẽng v뿯ẽ tr뿯ẽng th뿯½i Kh뿯½ch v뿯½ng la
+H뿯½nh đ뿯ẽng click v뿯½o n뿯½t "Đăng xu뿯ẽt"
+Token/Session b뿯ẽ x뿯½a; Giao di뿯ẽn tr뿯ẽ v뿯ẽ m뿯ẽc đ뿯ẽnh (ch뿯ƽa đăng nh뿯ẽp)
+3: Backend nh뿯ẽn request, đ뿯ƽa Token n뿯½y v뿯½o "Blacklist" (danh s뿯½ch đen) trong DB/Redis đ뿯ẽ v뿯½ hi뿯ẽu h뿯½a ho뿯½n to뿯½n;਍㐀㨀 䈀愀挀欀攀渀搀 琀爀붿„瘀붿„猀琀愀琀甀猀 ㈀　　 伀䬀㬀ഀ
+Đăng xu뿯ẽt 뿯ẽ thi뿯ẽt b뿯ẽ kh뿯½c: Actor ch뿯ẽn "Đăng xu뿯ẽt kh뿯ẽi t뿯ẽt c뿯ẽ thi뿯ẽt b뿯ẽ"; Backend s뿯ẽ x뿯½a/blacklist to뿯½n b뿯ẽ Token đang active c뿯ẽa User ID đ뿯½
+4: Frontend đ뿯½ng g뿯½i d뿯ẽ li뿯ẽu d뿯ẽng multipart/form-data v뿯½ g뿯ẽi API PUT/PATCH l뿯½n Backend (k뿯½m Header ch뿯ẽa Token);਍㔀㨀 䈀愀挀欀攀渀搀 砀붿挀 琀栀붿挞 吀漀欀攀渀㬀ഀ
+8: Frontend nh뿯ẽn d뿯ẽ li뿯ẽu m뿯ẽi, c뿯ẽp nh뿯ẽt l뿯ẽi giao di뿯ẽn.
+File 뿯ẽnh t뿯ẽi l뿯½n b뿯ẽ l뿯ẽi ho뿯ẽc ch뿯ẽa m뿯½ đ뿯ẽc: H뿯ẽ th뿯ẽng Cloud Storage t뿯ẽ ch뿯ẽi upload, Backend tr뿯ẽ v뿯ẽ l뿯ẽi 400; Frontend b뿯½o "뿯ẽnh kh뿯½ng h뿯ẽp l뿯ẽ"
+SEQ B뿯ẽng \* ARABIC
+: K뿯ẽch b뿯ẽn usecase c뿯ẽp nh뿯ẽt th뿯½ng tin c뿯½ nh뿯½n਍ഀ
+2: Frontend thi뿯ẽt l뿯ẽp k뿯ẽt n뿯ẽi WebSocket (ho뿯ẽc Socket;io) v뿯ẽi Backend;਍㌀㨀 䄀挀琀漀爀 最붿 琀椀渀 渀栀붿渞 瘀붿 渀栀붿渞 ∀䜀붿椞∀㬀ഀ
+Ng뿯ƽ뿯ẽi nh뿯ẽn (Seller) đang offline: Backend v뿯ẽn l뿯ƽu tin nh뿯ẽn v뿯½o DB v뿯½ tăng bi뿯ẽn unread_count; Khi Seller online, h뿯ẽ th뿯ẽng s뿯ẽ đ뿯ẽy th뿯½ng b뿯½o
+H뿯ẽ th뿯ẽng g뿯ẽi c뿯½c c뿯ẽnh b뿯½o tr뿯ẽng th뿯½i (Đ뿯ƽn h뿯½ng đ뿯½ duy뿯ẽt, C뿯½ tin nh뿯ẽn m뿯ẽi, Khuy뿯ẽn m뿯½i) đ뿯ẽn ng뿯ƽ뿯ẽi d뿯½ng
+C뿯½c trigger (s뿯ẽ ki뿯ẽn k뿯½ch ho뿯ẽt) t뿯ẽ h뿯ẽ th뿯ẽng (VD: Admin v뿯ẽa duy뿯ẽt đ뿯ƽn)
+Chu뿯½ng th뿯½ng b뿯½o tr뿯½n Header hi뿯ẽn th뿯ẽ s뿯ẽ m뿯½u đ뿯ẽ (+1), dropdown hi뿯ẽn chi ti뿯ẽt;
+Actor ch뿯ẽn "Đ뿯½nh d뿯ẽu t뿯ẽt c뿯ẽ đ뿯½ đ뿯ẽc": Frontend g뿯ẽi API update to뿯½n b뿯ẽ th뿯½ng b뿯½o c뿯ẽa User ID th뿯½nh is_read = true
+T뿯½m ki뿯ẽm s뿯ẽn ph뿯ẽm v뿯½ h뿯ẽ th뿯ẽng t뿯ẽ đ뿯ẽng l뿯ƽu l뿯ẽi l뿯ẽch s뿯ẽ t뿯½m ki뿯ẽm c뿯ẽa c뿯½ nh뿯½n đ뿯½
+Tr뿯ẽ k뿯ẽt qu뿯ẽ t뿯½m ki뿯ẽm v뿯½ l뿯ƽu l뿯ẽch s뿯ẽ
+1:Khi Actor click v뿯½o 뿯½ Search (ch뿯ƽa g뿯½ g뿯½), Frontend g뿯ẽi API l뿯ẽy "L뿯ẽch s뿯ẽ t뿯½m ki뿯ẽm g뿯ẽn đ뿯½y" c뿯ẽa User ID đ뿯½ đ뿯ẽ hi뿯ẽn th뿯ẽ g뿯ẽi 뿯½;਍㈀㨀 䄀挀琀漀爀 渀栀붿瀞 琀붿„欀栀붿愀 洀붿椞 瘀붿 渀栀붿渞 䔀渀琀攀爀㬀ഀ
+5: Tr뿯ẽ k뿯ẽt qu뿯ẽ v뿯ẽ Frontend hi뿯ẽn th뿯ẽ.
+L뿯ẽi timeout do t뿯ẽ kh뿯½a qu뿯½ ph뿯ẽ bi뿯ẽn khi뿯ẽn query qu뿯½ l뿯½u: Backend ng뿯ẽt k뿯ẽt n뿯ẽi; Frontend b뿯½o l뿯ẽi m뿯ẽng
+SEQ B뿯ẽng \* ARABIC
+: K뿯ẽch b뿯ẽn usecase t뿯½m ki뿯ẽm s뿯ẽn ph뿯ẽm਍ഀ
+4: (Kh뿯½c bi뿯ẽt) Backend truy v뿯ẽn th뿯½m b뿯ẽng Wishlists xem User ID n뿯½y đ뿯½ l뿯ƽu Product ID n뿯½y ch뿯ƽa; Đ뿯ẽng th뿯ẽi truy v뿯ẽn b뿯ẽng Vouchers xem c뿯½ m뿯½ n뿯½o ph뿯½ h뿯ẽp v뿯ẽi h뿯ẽng c뿯ẽa User n뿯½y kh뿯½ng;਍㔀㨀 䈀愀挀欀攀渀搀 琀爀붿„䨀匀伀一 瘀붿㬞ഀ
+6: Frontend render UI; N뿯ẽu s뿯ẽn ph뿯ẽm đ뿯½ n뿯ẽm trong Wishlist, icon Tr뿯½i tim đ뿯ƽ뿯ẽc t뿯½ m뿯½u đ뿯ẽ.
+ID/Slug kh뿯½ng t뿯ẽn t뿯ẽi ho뿯ẽc S뿯ẽn ph뿯ẽm đ뿯½ b뿯ẽ x뿯½a/뿯ẽn (status = inactive): Backend tr뿯ẽ v뿯ẽ l뿯ẽi 404 Not Found; Frontend đi뿯ẽu h뿯ƽ뿯ẽng sang trang "S뿯ẽn ph뿯ẽm kh뿯½ng t뿯ẽn t뿯ẽi"
+SEQ B뿯ẽng \* ARABIC
+: K뿯ẽch b뿯ẽn usecase xem chi ti뿯ẽt s뿯ẽn ph뿯ẽm਍ഀ
+Buyer th뿯½m s뿯ẽn ph뿯ẽm v뿯½o gi뿯ẽ, thay đ뿯ẽi s뿯ẽ l뿯ƽ뿯ẽng ho뿯ẽc x뿯½a s뿯ẽn ph뿯ẽm kh뿯ẽi gi뿯ẽ h뿯½ng
+Product ID, Variant ID (M뿯½u/Size), S뿯ẽ l뿯ƽ뿯ẽng (Quantity)
+D뿯ẽ li뿯ẽu gi뿯ẽ h뿯½ng đ뿯ƽ뿯ẽc c뿯ẽp nh뿯ẽt trong DB/Redis; Icon gi뿯ẽ h뿯½ng tr뿯½n UI hi뿯ẽn th뿯ẽ t뿯ẽng s뿯ẽ l뿯ƽ뿯ẽng m뿯ẽi
+5: Frontend hi뿯ẽn th뿯ẽ Toast "Th뿯½m th뿯½nh c뿯½ng" v뿯½ update s뿯ẽ badge tr뿯½n icon Gi뿯ẽ h뿯½ng.
+b. Actor b뿯ẽm bi뿯ẽu t뿯ƽ뿯ẽng Th뿯½ng r뿯½c: Frontend g뿯ẽi API DELETE /cart/remove; Backend x뿯½a record kh뿯ẽi Cart_Items.
+c. Icon tr뿯½i tim chuy뿯ẽn v뿯ẽ m뿯½u tr뿯ẽng.
+Buyer ch뿯ẽt đ뿯ƽn c뿯½c s뿯ẽn ph뿯ẽm đ뿯½ tick ch뿯ẽn trong gi뿯ẽ h뿯½ng
+M뿯ẽng Cart_Item_IDs, ID Đ뿯ẽa ch뿯ẽ giao h뿯½ng, ID Ph뿯ƽ뿯ƽng th뿯ẽc v뿯ẽn chuy뿯ẽn, ID Ph뿯ƽ뿯ƽng th뿯ẽc thanh to뿯½n (M뿯ẽc đ뿯ẽnh: COD)
+T뿯ẽo Record trong b뿯ẽng Orders v뿯½ Order_Items; T뿯ẽn kho b뿯ẽ tr뿯ẽ
+- Check l뿯ẽi T뿯ẽn kho l뿯ẽn cu뿯ẽi (Ngăn ch뿯ẽn Race Condition);਍ⴀ 䤀一匀䔀刀吀 瘀붿漀 戀붿渞最 伀爀搀攀爀猀㬀ഀ
+7: Frontend chuy뿯ẽn sang trang "Đ뿯ẽt h뿯½ng th뿯½nh c뿯½ng".
+Xung đ뿯ẽt mua h뿯½ng (Race Condition): L뿯½c Actor b뿯ẽm Đ뿯ẽt h뿯½ng, ng뿯ƽ뿯ẽi kh뿯½c đ뿯½ mua h뿯ẽt s뿯ẽ l뿯ƽ뿯ẽng cu뿯ẽi c뿯½ng; Transaction DB th뿯ẽt b뿯ẽi (Rollback); Backend tr뿯ẽ l뿯ẽi 409 Conflict; Frontend b뿯½o "S뿯ẽn ph뿯ẽm đ뿯½ h뿯ẽt h뿯½ng trong qu뿯½ tr뿯½nh thanh to뿯½n, vui l뿯½ng ki뿯ẽm tra l뿯ẽi"
+SEQ B뿯ẽng \* ARABIC
+: K뿯ẽch b뿯ẽn usecase mua h뿯½ng਍ഀ
+Voucher kh뿯½ng h뿯ẽp l뿯ẽ: Backend tr뿯ẽ v뿯ẽ l뿯ẽi 400 k뿯½m message (VD: "Đ뿯ƽn h뿯½ng ch뿯ƽa đ뿯ẽt t뿯ẽi thi뿯ẽu 150k"); Frontend hi뿯ẽn th뿯½ng b뿯½o đ뿯ẽ d뿯ƽ뿯ẽi 뿯½ nh뿯ẽp m뿯½
+SEQ B뿯ẽng \* ARABIC
+: K뿯ẽch b뿯ẽn usecase 뿯½p d뿯ẽng m뿯½ khuy뿯ẽn m뿯½i਍ഀ
+8: Actor đ뿯ƽ뿯ẽc Momo redirect tr뿯ẽ l뿯ẽi trang S뿯½n k뿯½m th뿯½ng b뿯½o "Thanh to뿯½n th뿯½nh c뿯½ng".
+H뿯ẽt th뿯ẽi gian thanh to뿯½n (15 ph뿯½t): Actor kh뿯½ng thanh to뿯½n, Backend t뿯ẽ đ뿯ẽng ch뿯ẽy Job h뿯ẽy đ뿯ƽn (Cancel) v뿯½ nh뿯ẽ l뿯ẽi t뿯ẽn kho (Restock)
+SEQ B뿯ẽng \* ARABIC
+: K뿯ẽch b뿯ẽn usecase thanh to뿯½n qua s뿯½n਍ഀ
+a. Actor click v뿯½o c뿯½c tab ph뿯½n lo뿯ẽi (T뿯ẽt c뿯ẽ / Ch뿯ẽ x
+c. (Lu뿯ẽng r뿯ẽng) Actor ch뿯ƽa t뿯ẽng mua h뿯½ng: Backend tr뿯ẽ v뿯ẽ m뿯ẽng r뿯ẽng []; Frontend hi뿯ẽn th뿯ẽ giao di뿯ẽn "B뿯ẽn ch뿯ƽa c뿯½ đ뿯ƽn h뿯½ng n뿯½o".
+Ng뿯ƽ뿯ẽi mua theo d뿯½i chi ti뿯ẽt h뿯½nh tr뿯½nh v뿯ẽn chuy뿯ẽn v뿯½ tr뿯ẽng th뿯½i c뿯ẽ th뿯ẽ c뿯ẽa m뿯ẽt đ뿯ƽn h뿯½ng duy nh뿯ẽt
+Chi ti뿯ẽt đ뿯ƽn h뿯½ng v뿯½ Timeline h뿯½nh tr뿯½nh giao h뿯½ng (VD: Đ뿯½ l뿯ẽy h뿯½ng -> Đang l뿯ƽu kho trung chuy뿯ẽn -> Đang giao)
+Đ뿯ƽn h뿯½ng ch뿯ƽa đ뿯ƽ뿯ẽc Shop chu뿯ẽn b뿯ẽ (Ch뿯ƽa c뿯½ m뿯½ v뿯ẽn đ뿯ƽn): Backend b뿯ẽ qua b뿯ƽ뿯ẽc g뿯ẽi API đ뿯ẽi t뿯½c v뿯ẽn chuy뿯ẽn, ch뿯ẽ tr뿯ẽ v뿯ẽ tr뿯ẽng th뿯½i "Shop đang chu뿯ẽn b뿯ẽ h뿯½ng"; Frontend hi뿯ẽn th뿯ẽ Timeline r뿯½t g뿯ẽn
+Buyer nh뿯ẽn h뿯½ng l뿯ẽi, y뿯½u c뿯ẽu tr뿯ẽ h뿯½ng ho뿯½n ti뿯ẽn;
+Order ID, H뿯½nh 뿯ẽnh/Video b뿯ẽng ch뿯ẽng, L뿯½ do;
+Đ뿯ƽn h뿯½ng chuy뿯ẽn sang tr뿯ẽng th뿯½i "Đang tranh ch뿯ẽp" (Dispute);
+Actor đ뿯ẽi 뿯½, kh뿯½ng mu뿯ẽn đ뿯ẽi tr뿯ẽ n뿯ẽa: B뿯ẽm n뿯½t "H뿯ẽy y뿯½u c뿯ẽu". Frontend đ뿯½ng Popup, kh뿯½ng g뿯ẽi API
+Buyer t뿯ẽ đ뿯ẽng h뿯ẽy đ뿯ƽn khi đ뿯ẽi 뿯½ (Ch뿯ẽ đ뿯ƽ뿯ẽc ph뿯½p khi đ뿯ƽn ch뿯ƽa đ뿯ƽ뿯ẽc Shop chu뿯ẽn b뿯ẽ/giao)
+Order ID v뿯½ L뿯½ do h뿯ẽy (Text)
+Đ뿯ƽn h뿯½ng đ뿯ẽi tr뿯ẽng th뿯½i "Đ뿯½ h뿯ẽy", t뿯ẽn kho đ뿯ƽ뿯ẽc c뿯ẽng l뿯ẽi; Ho뿯½n ti뿯ẽn n뿯ẽu đ뿯½ thanh to뿯½n
+Đ뿯ƽn h뿯½ng đ뿯½ đ뿯ƽ뿯ẽc thanh to뿯½n Online tr뿯ƽ뿯ẽc đ뿯½: Backend g뿯ẽi th뿯½m lu뿯ẽng API sang C뿯ẽng thanh to뿯½n (Momo/VNPAY) đ뿯ẽ th뿯ẽc hi뿯ẽn l뿯ẽnh Refund (Ho뿯½n ti뿯ẽn) t뿯ẽ đ뿯ẽng cho Buyer
+Buyer đ뿯ẽ l뿯ẽi s뿯ẽ sao v뿯½ nh뿯ẽn x뿯½t sau khi ho뿯½n t뿯ẽt đ뿯ƽn h뿯½ng
+Product ID, Order ID, S뿯ẽ sao (1-5), Text nh뿯ẽn x뿯½t, H뿯½nh 뿯ẽnh th뿯ẽc t뿯ẽ
+Record đ뿯ƽ뿯ẽc l뿯ƽu v뿯½o b뿯ẽng Reviews; Đi뿯ẽm trung b뿯½nh c뿯ẽa s뿯ẽn ph뿯ẽm đ뿯ƽ뿯ẽc t뿯½nh l뿯ẽi
+Actor ch뿯ẽ ch뿯ẽn s뿯ẽ sao (v뿯½ d뿯ẽ 5 sao) m뿯½ kh뿯½ng ghi Text ho뿯ẽc kh뿯½ng upload 뿯ẽnh; H뿯ẽ th뿯ẽng v뿯ẽn ch뿯ẽp nh뿯ẽn v뿯½ l뿯ƽu DB v뿯ẽi c뿯½c tr뿯ƽ뿯ẽng text/image l뿯½ null
+6. Frontend b뿯½o "L뿯ƽu th뿯½nh c뿯½ng", hi뿯ẽn th뿯ẽ t뿯½n b뿯ẽ l뿯ẽc 뿯ẽ danh s뿯½ch "B뿯ẽ l뿯ẽc c뿯ẽa t뿯½i".
+b. X뿯½a b뿯ẽ l뿯ẽc: Actor b뿯ẽm icon Th뿯½ng r뿯½c c뿯ẽnh t뿯½n b뿯ẽ l뿯ẽc. Frontend g뿯ẽi API DELETE x뿯½a b뿯ẽn ghi kh뿯ẽi DB.
+E2. H뿯ẽ h뿯ẽng VIP: Actor b뿯ẽ r뿯ẽt h뿯ẽng xu뿯ẽng User th뿯ƽ뿯ẽng. H뿯ẽ th뿯ẽng t뿯ẽ đ뿯ẽng disable (l뿯½m m뿯ẽ) danh s뿯½ch b뿯ẽ l뿯ẽc đ뿯½ l뿯ƽu v뿯½ kh뿯½ng cho ph뿯½p s뿯ẽ d뿯ẽng.
+SEQ B뿯ẽng \* ARABIC
+: K뿯ẽch b뿯ẽn usecase l뿯ƽu b뿯ẽ l뿯ẽc t뿯½m ki뿯ẽm਍ഀ
+6. Frontend đ뿯ẽi n뿯½t "L뿯ƽu" th뿯½nh "Đ뿯½ l뿯ƽu" (disable n뿯½t).
+6. Frontend chuy뿯ẽn h뿯ƽ뿯ẽng sang m뿯½n h뿯½nh "Ch뿯½o m뿯ẽng b뿯ẽn tr뿯ẽ th뿯½nh Kh뿯½ch h뿯½ng th뿯½n thi뿯ẽt".
+Ch뿯ƽa đ뿯ẽ đi뿯ẽu ki뿯ẽn: Actor c뿯ẽ t뿯½nh d뿯½ng link tr뿯ẽc ti뿯ẽp đ뿯ẽ v뿯½o trang đăng k뿯½, nh뿯ƽng Backend check Total_Spent ch뿯ƽa đ뿯ẽ. Tr뿯ẽ l뿯ẽi 403 "B뿯ẽn ch뿯ƽa đ뿯ẽ đi뿯ẽu ki뿯ẽn chi ti뿯½u đ뿯ẽ tham gia".
+SEQ B뿯ẽng \* ARABIC
+: K뿯ẽch b뿯ẽn usecase tham gia ch뿯ƽ뿯ƽng tr뿯½nh VIP਍ഀ
+6. Frontend chuy뿯ẽn sang trang Đ뿯ẽt h뿯½ng th뿯½nh c뿯½ng.
+Đi뿯ẽm kh뿯½ng đ뿯ẽ (Race Condition): Actor m뿯ẽ 2 tab tr뿯½nh duy뿯ẽt c뿯½ng l뿯½c v뿯½ mua 2 đ뿯ƽn h뿯½ng song song. Đ뿯ƽn 뿯ẽ tab 1 đ뿯½ d뿯½ng h뿯ẽt đi뿯ẽm. Khi b뿯ẽm đ뿯ẽt đ뿯ƽn 뿯ẽ tab 2, Backend check th뿯ẽy đi뿯ẽm kh뿯½ng đ뿯ẽ, t뿯ẽ đ뿯ẽng Rollback (h뿯ẽy giao d뿯ẽch) v뿯½ b뿯½o l뿯ẽi 400 "S뿯ẽ d뿯ƽ đi뿯ẽm kh뿯½ng h뿯ẽp l뿯ẽ".
+SEQ B뿯ẽng \* ARABIC
+: K뿯ẽch b뿯ẽn usecase s뿯ẽ d뿯ẽng đi뿯ẽm਍ഀ
+4. Backend t뿯½nh to뿯½n xem Actor c뿯½n thi뿯ẽu bao nhi뿯½u đi뿯ẽm/ti뿯ẽn đ뿯ẽ l뿯½n h뿯ẽng ti뿯ẽp theo.਍㔀⸀ 吀爀붿„搀붿„氀椀붿甞 䨀匀伀一 瘀붿„䘀爀漀渀琀攀渀搀⸀ഀ
+6. Frontend v뿯ẽ giao di뿯ẽn hi뿯ẽn th뿯ẽ Th뿯ẽ th뿯½nh vi뿯½n, thanh ti뿯ẽn tr뿯½nh chi ti뿯½u v뿯½ c뿯½c quy뿯ẽn l뿯ẽi đi k뿯½m.
+L뿯ẽi t뿯ẽi d뿯ẽ li뿯ẽu: H뿯ẽ th뿯ẽng m뿯½y ch뿯ẽ t뿯½nh to뿯½n đi뿯ẽm đang b뿯ẽ qu뿯½ t뿯ẽi (th뿯ƽ뿯ẽng x뿯ẽy ra v뿯½o c뿯½c d뿯ẽp Sale l뿯ẽn). API timeout, Frontend hi뿯ẽn th뿯ẽ "Đang c뿯ẽp nh뿯ẽt th뿯½ng tin h뿯ẽng, vui l뿯½ng quay l뿯ẽi sau".
+SEQ B뿯ẽng \* ARABIC
+: K뿯ẽch b뿯ẽn usecase xem h뿯ẽng th뿯½nh vi뿯½n਍䄀挀琀漀爀 渀最붿붿椞 戀붿渀ഀ
+6. Frontend th뿯½ng b뿯½o "G뿯ẽi h뿯ẽ s뿯ƽ th뿯½nh c뿯½ng, vui l뿯½ng ch뿯ẽ Admin duy뿯ẽt".
+Ng뿯ƽ뿯ẽi b뿯½n th뿯½m m뿯ẽt m뿯ẽt h뿯½ng ho뿯½n to뿯½n m뿯ẽi l뿯½n gian h뿯½ng c뿯ẽa m뿯½nh.
+T뿯½n SP, M뿯½ t뿯ẽ, Danh m뿯ẽc, H뿯½nh 뿯ẽnh, Gi뿯½ b뿯½n, S뿯ẽ l뿯ƽ뿯ẽng t뿯ẽn kho, Ph뿯½n lo뿯ẽi (M뿯½u/Size n뿯ẽu c뿯½).
+B뿯ẽn ghi m뿯ẽi đ뿯ƽ뿯ẽc t뿯ẽo trong b뿯ẽng SanPham v뿯½ PhanLoaiSanPham.
+1. Actor v뿯½o m뿯ẽc "S뿯ẽn ph뿯ẽm", nh뿯ẽn "Th뿯½m s뿯ẽn ph뿯ẽm m뿯ẽi".਍଀ഀ
+2. Actor đi뿯ẽn c뿯½c tr뿯ƽ뿯ẽng th뿯½ng tin b뿯ẽt bu뿯ẽc, t뿯ẽi 뿯ẽnh v뿯½ thi뿯ẽt l뿯ẽp gi뿯½/kho.਍㌀⸀ 䄀挀琀漀爀 渀栀붿渞 ∀က́渁最 戀붿渀∀⸀ഀ
+6. Frontend chuy뿯ẽn h뿯ƽ뿯ẽng v뿯ẽ trang danh s뿯½ch s뿯ẽn ph뿯ẽm v뿯½ b뿯½o th뿯½nh c뿯½ng.
+Vi ph뿯ẽm t뿯ẽ kh뿯½a: Backend ch뿯ẽy h뿯½m qu뿯½t m뿯½ t뿯ẽ, ph뿯½t hi뿯ẽn t뿯ẽ kh뿯½a c뿯ẽm (VD: h뿯½ng gi뿯ẽ, ma t뿯½y). Backend ch뿯ẽn l뿯ƽu, tr뿯ẽ l뿯ẽi 406. Frontend b뿯½i đ뿯ẽ d뿯½ng vi ph뿯ẽm.
+SEQ B뿯ẽng \* ARABIC
+: K뿯ẽch b뿯ẽn usecase đăng s뿯ẽn ph뿯ẽm m뿯ẽi਍ഀ
+6. Frontend hi뿯ẽn th뿯ẽ th뿯½ng b뿯½o "C뿯ẽp nh뿯ẽt th뿯½nh c뿯½ng".
+L뿯ẽi logic nh뿯ẽp li뿯ẽu: Actor nh뿯ẽp s뿯ẽ l뿯ƽ뿯ẽng t뿯ẽn kho l뿯½ m뿯ẽt s뿯ẽ 뿯½m (< 0). Frontend ch뿯ẽn g뿯ẽi API. N뿯ẽu c뿯ẽ t뿯½nh g뿯ẽi API qua tool, Backend tr뿯ẽ l뿯ẽi 400 Bad Request.
+SEQ B뿯ẽng \* ARABIC
+: K뿯ẽch b뿯ẽn usecase c뿯ẽp nh뿯ẽt th뿯½ng tin s뿯ẽn ph뿯ẽm਍ഀ
+4. Frontend g뿯ẽi API POST /shops/vouchers/create.਍㔀⸀ 䈀愀挀欀攀渀搀 氀붿甁 瘀붿漀 䌀匀䐀䰀⸀ഀ
+6. H뿯ẽ th뿯ẽng hi뿯ẽn th뿯ẽ m뿯½ gi뿯ẽm gi뿯½ n뿯½y tr뿯½n trang ch뿯ẽ c뿯ẽa Shop đ뿯ẽ ng뿯ƽ뿯ẽi mua thu th뿯ẽp.
+Tr뿯½ng m뿯½ Code: T뿯½n m뿯½ gi뿯ẽm gi뿯½ (VD: GIAM10K) đ뿯½ đ뿯ƽ뿯ẽc d뿯½ng tr뿯ƽ뿯ẽc đ뿯½ trong Shop. Backend tr뿯ẽ l뿯ẽi 409 "M뿯½ code n뿯½y đ뿯½ t뿯ẽn t뿯ẽi, vui l뿯½ng nh뿯ẽp m뿯½ kh뿯½c".
+SEQ B뿯ẽng \* ARABIC
+: K뿯ẽch b뿯ẽn usecase qu뿯ẽn l뿯½ khuy뿯ẽn m뿯½i਍ഀ
+Chu뿯ẽn b뿯ẽ h뿯½ng lo뿯ẽt: Actor tick ch뿯ẽn nhi뿯ẽu đ뿯ƽn h뿯½ng c뿯½ng l뿯½c v뿯½ b뿯ẽm "Chu뿯ẽn b뿯ẽ h뿯½ng lo뿯ẽt". Backend ch뿯ẽy v뿯½ng l뿯ẽp x뿯ẽ l뿯½ cho t뿯ẽt c뿯ẽ c뿯½c đ뿯ƽn đ뿯½ ch뿯ẽn.
+Qu뿯ẽn l뿯½ t뿯½i ch뿯½nh
+Ng뿯ƽ뿯ẽi b뿯½n theo d뿯½i bi뿯ẽu đ뿯ẽ doanh thu, xem sao k뿯½ c뿯½c giao d뿯ẽch ti뿯ẽn v뿯½o (đ뿯ƽn h뿯½ng th뿯½nh c뿯½ng) v뿯½ ti뿯ẽn ra (r뿯½t ti뿯ẽn).
+B뿯ẽ l뿯ẽc th뿯ẽi gian (Ng뿯½y/Th뿯½ng/Năm).
+B뿯ẽng sao k뿯½ giao d뿯ẽch v뿯½ bi뿯ẽu đ뿯ẽ t뿯ẽng quan doanh thu.
+L뿯ẽi Timeout truy v뿯ẽn: Actor ch뿯ẽn kho뿯ẽng th뿯ẽi gian qu뿯½ d뿯½i (VD: 5 năm) khi뿯ẽn DB query qu뿯½ l뿯½u, b뿯ẽ ng뿯ẽt k뿯ẽt n뿯ẽi. Frontend hi뿯ẽn th뿯ẽ l뿯ẽi "D뿯ẽ li뿯ẽu qu뿯½ l뿯ẽn, vui l뿯½ng chia nh뿯ẽ kho뿯ẽng th뿯ẽi gian đ뿯ẽ tra c뿯ẽu".
+SEQ B뿯ẽng \* ARABIC
+: K뿯ẽch b뿯ẽn usecase qu뿯ẽn l뿯½ t뿯½i ch뿯½nh਍ഀ
+R뿯½t ti뿯ẽn th뿯ẽ c뿯½ng (N뿯ẽu s뿯½n kh뿯½ng t뿯½ch h뿯ẽp API chuy뿯ẽn ti뿯ẽn t뿯ẽ đ뿯ẽng): L뿯ẽnh r뿯½t ti뿯ẽn đ뿯ƽ뿯ẽc t뿯ẽo v뿯ẽi tr뿯ẽng th뿯½i ChoKeToanDuyet. K뿯ẽ to뿯½n (Admin) s뿯ẽ check v뿯½ chuy뿯ẽn kho뿯ẽn b뿯ẽng tay, sau đ뿯½ duy뿯ẽt l뿯ẽnh tr뿯½n h뿯ẽ th뿯ẽng.
+E2. Sai m뿯½ PIN: Nh뿯ẽp sai m뿯½ PIN qu뿯½ 5 l뿯ẽn, t뿯½i kho뿯ẽn t뿯ẽm kh뿯½a ch뿯ẽc năng r뿯½t ti뿯ẽn trong 24h.
+SEQ B뿯ẽng \* ARABIC
+: K뿯ẽch b뿯ẽn usecase r뿯½t ti뿯ẽn b뿯½n h뿯½ng਍ഀ
+H뿯ẽy đ뿯ƽn h뿯½ng đ뿯½ b뿯½n
+Ng뿯ƽ뿯ẽi b뿯½n ch뿯ẽ đ뿯ẽng h뿯ẽy đ뿯ƽn h뿯½ng (th뿯ƽ뿯ẽng do ph뿯½t hi뿯ẽn h뿯ẽt h뿯½ng kho th뿯ẽc t뿯ẽ ho뿯ẽc sai gi뿯½).
+Order ID c뿯ẽa đ뿯ƽn c뿯ẽn h뿯ẽy, L뿯½ do h뿯ẽy.
+Đ뿯ƽn h뿯½ng đ뿯ẽi tr뿯ẽng th뿯½i "Đ뿯½ h뿯ẽy", h뿯ẽ th뿯ẽng c뿯ẽng l뿯ẽi t뿯ẽn kho cho s뿯ẽn ph뿯ẽm.
+7. Backend ghi log ph뿯ẽt t뿯ẽ l뿯ẽ ho뿯½n th뿯½nh đ뿯ƽn c뿯ẽa Shop.
+Xung đ뿯ẽt tr뿯ẽng th뿯½i: Đ뿯ƽn h뿯½ng đ뿯½ c뿯½ m뿯½ v뿯ẽn đ뿯ƽn v뿯½ chuy뿯ẽn sang tr뿯ẽng th뿯½i DangXuLy ho뿯ẽc DangGiao. H뿯ẽ th뿯ẽng t뿯ẽ ch뿯ẽi cho Seller t뿯ẽ h뿯ẽy. Frontend b뿯½o l뿯ẽi "Đ뿯ƽn h뿯½ng đ뿯½ đ뿯ƽ뿯ẽc b뿯½n giao cho đ뿯ƽn v뿯ẽ v뿯ẽn chuy뿯ẽn, kh뿯½ng th뿯ẽ h뿯ẽy".
+SEQ B뿯ẽng \* ARABIC
+: K뿯ẽch b뿯ẽn usecase h뿯ẽy đ뿯ƽn đ뿯½ b뿯½n਍ഀ
+Qu뿯ẽn l뿯½ t뿯½i kho뿯ẽn ng뿯ƽ뿯ẽi d뿯½ng
+Admin xem danh s뿯½ch v뿯½ th뿯½ng tin chi ti뿯ẽt c뿯ẽa t뿯ẽt c뿯ẽ ng뿯ƽ뿯ẽi d뿯½ng tr뿯½n h뿯ẽ th뿯ẽng.
+T뿯ẽ kh뿯½a t뿯½m ki뿯ẽm ho뿯ẽc b뿯ẽ l뿯ẽc lo뿯ẽi t뿯½i kho뿯ẽn.
+Danh s뿯½ch t뿯½i kho뿯ẽn ng뿯ƽ뿯ẽi d뿯½ng hi뿯ẽn ra.
+3. Admin b뿯ẽm v뿯½o m뿯ẽt t뿯½i kho뿯ẽn đ뿯ẽ xem chi ti뿯ẽt th뿯½ng tin c뿯½ nh뿯½n ho뿯ẽc l뿯ẽch s뿯ẽ ho뿯ẽt đ뿯ẽng.
+H뿯ẽ th뿯ẽng b뿯½o l뿯ẽi k뿯ẽt n뿯ẽi n뿯ẽu d뿯ẽ li뿯ẽu ng뿯ƽ뿯ẽi d뿯½ng qu뿯½ l뿯ẽn kh뿯½ng th뿯ẽ t뿯ẽi l뿯½n k뿯ẽp.
+SEQ B뿯ẽng \* ARABIC
+: K뿯ẽch b뿯ẽn usecase qu뿯ẽn l뿯½ t뿯½i kho뿯ẽn ng뿯ƽ뿯ẽi d뿯½ng਍ഀ
+4. H뿯ẽ th뿯ẽng chuy뿯ẽn tr뿯ẽng th뿯½i th뿯½nh ho뿯ẽt đ뿯ẽng v뿯½ g뿯ẽi th뿯½ng b뿯½o cho ng뿯ƽ뿯ẽi b뿯½n.
+D뿯ẽ li뿯ẽu b뿯ẽ tr뿯½ng l뿯ẽp khi c뿯½ hai qu뿯ẽn tr뿯ẽ vi뿯½n c뿯½ng v뿯½o duy뿯ẽt m뿯ẽt y뿯½u c뿯ẽu c뿯½ng m뿯ẽt l뿯½c, h뿯ẽ th뿯ẽng s뿯ẽ b뿯½o l뿯ẽi cho ng뿯ƽ뿯ẽi duy뿯ẽt sau.
+SEQ B뿯ẽng \* ARABIC
+Kh뿯½a t뿯½i kho뿯ẽn vi ph뿯ẽm
+Admin kh뿯½a t뿯½i kho뿯ẽn c뿯ẽa ng뿯ƽ뿯ẽi d뿯½ng ho뿯ẽc ng뿯ƽ뿯ẽi b뿯½n n뿯ẽu h뿯ẽ vi ph뿯ẽm quy đ뿯ẽnh c뿯ẽa s뿯½n.
+T뿯½n t뿯½i kho뿯ẽn, l뿯½ do kh뿯½a v뿯½ th뿯ẽi gian kh뿯½a.
+T뿯½i kho뿯ẽn b뿯ẽ v뿯½ hi뿯ẽu h뿯½a, kh뿯½ng th뿯ẽ đăng nh뿯ẽp đ뿯ƽ뿯ẽc n뿯ẽa.
+Admin c뿯½ th뿯ẽ ch뿯ẽn m뿯ẽ kh뿯½a cho t뿯½i kho뿯ẽn đ뿯½ h뿯ẽt h뿯ẽn ph뿯ẽt đ뿯ẽ h뿯ẽ ho뿯ẽt đ뿯ẽng l뿯ẽi b뿯½nh th뿯ƽ뿯ẽng.
+Admin x뿯½a b뿯ẽ c뿯½c s뿯ẽn ph뿯ẽm vi ph뿯ẽm b뿯ẽn quy뿯ẽn, h뿯½ng gi뿯ẽ ho뿯ẽc sai quy đ뿯ẽnh kh뿯ẽi trang ch뿯ẽ.
+T뿯½n ho뿯ẽc m뿯½ s뿯ẽn ph뿯ẽm vi ph뿯ẽm, l뿯½ do g뿯ẽ.
+S뿯ẽn ph뿯ẽm b뿯ẽ 뿯ẽn ho뿯½n to뿯½n kh뿯ẽi trang web.
+Kh뿯½ng c뿯½ lu뿯ẽng thay th뿯ẽ.
+Xem v뿯½ x뿯ẽ l뿯½ b뿯½o c뿯½o vi ph뿯ẽm
+Admin đ뿯ẽc c뿯½c b뿯½o c뿯½o t뿯ẽ c뿯½o t뿯ẽ ng뿯ƽ뿯ẽi mua ho뿯ẽc ng뿯ƽ뿯ẽi d뿯½ng đ뿯ẽ đ뿯ƽa ra h뿯ƽ뿯ẽng gi뿯ẽi quy뿯ẽt.
+Danh s뿯½ch c뿯½c b뿯½o c뿯½o t뿯ẽ h뿯ẽ th뿯ẽng.
+Tr뿯ẽng th뿯½i b뿯½o c뿯½o đ뿯ƽ뿯ẽc đ뿯½nh d뿯ẽu l뿯½ đ뿯½ x뿯ẽ l뿯½.
+N뿯ẽu b뿯½o c뿯½o kh뿯½ng đ뿯½ng s뿯ẽ th뿯ẽt, Admin nh뿯ẽn b뿯ẽ qua b뿯½o c뿯½o v뿯½ gi뿯ẽ nguy뿯½n tr뿯ẽng th뿯½i s뿯ẽn ph뿯ẽm.
+4. Hi뿯ẽn th뿯ẽ k뿯ẽt qu뿯ẽ tr뿯ẽc quan d뿯ƽ뿯ẽi d뿯ẽng bi뿯ẽu đ뿯ẽ v뿯½ danh s뿯½ch.
+Admin ch뿯ẽn kho뿯ẽng th뿯ẽi gian qu뿯½ d뿯½i (v뿯½ d뿯ẽ 10 năm) khi뿯ẽn h뿯ẽ th뿯ẽng t뿯½nh to뿯½n qu뿯½ l뿯½u v뿯½ b뿯½o l뿯ẽi qu뿯½ t뿯ẽi.
+SEQ B뿯ẽng \* ARABIC
+: K뿯ẽch b뿯ẽn usecase th뿯ẽng k뿯½ t뿯ẽng quan਍ഀ
+4. H뿯ẽ th뿯ẽng t뿯ẽ đ뿯ẽng chuy뿯ẽn ti뿯ẽn cho b뿯½n th뿯ẽng v뿯½ k뿯ẽt th뿯½c khi뿯ẽu n뿯ẽi.
+L뿯ẽi k뿯ẽt n뿯ẽi v뿯ẽi h뿯ẽ th뿯ẽng ng뿯½n h뿯½ng khi뿯ẽn vi뿯ẽc chuy뿯ẽn ti뿯ẽn ho뿯½n l뿯ẽi b뿯ẽ gi뿯½n đo뿯ẽn, h뿯ẽ th뿯ẽng ph뿯ẽi treo đ뿯ƽn h뿯½ng ch뿯ẽ x뿯ẽ l뿯½ l뿯ẽi.
+SEQ B뿯ẽng \* ARABIC
+: K뿯ẽch b뿯ẽn usecase gi뿯ẽi quy뿯ẽt tranh ch뿯ẽp đ뿯ẽi tr뿯ẽ਍ഀ
+H뿯ẽ th뿯ẽng đ뿯ƽ뿯ẽc c뿯½i đ뿯ẽt t뿯ẽ đ뿯ẽng đ뿯ẽi so뿯½t đ뿯ẽnh k뿯ẽ v뿯½o cu뿯ẽi th뿯½ng m뿯½ kh뿯½ng c뿯ẽn Admin ph뿯ẽi t뿯ẽ b뿯ẽm n뿯½t x뿯½c nh뿯ẽn.
+SEQ B뿯ẽng \* ARABIC
+: K뿯ẽch b뿯ẽn usecase đ뿯ẽi so뿯½t v뿯½ chia ti뿯ẽn਍ഀ
+2. So뿯ẽn th뿯ẽo ho뿯ẽc ch뿯ẽnh s뿯ẽa c뿯½c đi뿯ẽu kho뿯ẽn trong ch뿯½nh s뿯½ch.਍㌀⸀ 一栀붿渞 氀붿甁 氀붿椞⸀ഀ
+4. H뿯ẽ th뿯ẽng c뿯ẽp nh뿯ẽt n뿯ẽi dung m뿯ẽi nh뿯ẽt hi뿯ẽn th뿯ẽ cho t뿯ẽt c뿯ẽ m뿯ẽi ng뿯ƽ뿯ẽi c뿯½ng xem.
+H뿯ẽ th뿯ẽng b뿯½o l뿯ẽi kh뿯½ng cho l뿯ƽu n뿯ẽu văn b뿯ẽn đ뿯ẽ tr뿯ẽng ho뿯½n to뿯½n.
+SEQ B뿯ẽng \* ARABIC
+: K뿯ẽch b뿯ẽn usecase c뿯ẽp nh뿯ẽt ch뿯½nh s뿯½ch s뿯ẽ d뿯ẽng਍ഀ
+Admin c뿯½ th뿯ẽ c뿯½i đ뿯ẽt gi뿯ẽ đ뿯ẽ h뿯ẽ th뿯ẽng t뿯ẽ đ뿯ẽng g뿯ẽi th뿯½ng b뿯½o v뿯½o ng뿯½y h뿯½m sau.
+: Giao di뿯ẽn chi ti뿯ẽt s뿯ẽn ph뿯ẽm਍ഀ
+: Giao di뿯ẽn gi뿯ẽ h뿯½ng਍ഀ
+: Giao di뿯ẽn gi뿯ẽ h뿯½ng khi thay đ뿯ẽi s뿯ẽ l뿯ƽ뿯ẽng mua h뿯½ng਍ഀ
+: Giao di뿯ẽn check th뿯½ng tin v뿯½ 뿯½p m뿯½ gi뿯ẽm gi뿯½਍ഀ
+Use-case qu뿯ẽn l뿯½ đ뿯ƽn h뿯½ng ਍Āഀ
+: Activity usecase qu뿯ẽn l뿯½ đ뿯ƽn h뿯½ng਍ഀ
+: Giao di뿯ẽn ch뿯½nh c뿯ẽa usecase qu뿯ẽn l뿯½ tranh ch뿯ẽp đ뿯ẽi tr뿯ẽ਍ഀ
+: Giao di뿯ẽn t뿯ẽ ch뿯ẽi đ뿯ẽi tr뿯ẽ਍ഀ
+: Giao di뿯ẽn x뿯½c nh뿯ẽn đ뿯ẽi so뿯½t਍ऀఀఀഀ
+ᰀ䜀漀漀最氀攀 䤀渀挀⸀ ㈀　㄀㘀뿯붿䌀̀ȂȂ̂Ȃ̂̃ЃІЄЄ؈Ԇआഈഊऊईഉఊఏ਍ซऋഉᄊ਍༎တထ਍ሌሓጐဏတ뿯붿䌀́̃̄ࠄЄဈऋဋတတတတတတတတတတတတတတတတတတတတတတတတ붿뿯½ࠑ缅ⴉă"ᄂ́đ뿯붿ḀĀ
+਍붿뿯½CĂāāĂāȂȂЂȃȂԂЄЃԆ؆Ԇ؆܆ࠉ܆܉؆ଈई਍਍਍਍਍ࠆఋഋఊഉഊഊ붿뿯½ŃȂȂȂ̅ԃ਍؇ഇഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊ붿뿯½ࠑ붿붿ă
+ᰀ䜀漀漀最氀攀 䤀渀挀⸀ ㈀　㄀㘀뿯붿䌀̀ȂȂ̂Ȃ̂̃ЃІЄЄ؈Ԇआഈഊऊईഉఊఏ਍ซऋഉᄊ਍༎တထ਍ሌሓጐဏတ뿯붿䌀́̃̄ࠄЄဈऋဋတတတတတတတတတတတတတတတတတတတတတတတတ붿뿯½ࠑ붿䘌ă"ᄂ́đ뿯붿ḀĀȀ̂ā
+B뿯½a - Ng뿯ƽ뿯ẽi h뿯ƽ뿯ẽng d뿯ẽn - In đ뿯ẽm
+B뿯½a - Ng뿯ƽ뿯ẽi h뿯ƽ뿯ẽng d뿯ẽn Char

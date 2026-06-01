@@ -128,7 +128,7 @@ const useAuthStore = create(
           });
           
           set({
-            user: { ...get().user, ...response.data.data },
+            user: { ...get().user, ...(response.data?.data || userData) },
             loading: false
           });
           

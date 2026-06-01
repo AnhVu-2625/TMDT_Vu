@@ -10,6 +10,12 @@ import ProductCard from '../components/ProductCard';
 
 const API = 'http://localhost:5000/api';
 
+const getImageUrl = (path) => {
+  if (!path) return null;
+  if (path.startsWith('http://') || path.startsWith('https://')) return path;
+  return `http://localhost:5000${path.startsWith('/') ? '' : '/'}${path}`;
+};
+
 const mockProduct = {
   MaSanPham: 1, TenSanPham: 'Điện thoại Samsung Galaxy S24 Ultra 5G', GiaGoc: 31990000,
   MoTa: 'Điện thoại cao cấp với camera 200MP, chip Snapdragon 8 Gen 3, pin 5000mAh. Màn hình Dynamic AMOLED 2X 6.8 inch, tần số quét 120Hz. Thiết kế sang trọng, khung titan bền bỉ.',
@@ -20,9 +26,23 @@ const mockProduct = {
     { MaPhienBan: 2, MauSac: 'Titanium Gray', KichThuoc: '256GB', GiaBan: 29990000, SoLuongTonKho: 30 },
     { MaPhienBan: 3, MauSac: 'Titanium Black', KichThuoc: '512GB', GiaBan: 34990000, SoLuongTonKho: 20 },
   ],
-  images: [], reviews: [
-    { MaDanhGia: 1, HoTen: 'Nguyễn Văn A', DiemDanhGia: 5, BinhLuan: 'Sản phẩm tuyệt vời, đúng như mô tả!', NgayTao: '2026-05-01' },
-    { MaDanhGia: 2, HoTen: 'Trần Thị B', DiemDanhGia: 4, BinhLuan: 'Hàng chất lượng, giao hàng nhanh.', NgayTao: '2026-04-28' },
+  images: [{ DuongDanAnh: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=800&q=80' }], reviews: [
+    { MaDanhGia: 1, HoTen: 'Nguyễn Hoàng Anh', DiemDanhGia: 5, BinhLuan: 'Máy đẹp xuất sắc, camera chụp đêm quá tốt. Pin trâu cả ngày dùng thoải mái. Màn hình siêu mượt!', NgayTao: '2026-05-15' },
+    { MaDanhGia: 2, HoTen: 'Trần Minh Quân', DiemDanhGia: 5, BinhLuan: 'Lên đời từ S23 Ultra, cảm giác khác biệt rõ rệt. Sạc nhanh, chip mượt, chơi game không giật lag.', NgayTao: '2026-05-12' },
+    { MaDanhGia: 3, HoTen: 'Lê Thị Phương', DiemDanhGia: 4, BinhLuan: 'Hàng chính hãng, đầy đủ phụ kiện. Giao hàng nhanh, đóng gói cẩn thận. Trừ 1 sao vì màu hồng không có sẵn.', NgayTao: '2026-05-10' },
+    { MaDanhGia: 4, HoTen: 'Phạm Đức Trung', DiemDanhGia: 5, BinhLuan: 'Quá ngon so với tầm giá. Mua con này xài 3-4 năm không phải thay. Chụp ảnh đẹp, quay video 8K siêu nét.', NgayTao: '2026-05-08' },
+    { MaDanhGia: 5, HoTen: 'Hoàng Thị Lan', DiemDanhGia: 4, BinhLuan: 'Samsung bền, đẹp, pin khỏe. Mua tặng chồng, ổng rất thích. Shop giao hàng siêu tốc!', NgayTao: '2026-05-06' },
+    { MaDanhGia: 6, HoTen: 'Đặng Văn Hải', DiemDanhGia: 5, BinhLuan: 'Máy flagship đáng mua nhất 2026. S Pen viết rất sướng, camera zoom 100x thần thánh. 5 sao!', NgayTao: '2026-05-04' },
+    { MaDanhGia: 7, HoTen: 'Vũ Thị Hồng', DiemDanhGia: 3, BinhLuan: 'Hàng tốt nhưng giá vẫn hơi cao so với thu nhập. Máy nặng tay, nữ cầm hơi mỏi.', NgayTao: '2026-05-02' },
+    { MaDanhGia: 8, HoTen: 'Ngô Quốc Bảo', DiemDanhGia: 5, BinhLuan: 'Điện thoại xuất sắc! Màn hình đẹp nhất thị trường, 120Hz mượt mà. Pin dùng 2 ngày mới sạc.', NgayTao: '2026-04-30' },
+    { MaDanhGia: 9, HoTen: 'Đỗ Minh Tuấn', DiemDanhGia: 4, BinhLuan: 'Cấu hình mạnh, chơi game max setting không lag. Máy hơi nóng khi chơi lâu nhưng chấp nhận được.', NgayTao: '2026-04-28' },
+    { MaDanhGia: 10, HoTen: 'Bùi Thanh Hà', DiemDanhGia: 5, BinhLuan: 'Lần đầu mua hàng online mà yên tâm thế này. Máy mới nguyên seal, đúng mô tả. Sẽ ủng hộ shop dài dài!', NgayTao: '2026-04-25' },
+    { MaDanhGia: 11, HoTen: 'Dương Văn Hoàng', DiemDanhGia: 4, BinhLuan: 'Máy đẹp, chụp hình đẹp. Giao diện One UI mượt. Chỉ tiếc là không có sạc kèm hộp.', NgayTao: '2026-04-22' },
+    { MaDanhGia: 12, HoTen: 'Trịnh Thị Ngọc', DiemDanhGia: 5, BinhLuan: 'Máy ảnh chụp đẹp xuất sắc, đặc biệt là zoom xa. Pin từ sáng đến tối còn 30%. Rất đáng đồng tiền!', NgayTao: '2026-04-20' },
+    { MaDanhGia: 13, HoTen: 'Lâm Hoàng Phúc', DiemDanhGia: 5, BinhLuan: 'Mua hàng tại shop rất yên tâm. Samsung chính hãng, có bảo hành đầy đủ. Máy xài mượt, đẹp lung linh!', NgayTao: '2026-04-18' },
+    { MaDanhGia: 14, HoTen: 'Huỳnh Thị Mỹ', DiemDanhGia: 4, BinhLuan: 'Ngoại hình sang trọng, màn hình sắc nét. Giao hàng đúng hẹn, nhân viên hỗ trợ nhiệt tình.', NgayTao: '2026-04-15' },
+    { MaDanhGia: 15, HoTen: 'Phan Văn Tài', DiemDanhGia: 5, BinhLuan: 'Đây là con flagship mình từng xài. Camera chụp ảnh, quay phim đỉnh. AI xóa phông siêu ảo. Recommend!', NgayTao: '2026-04-12' },
+    { MaDanhGia: 16, HoTen: 'Nguyễn Thị Kim', DiemDanhGia: 3, BinhLuan: 'Máy tốt nhưng màu sắc trong thực tế khác với hình trên web. Dùng quen rồi cũng thấy ổn.', NgayTao: '2026-04-10' },
   ],
 };
 
@@ -41,16 +61,25 @@ export default function ProductDetail() {
   const [activeImg, setActiveImg] = useState(0);
   const [related, setRelated] = useState([]);
 
+
   useEffect(() => {
     const load = async () => {
       setLoading(true);
       try {
         const res = await axios.get(`${API}/products/${id}`);
         const p = res.data.data;
-        setProduct(p);
-        setSelectedVariant(p.variants?.[0] || null);
+        setProduct({ ...p, variants: p.phienBan || [], images: p.hinhAnh || [] });
+        setSelectedVariant((p.phienBan || [])[0] || null);
       } catch {
-        setProduct(mockProduct);
+        // Merge demo reviews from localStorage into mockProduct
+        const localReviews = JSON.parse(localStorage.getItem('demo_reviews') || '[]');
+        const productReviews = localReviews.filter(r => r.MaSanPham === Number(id));
+        const merged = {
+          ...mockProduct,
+          MaSanPham: Number(id),
+          reviews: [...mockProduct.reviews, ...productReviews],
+        };
+        setProduct(merged);
         setSelectedVariant(mockProduct.variants[0]);
       } finally { setLoading(false); }
     };
@@ -58,17 +87,21 @@ export default function ProductDetail() {
   }, [id]);
 
   const handleAddToCart = async () => {
-    if (!isAuthenticated) { toast.info('Vui lòng đăng nhập'); return navigate('/login'); }
-    if (!selectedVariant) { toast.warning('Chọn phiên bản sản phẩm'); return; }
+    if (!isAuthenticated) { toast.info('Vui lòng đăng nhập'); navigate('/login'); return false; }
+    if (!selectedVariant) { toast.warning('Chọn phiên bản sản phẩm'); return false; }
     try {
       await addItem(selectedVariant.MaPhienBan, quantity);
       toast.success('Đã thêm vào giỏ hàng!');
-    } catch { toast.error('Lỗi thêm vào giỏ hàng'); }
+      return true;
+    } catch {
+      toast.error('Lỗi thêm vào giỏ hàng');
+      return false;
+    }
   };
 
   const handleBuyNow = async () => {
-    await handleAddToCart();
-    navigate('/cart');
+    const ok = await handleAddToCart();
+    if (ok) navigate('/cart');
   };
 
   const colors = [...new Set(product?.variants?.map(v => v.MauSac).filter(Boolean))];
@@ -128,8 +161,8 @@ export default function ProductDetail() {
             initial={{ opacity: 0 }} animate={{ opacity: 1 }}
             className="aspect-square rounded-xl overflow-hidden bg-slate-800/50 mb-3 border border-slate-700/50 flex items-center justify-center text-8xl"
           >
-            {p.images?.[activeImg]?.DuongDanAnh
-              ? <img src={p.images[activeImg].DuongDanAnh} alt={p.TenSanPham} className="w-full h-full object-cover" />
+            {getImageUrl(p.images?.[activeImg]?.DuongDanAnh)
+              ? <img src={getImageUrl(p.images[activeImg].DuongDanAnh)} alt={p.TenSanPham} className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; e.target.parentElement.innerHTML = '📦'; }} />
               : '📦'}
           </motion.div>
           {p.images?.length > 1 && (
@@ -137,7 +170,7 @@ export default function ProductDetail() {
               {p.images.map((img, i) => (
                 <button key={i} onClick={() => setActiveImg(i)}
                   className={`w-16 h-16 rounded-lg border overflow-hidden ${activeImg === i ? 'border-red-500' : 'border-slate-700/50'}`}>
-                  <img src={img.DuongDanAnh} alt="" className="w-full h-full object-cover" />
+                  <img src={getImageUrl(img.DuongDanAnh)} alt="" className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; e.target.parentElement.innerHTML = '📦'; }} />
                 </button>
               ))}
             </div>
@@ -283,7 +316,7 @@ export default function ProductDetail() {
             <motion.div key="reviews" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-4">
               {(p.reviews || []).length === 0
                 ? <p className="text-center text-slate-400 py-8">Chưa có đánh giá nào</p>
-                : (p.reviews || []).map(r => (
+                : (p.reviews || []).slice().reverse().map(r => (
                   <div key={r.MaDanhGia} className="bg-slate-900/50 rounded-xl p-5 border border-slate-800/50">
                     <div className="flex items-center gap-3 mb-2">
                       <div className="w-9 h-9 rounded-full bg-gradient-to-br from-red-500 to-red-800 flex items-center justify-center font-bold text-sm">{r.HoTen?.[0]}</div>
@@ -296,6 +329,16 @@ export default function ProductDetail() {
                     <p className="text-sm text-slate-300">{r.BinhLuan}</p>
                   </div>
                 ))}
+              {/* Purchase required for review */}
+              <div className="bg-gradient-to-b from-slate-900/70 to-slate-900/40 rounded-xl p-6 border border-slate-700/50 text-center">
+                <FaStar className="text-yellow-400/50 mx-auto mb-3" size={32} />
+                <h4 className="text-sm font-bold text-white mb-2">Bạn muốn đánh giá sản phẩm này?</h4>
+                <p className="text-xs text-slate-400 mb-4">Chỉ khách hàng đã mua sản phẩm mới có thể gửi đánh giá.</p>
+                <Link to={isAuthenticated ? '/user/orders' : '/login'}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-red-600 to-orange-600 text-white text-xs font-bold rounded-xl hover:shadow-lg hover:shadow-red-600/20 transition-all">
+                  <FaShoppingCart size={11} /> {isAuthenticated ? 'Đến đơn hàng của tôi' : 'Đăng nhập để đánh giá'}
+                </Link>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
