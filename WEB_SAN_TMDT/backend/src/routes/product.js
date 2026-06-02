@@ -99,7 +99,14 @@ router.get('/', async (req, res) => {
         }
         
         if (category) {
+<<<<<<< HEAD
             whereClause += ` AND sp.MaDanhMuc = @category`;
+=======
+            const catId = parseInt(category);
+            if (!isNaN(catId)) {
+                whereClause += ` AND (sp.MaDanhMuc = ${catId} OR sp.MaDanhMuc IN (SELECT MaDanhMuc FROM DanhMucSanPham WHERE MaDanhMucCha = ${catId}))`;
+            }
+>>>>>>> 6b22ddd7f1495a754e75169ea503240ad3039d09
         }
 
         const query = `
@@ -114,7 +121,10 @@ router.get('/', async (req, res) => {
                 ch.TenCuaHang,
                 ch.MaCuaHang,
                 dm.TenDanhMuc,
-                (SELECT TOP 1 DuongDanAnh FROM HinhAnhSanPham WHERE MaSanPham = sp.MaSanPham AND LaAnhChinh = 1) as AnhChinh,
+                ISNULL(
+                    (SELECT TOP 1 DuongDanAnh FROM HinhAnhSanPham WHERE MaSanPham = sp.MaSanPham AND LaAnhChinh = 1),
+                    '/placeholder.svg?text=📦'
+                ) as AnhChinh,
                 (SELECT MIN(GiaBan) FROM PhienBanSanPham WHERE MaSanPham = sp.MaSanPham) as GiaThapNhat,
                 (SELECT MAX(GiaBan) FROM PhienBanSanPham WHERE MaSanPham = sp.MaSanPham) as GiaCaoNhat,
                 (SELECT SUM(SoLuongTonKho) FROM PhienBanSanPham WHERE MaSanPham = sp.MaSanPham) as TongTonKho
@@ -245,7 +255,11 @@ router.get('/shops/:shopId', async (req, res) => {
  *       200:
  *         description: Danh sách danh mục
  */
+<<<<<<< HEAD
 // GET /api/products/categories/all - Lấy danh mục (PHẢI đặt TRƯỚC /:id)
+=======
+// GET /api/products/categories/all - Lấy danh mục
+>>>>>>> 6b22ddd7f1495a754e75169ea503240ad3039d09
 router.get('/categories/all', async (req, res) => {
     try {
         const pool = await getPool();
@@ -267,6 +281,57 @@ router.get('/categories/all', async (req, res) => {
     }
 });
 
+<<<<<<< HEAD
+=======
+// GET /api/products/seller - Lấy sản phẩm thuộc shop của seller
+// (giúp UI quản lý đúng phạm vi quyền)
+router.get('/seller', authenticateToken, requireSeller, async (req, res) => {
+    try {
+        const pool = await getPool();
+        const maCuaHang = req.shop.MaCuaHang;
+
+        const result = await pool.request()
+            .input('MaCuaHang', sql.Int, maCuaHang)
+            .query(`
+                SELECT
+                    sp.MaSanPham,
+                    sp.TenSanPham,
+                    sp.DuongDan,
+                    sp.MoTa,
+                    sp.GiaGoc,
+                    sp.DanhGiaTrungBinh,
+                    sp.NgayTao,
+                    sp.TrangThai,
+                    ch.TenCuaHang,
+                    dm.TenDanhMuc,
+                    dm.MaDanhMuc,
+                    ISNULL(
+                        (SELECT TOP 1 DuongDanAnh FROM HinhAnhSanPham WHERE MaSanPham = sp.MaSanPham AND LaAnhChinh = 1),
+                        '/placeholder.svg?text=📦'
+                    ) as AnhChinh
+                FROM SanPham sp
+                LEFT JOIN CuaHang ch ON sp.MaCuaHang = ch.MaCuaHang
+                LEFT JOIN DanhMucSanPham dm ON sp.MaDanhMuc = dm.MaDanhMuc
+                WHERE sp.MaCuaHang = @MaCuaHang
+                ORDER BY sp.NgayTao DESC
+            `);
+
+        res.json({
+            success: true,
+            data: {
+                products: result.recordset
+            }
+        });
+    } catch (error) {
+        console.error('Lỗi lấy sản phẩm của seller:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Lỗi lấy sản phẩm của seller'
+        });
+    }
+});
+
+>>>>>>> 6b22ddd7f1495a754e75169ea503240ad3039d09
 /**
  * @swagger
  * /api/products/{id}:
@@ -419,11 +484,23 @@ router.post('/', authenticateToken, requireSeller, validateProduct, async (req, 
                 VALUES (@MaCuaHang, @MaDanhMuc, @TenSanPham, @DuongDan, @MoTa, @GiaGoc)
             `);
 
+        const maSanPham = result.recordset[0].MaSanPham;
+
+        // Tự động tạo 1 phiên bản mặc định (để có thể bán được ngay)
+        await pool.request()
+            .input('MaSanPham', sql.Int, maSanPham)
+            .input('GiaBan', sql.Decimal(15, 2), giaGoc)
+            .input('SoLuongTonKho', sql.Int, 0)
+            .query(`
+                INSERT INTO PhienBanSanPham (MaSanPham, MauSac, KichThuoc, GiaBan, SoLuongTonKho)
+                VALUES (@MaSanPham, NULL, NULL, @GiaBan, @SoLuongTonKho)
+            `);
+
         res.status(201).json({
             success: true,
             message: 'Tạo sản phẩm thành công',
             data: {
-                maSanPham: result.recordset[0].MaSanPham
+                maSanPham: maSanPham
             }
         });
     } catch (error) {
@@ -573,6 +650,7 @@ router.post('/:id/variants', authenticateToken, requireSeller, validateProductVa
     }
 });
 
+<<<<<<< HEAD
 // POST /api/products/:id/upload-image - Upload ảnh sản phẩm
 /**
  * @swagger
@@ -670,5 +748,11 @@ router.post('/:id/upload-image', authenticateToken, requireSeller, uploadProduct
         });
     }
 });
+=======
+
+
+
+
+>>>>>>> 6b22ddd7f1495a754e75169ea503240ad3039d09
 
 module.exports = router;

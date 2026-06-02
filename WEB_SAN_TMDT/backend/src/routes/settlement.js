@@ -340,6 +340,81 @@ router.get('/', authenticateToken, requireAdmin, async (req, res) => {
 
 /**
  * @swagger
+ * /api/settlements/config/system:
+ *   get:
+ *     summary: Lấy cấu hình hệ thống (Admin)
+ *     tags: [Settlement]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.get('/config/system', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const pool = await getPool();
+
+        const result = await pool.request()
+            .query(`SELECT * FROM CauHinhHeThong ORDER BY TenCauHinh`);
+
+        res.json({
+            success: true,
+            data: result.recordset
+        });
+
+    } catch (error) {
+        console.error('Error fetching config:', error);
+        res.status(500).json({ success: false, message: 'Lỗi server', error: error.message });
+    }
+});
+
+/**
+ * @swagger
+ * /api/settlements/config/system:
+ *   put:
+ *     summary: Cập nhật cấu hình hệ thống (Admin)
+ *     tags: [Settlement]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.put('/config/system',
+    authenticateToken,
+    requireAdmin,
+    [
+        body('tenCauHinh').notEmpty(),
+        body('giaTri').notEmpty()
+    ],
+    async (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ success: false, errors: errors.array() });
+        }
+
+        try {
+            const { tenCauHinh, giaTri } = req.body;
+            const pool = await getPool();
+
+            await pool.request()
+                .input('tenCauHinh', sql.NVarChar, tenCauHinh)
+                .input('giaTri', sql.NVarChar, giaTri)
+                .query(`
+                    UPDATE CauHinhHeThong
+                    SET GiaTri = @giaTri,
+                        NgayCapNhat = GETDATE()
+                    WHERE TenCauHinh = @tenCauHinh
+                `);
+
+            res.json({
+                success: true,
+                message: 'Cập nhật cấu hình thành công'
+            });
+
+        } catch (error) {
+            console.error('Error updating config:', error);
+            res.status(500).json({ success: false, message: 'Lỗi server', error: error.message });
+        }
+    }
+);
+
+/**
+ * @swagger
  * /api/settlements/{id}:
  *   get:
  *     summary: Xem chi tiết phiên đối soát (Admin)
@@ -569,70 +644,4 @@ router.post('/:id/execute',
  *     security:
  *       - bearerAuth: []
  */
-router.get('/config/system', authenticateToken, requireAdmin, async (req, res) => {
-    try {
-        const pool = await getPool();
-
-        const result = await pool.request()
-            .query(`SELECT * FROM CauHinhHeThong ORDER BY TenCauHinh`);
-
-        res.json({
-            success: true,
-            data: result.recordset
-        });
-
-    } catch (error) {
-        console.error('Error fetching config:', error);
-        res.status(500).json({ success: false, message: 'Lỗi server', error: error.message });
-    }
-});
-
-/**
- * @swagger
- * /api/settlements/config:
- *   put:
- *     summary: Cập nhật cấu hình hệ thống (Admin)
- *     tags: [Settlement]
- *     security:
- *       - bearerAuth: []
- */
-router.put('/config/system',
-    authenticateToken,
-    requireAdmin,
-    [
-        body('tenCauHinh').notEmpty(),
-        body('giaTri').notEmpty()
-    ],
-    async (req, res) => {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ success: false, errors: errors.array() });
-        }
-
-        try {
-            const { tenCauHinh, giaTri } = req.body;
-            const pool = await getPool();
-
-            await pool.request()
-                .input('tenCauHinh', sql.NVarChar, tenCauHinh)
-                .input('giaTri', sql.NVarChar, giaTri)
-                .query(`
-                    UPDATE CauHinhHeThong
-                    SET GiaTri = @giaTri,
-                        NgayCapNhat = GETDATE()
-                    WHERE TenCauHinh = @tenCauHinh
-                `);
-
-            res.json({
-                success: true,
-                message: 'Cập nhật cấu hình thành công'
-            });
-
-        } catch (error) {
-            console.error('Error updating config:', error);
-            res.status(500).json({ success: false, message: 'Lỗi server', error: error.message });
-        }
-    }
-);
-
 module.exports = router;

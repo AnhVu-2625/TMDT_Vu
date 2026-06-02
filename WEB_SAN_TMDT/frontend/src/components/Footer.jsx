@@ -41,7 +41,7 @@ function Footer() {
     <footer className="bg-black/40 border-t border-slate-800/50 mt-20">
       {/* Feature highlights */}
       <div className="border-b border-slate-800/50">
-        <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="max-w-[1440px] mx-auto px-4 py-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {features.map(({ icon: Icon, title, desc }) => (
               <div key={title} className="flex items-center gap-4 group">
@@ -59,7 +59,7 @@ function Footer() {
       </div>
 
       {/* Main footer */}
-      <div className="max-w-7xl mx-auto px-4 py-12">
+      <div className="max-w-[1440px] mx-auto px-4 py-12">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
@@ -113,7 +113,7 @@ function Footer() {
 
       {/* Bottom bar */}
       <div className="border-t border-slate-800/50">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-2">
+        <div className="max-w-[1440px] mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-2">
           <p className="text-xs text-slate-500">
             © 2026 MartHub. Nền tảng thương mại điện tử trung tâm. All rights reserved.
           </p>

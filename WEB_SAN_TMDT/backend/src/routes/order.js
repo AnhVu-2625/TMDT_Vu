@@ -68,7 +68,7 @@ router.post('/', authenticateToken, async (req, res) => {
     }
 
     const finalAmount = totalAmount - discount;
-    const shippingFee = finalAmount > 500 ? 0 : 30; // Free shipping for orders > 500k
+    const shippingFee = finalAmount > 500000 ? 0 : 30000;
 
     // Create orders for each shop
     const orderIds = [];
@@ -78,20 +78,20 @@ router.post('/', authenticateToken, async (req, res) => {
       const orderResult = await pool
         .request()
         .input('userId', sql.Int, req.userId)
-        .input('maCuaHang', sql.Int, shopId)
+        .input('maCuaHang', sql.Int, parseInt(shopId))
         .input('maDiaChi', sql.Int, maDiaChi)
         .input('maKhuyenMai', sql.Int, maKhuyenMai || null)
-        .input('tongTien', sql.Decimal, shopTotal)
-        .input('tienGiamGia', sql.Decimal, discount * (shopTotal / totalAmount))
-        .input('tienThanhToan', sql.Decimal, shopTotal - (discount * (shopTotal / totalAmount)) + shippingFee)
+        .input('tongTien', sql.Decimal(15, 2), shopTotal)
+        .input('tienGiamGia', sql.Decimal(15, 2), discount * (shopTotal / totalAmount))
+        .input('tienThanhToan', sql.Decimal(15, 2), shopTotal - (discount * (shopTotal / totalAmount)) + shippingFee)
         .input('phuongThucThanhToan', sql.NVarChar, phuongThucThanhToan)
-        .input('phiVanChuyen', sql.Decimal, shippingFee)
+        .input('phiVanChuyen', sql.Decimal(15, 2), shippingFee)
         .query(`
           INSERT INTO DonHang (MaNguoiDung, MaCuaHang, MaDiaChi, MaKhuyenMai, 
             TongTien, TienGiamGia, TienThanhToan, PhuongThucThanhToan, PhiVanChuyen)
+          OUTPUT INSERTED.MaDonHang
           VALUES (@userId, @maCuaHang, @maDiaChi, @maKhuyenMai, 
             @tongTien, @tienGiamGia, @tienThanhToan, @phuongThucThanhToan, @phiVanChuyen)
-          SELECT @@IDENTITY as MaDonHang
         `);
 
       const orderId = orderResult.recordset[0].MaDonHang;
@@ -135,6 +135,12 @@ router.post('/', authenticateToken, async (req, res) => {
         .request()
         .input('maKhuyenMai', sql.Int, maKhuyenMai)
         .query('UPDATE MaKhuyenMai SET DaSuDung = DaSuDung + 1 WHERE MaKhuyenMai = @maKhuyenMai');
+
+      await pool
+        .request()
+        .input('userId', sql.Int, req.userId)
+        .input('maKhuyenMai', sql.Int, maKhuyenMai)
+        .query("UPDATE KhuyenMaiNguoiDung SET TrangThai = N'DA_SU_DUNG' WHERE MaNguoiDung = @userId AND MaKhuyenMai = @maKhuyenMai");
     }
 
     res.status(201).json({

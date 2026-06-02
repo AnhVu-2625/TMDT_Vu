@@ -18,6 +18,8 @@ const cartRoutes = require('./routes/cart');
 const orderRoutes = require('./routes/order');
 const sellerRoutes = require('./routes/seller');
 const adminRoutes = require('./routes/admin');
+const adminUsersRoutes = require('./routes/admin-users');
+const membershipRoutes = require('./routes/membership');
 const chatRoutes = require('./routes/chat');
 const notificationRoutes = require('./routes/notification');
 const favoritesRoutes = require('./routes/favorites');
@@ -42,7 +44,10 @@ const io = socketIO(server, {
 app.set('io', io);
 
 // Middleware
-app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+  contentSecurityPolicy: false
+}));
 app.use(cors({
   origin: function(origin, callback) {
     // Allow all origins for now during development
@@ -55,11 +60,20 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
+<<<<<<< HEAD
 // Đảm bảo response API luôn UTF-8 (bỏ qua swagger)
 app.use((req, res, next) => {
   if (!req.path.startsWith('/api-docs')) {
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
   }
+=======
+// Static files – phục vụ ảnh upload (PHẢI trước Content-Type middleware)
+app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
+
+// Đảm bảo response API luôn UTF-8
+app.use('/api', (req, res, next) => {
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+>>>>>>> 6b22ddd7f1495a754e75169ea503240ad3039d09
   next();
 });
 
@@ -92,9 +106,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// Static files – phục vụ ảnh upload
-app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
-
 // Swagger UI
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
   customSiteTitle: 'MartHub API Docs',
@@ -102,9 +113,37 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
   swaggerOptions: { persistAuthorization: true }
 }));
 
+// Root route
+app.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'E-commerce API Server',
+    version: '1.0.0',
+    endpoints: {
+      health: '/api/health',
+      docs: '/api-docs',
+      api: '/api'
+    }
+  });
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'API is running ✅', timestamp: new Date(), swagger: 'http://localhost:5000/api-docs' });
+});
+
+// Placeholder image cho sản phẩm không có ảnh
+app.get('/placeholder.svg', (req, res) => {
+  const color = req.query.color || '#dc2626';
+  const text = req.query.text || '📦';
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
+    <rect width="400" height="400" fill="${color}" opacity="0.1"/>
+    <text x="200" y="200" text-anchor="middle" dominant-baseline="central" font-size="80">${text}</text>
+    <text x="200" y="320" text-anchor="middle" fill="#999" font-size="16" font-family="sans-serif">No Image</text>
+  </svg>`;
+  res.setHeader('Content-Type', 'image/svg+xml');
+  res.setHeader('Cache-Control', 'public, max-age=86400');
+  res.send(svg);
 });
 
 // Routes
@@ -115,12 +154,14 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/sellers', sellerRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/admin/users', adminUsersRoutes);
+app.use('/api/membership', membershipRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/notifications', notificationRoutes);
-app.use('/api/favorites', favoritesRoutes);   // ← Đã sửa: route favorites bị thiếu
-app.use('/api/reviews', reviewRoutes);         // ← Mới: route reviews
-app.use('/api/disputes', disputeRoutes);       // ← Mới: route giải quyết tranh chấp
-app.use('/api/settlements', settlementRoutes); // ← Mới: route đối soát & chia tiền
+app.use('/api/favorites', favoritesRoutes);
+app.use('/api/reviews', reviewRoutes);
+app.use('/api/disputes', disputeRoutes);
+app.use('/api/settlements', settlementRoutes);
 
 // ─── Socket.IO – Real-time Chat & Notifications ─────────────────────────────
 const connectedUsers = new Map(); // userId → socketId
@@ -198,7 +239,7 @@ async function startServer() {
   try {
     await getPool();
     console.log('✅ Database connected successfully');
-    
+
     server.listen(PORT, () => {
       console.log(`\n🚀 Server running on http://localhost:${PORT}`);
       console.log(`   Environment: ${process.env.NODE_ENV || 'development'}`);
