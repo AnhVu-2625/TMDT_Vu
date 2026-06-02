@@ -23,93 +23,210 @@ router.get('/shops', authenticateToken, requireAdmin, async (req, res) => {
     const { trangThai } = req.query;
     const pool = await getPool();
 
-    let where = '';
-    if (trangThai) where = `WHERE ch.TrangThai = N'${trangThai}'`;
-
-    const result = await pool.request().query(`
-      SELECT ch.*, nd.HoTen, nd.Email, nd.SoDienThoai
+    let query = `
+      SELECT ch.MaCuaHang, ch.TenCuaHang, ch.MoTa, ch.Logo, ch.TrangThai, ch.SoDuVi, ch.NgayTao,
+             nd.HoTen, nd.Email, nd.SoDienThoai
       FROM CuaHang ch
-      JOIN NguoiDung nd ON ch.MaNguoiDung = nd.MaNguoiDung
-      ${where}
-      ORDER BY ch.NgayTao DESC
-    `);
+      INNER JOIN NguoiDung nd ON ch.MaNguoiDung = nd.MaNguoiDung
+      WHERE 1=1
+    `;
+    if (trangThai) query += ` AND ch.TrangThai = @trangThai`;
+    query += ` ORDER BY ch.NgayTao DESC`;
 
+    const request = pool.request();
+    if (trangThai) request.input('trangThai', sql.NVarChar, trangThai);
+    const result = await request.query(query);
     res.json({ success: true, data: result.recordset });
   } catch (error) {
-    console.error('Lỗi lấy danh sách shop:', error);
-    res.status(500).json({ success: false, message: 'Lỗi lấy danh sách shop' });
+    console.error('Get shops error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// PUT /api/admin/shops/:id/approve — Duyệt shop
+// PUT /api/admin/shops/:shopId/approve — Duyệt shop
 // ═══════════════════════════════════════════════════════════════════════════════
-/**
- * @swagger
- * /api/admin/shops/{id}/approve:
- *   put:
- *     tags: [Admin]
- *     summary: Duyệt / từ chối shop
- *     security: [{ bearerAuth: [] }]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema: { type: integer }
- *     requestBody:
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               action: { type: string, enum: [approve, reject] }
- *               lyDo: { type: string }
- */
-router.put('/shops/:id/approve', authenticateToken, requireAdmin, async (req, res) => {
+router.put('/shops/:shopId/approve', authenticateToken, requireAdmin, async (req, res) => {
   try {
-    const { action, lyDo } = req.body;
+    const { shopId } = req.params;
     const pool = await getPool();
 
-    if (action === 'approve') {
-      await pool.request()
-        .input('MaCuaHang', sql.Int, req.params.id)
-        .query("UPDATE CuaHang SET TrangThai = N'HOAT_DONG' WHERE MaCuaHang = @MaCuaHang");
-      res.json({ success: true, message: 'Đã duyệt shop thành công' });
-    } else if (action === 'reject') {
-      await pool.request()
-        .input('MaCuaHang', sql.Int, req.params.id)
-        .query("UPDATE CuaHang SET TrangThai = N'BI_KHOA' WHERE MaCuaHang = @MaCuaHang");
-      res.json({ success: true, message: 'Đã từ chối shop' });
-    } else {
-      res.status(400).json({ success: false, message: 'Action không hợp lệ (approve/reject)' });
-    }
+    const shopResult = await pool.request()
+      .input('shopId', sql.Int, shopId)
+      .query(`SELECT ch.*, nd.MaNguoiDung FROM CuaHang ch INNER JOIN NguoiDung nd ON ch.MaNguoiDung = nd.MaNguoiDung WHERE ch.MaCuaHang = @shopId`);
+
+    if (shopResult.recordset.length === 0)
+      return res.status(404).json({ success: false, message: 'Không tìm thấy cửa hàng' });
+
+    const shop = shopResult.recordset[0];
+
+    await pool.request()
+      .input('shopId', sql.Int, shopId)
+      .query(`UPDATE CuaHang SET TrangThai = N'HOAT_DONG' WHERE MaCuaHang = @shopId`);
+
+    // Gửi thông báo cho chủ shop
+    await pool.request()
+      .input('userId', sql.Int, shop.MaNguoiDung)
+      .input('tieuDe', sql.NVarChar, 'Cửa hàng đã được duyệt')
+      .input('noiDung', sql.NVarChar, `Cửa hàng "${shop.TenCuaHang}" của bạn đã được Admin duyệt và có thể bắt đầu kinh doanh.`)
+      .query(`INSERT INTO ThongBao (MaNguoiDung, TieuDe, NoiDung, LoaiThongBao) VALUES (@userId, @tieuDe, @noiDung, N'HE_THONG')`);
+
+    res.json({ success: true, message: 'Đã duyệt cửa hàng' });
   } catch (error) {
-    console.error('Lỗi duyệt shop:', error);
-    res.status(500).json({ success: false, message: 'Lỗi duyệt shop' });
+    console.error('Approve shop error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 });
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// GET /api/admin/users — Quản lý người dùng
-// ═══════════════════════════════════════════════════════════════════════════════
+// Reject shop
+router.put('/shops/:shopId/reject', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { shopId } = req.params;
+    const { lyDo = '' } = req.body;
+    const pool = await getPool();
+
+    const shopResult = await pool.request()
+      .input('shopId', sql.Int, shopId)
+      .query(`SELECT ch.*, nd.MaNguoiDung FROM CuaHang ch INNER JOIN NguoiDung nd ON ch.MaNguoiDung = nd.MaNguoiDung WHERE ch.MaCuaHang = @shopId`);
+
+    if (shopResult.recordset.length === 0)
+      return res.status(404).json({ success: false, message: 'Không tìm thấy cửa hàng' });
+
+    const shop = shopResult.recordset[0];
+
+    await pool.request()
+      .input('shopId', sql.Int, shopId)
+      .query(`UPDATE CuaHang SET TrangThai = N'BI_KHOA' WHERE MaCuaHang = @shopId`);
+
+    await pool.request()
+      .input('userId', sql.Int, shop.MaNguoiDung)
+      .input('tieuDe', sql.NVarChar, 'Đăng ký cửa hàng bị từ chối')
+      .input('noiDung', sql.NVarChar, `Đăng ký cửa hàng "${shop.TenCuaHang}" bị từ chối. Lý do: ${lyDo}`)
+      .query(`INSERT INTO ThongBao (MaNguoiDung, TieuDe, NoiDung, LoaiThongBao) VALUES (@userId, @tieuDe, @noiDung, N'HE_THONG')`);
+
+    res.json({ success: true, message: 'Đã từ chối đăng ký' });
+  } catch (error) {
+    console.error('Reject shop error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Lock shop
+router.put('/shops/:shopId/lock', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { shopId } = req.params;
+    const { lyDo = '' } = req.body;
+    const pool = await getPool();
+
+    await pool.request()
+      .input('shopId', sql.Int, shopId)
+      .query(`UPDATE CuaHang SET TrangThai = N'BI_KHOA' WHERE MaCuaHang = @shopId`);
+
+    res.json({ success: true, message: 'Đã khóa cửa hàng' });
+  } catch (error) {
+    console.error('Lock shop error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// ==========================================
+// QUẢN LÝ NGƯỜI DÙNG (Account Management)
+// ==========================================
+
+// Get all users
 router.get('/users', authenticateToken, requireAdmin, async (req, res) => {
   try {
+    const { page = 1, limit = 20, search = '', status = '' } = req.query;
     const pool = await getPool();
-    const result = await pool.request().query(`
-      SELECT MaNguoiDung, HoTen, Email, SoDienThoai, VaiTro, TrangThai, NgayTao, DiemTichLuy
+    const offset = (page - 1) * limit;
+
+    let query = `
+      SELECT MaNguoiDung, HoTen, Email, SoDienThoai, VaiTro, TrangThai, 
+             DiemTichLuy, MaHang, NgayTao
       FROM NguoiDung
-      ORDER BY NgayTao DESC
-    `);
-    res.json({ success: true, data: result.recordset });
+      WHERE 1=1
+    `;
+    
+    if (search) {
+      query += ` AND (HoTen LIKE @search OR Email LIKE @search OR SoDienThoai LIKE @search)`;
+    }
+    if (status) {
+      query += ` AND TrangThai = @status`;
+    }
+
+    query += ` ORDER BY NgayTao DESC OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY`;
+
+    const request = pool.request();
+    if (search) request.input('search', sql.NVarChar, `%${search}%`);
+    if (status) request.input('status', sql.NVarChar, status);
+    request.input('offset', sql.Int, offset).input('limit', sql.Int, parseInt(limit));
+
+    const result = await request.query(query);
+
+    // Get total count
+    let countQuery = `SELECT COUNT(*) as total FROM NguoiDung WHERE 1=1`;
+    if (search) countQuery += ` AND (HoTen LIKE @search OR Email LIKE @search OR SoDienThoai LIKE @search)`;
+    if (status) countQuery += ` AND TrangThai = @status`;
+
+    const countRequest = pool.request();
+    if (search) countRequest.input('search', sql.NVarChar, `%${search}%`);
+    if (status) countRequest.input('status', sql.NVarChar, status);
+    const countResult = await countRequest.query(countQuery);
+
+    res.json({
+      success: true,
+      data: result.recordset,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total: countResult.recordset[0].total
+      }
+    });
   } catch (error) {
-    console.error('Lỗi lấy users:', error);
-    res.status(500).json({ success: false, message: 'Lỗi lấy danh sách người dùng' });
+    console.error('Get users error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 });
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// GET /api/admin/stats — Thống kê admin
-// ═══════════════════════════════════════════════════════════════════════════════
+// Lock user account (Khóa tài khoản)
+router.put('/users/:userId/lock', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { lyDo = '' } = req.body;
+    const pool = await getPool();
+
+    await pool.request()
+      .input('userId', sql.Int, userId)
+      .query(`UPDATE NguoiDung SET TrangThai = N'BI_KHOA', NgayCapNhat = GETDATE() WHERE MaNguoiDung = @userId`);
+
+    res.json({ success: true, message: 'User account locked' });
+  } catch (error) {
+    console.error('Lock user error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Unlock user account (Mở khóa tài khoản)
+router.put('/users/:userId/unlock', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const pool = await getPool();
+
+    await pool.request()
+      .input('userId', sql.Int, userId)
+      .query(`UPDATE NguoiDung SET TrangThai = N'HOAT_DONG', NgayCapNhat = GETDATE() WHERE MaNguoiDung = @userId`);
+
+    res.json({ success: true, message: 'User account unlocked' });
+  } catch (error) {
+    console.error('Unlock user error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// ==========================================
+// THỐNG KÊ (Statistics) — GET /api/admin/stats + /api/admin/statistics
+// ==========================================
+
 router.get('/stats', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const pool = await getPool();
@@ -126,6 +243,358 @@ router.get('/stats', authenticateToken, requireAdmin, async (req, res) => {
   } catch (error) {
     console.error('Lỗi thống kê:', error);
     res.status(500).json({ success: false, message: 'Lỗi lấy thống kê' });
+  }
+});
+
+router.get('/statistics', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const pool = await getPool();
+
+    const stats = await pool.request().query(`
+      SELECT 
+        (SELECT COUNT(*) FROM NguoiDung) as totalUsers,
+        (SELECT COUNT(*) FROM NguoiDung WHERE TrangThai = N'BI_KHOA') as lockedUsers,
+        (SELECT COUNT(*) FROM DonHang) as totalOrders,
+        (SELECT SUM(TienThanhToan) FROM DonHang WHERE TrangThaiThanhToan = N'DA_THANH_TOAN') as totalRevenue,
+        (SELECT COUNT(*) FROM BaoCao WHERE TrangThai = N'CHO_XU_LY') as pendingReports,
+        (SELECT COUNT(*) FROM YeuCauRutTien WHERE TrangThai = N'CHO_DUYET') as pendingWithdrawals,
+        (SELECT COUNT(*) FROM CuaHang) as totalShops,
+        (SELECT COUNT(*) FROM CuaHang WHERE TrangThai = N'CHO_DUYET') as pendingShops,
+        (SELECT COUNT(*) FROM YeuCauDoiTra WHERE TrangThai = N'KHIEU_NAI_ADMIN') as pendingDisputes
+    `);
+
+    res.json({ success: true, data: stats.recordset[0] });
+  } catch (error) {
+    console.error('Statistics error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// ==========================================
+// KIỂM DUYỆT HỆ THỐNG (Reports & Moderation)
+// ==========================================
+
+// Get all reports
+router.get('/reports', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { page = 1, limit = 20, status = '' } = req.query;
+    const pool = await getPool();
+    const offset = (page - 1) * limit;
+
+    let query = `
+      SELECT MaBaoCao, MaNguoiDungBaoCao, LoaiBaoCao, MoTaChiTiet, TrangThai, 
+             MaThamChieu, LoaiMaThamChieu, NgayTao, GhiChuAdmin
+      FROM BaoCao
+    `;
+    
+    if (status) {
+      query += ` WHERE TrangThai = @status`;
+    }
+
+    query += ` ORDER BY NgayTao DESC OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY`;
+
+    const request = pool.request();
+    if (status) request.input('status', sql.NVarChar, status);
+    request.input('offset', sql.Int, offset).input('limit', sql.Int, parseInt(limit));
+
+    const result = await request.query(query);
+
+    res.json({ success: true, data: result.recordset });
+  } catch (error) {
+    console.error('Get reports error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Resolve report (Xử lý báo cáo)
+router.put('/reports/:reportId/resolve', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { reportId } = req.params;
+    const { decision, ghiChu } = req.body; // decision: 'APPROVED', 'REJECTED'
+    const pool = await getPool();
+
+    // Get report details
+    const report = await pool.request()
+      .input('reportId', sql.Int, reportId)
+      .query(`SELECT * FROM BaoCao WHERE MaBaoCao = @reportId`);
+
+    if (report.recordset.length === 0) {
+      return res.status(404).json({ success: false, message: 'Report not found' });
+    }
+
+    const reportData = report.recordset[0];
+
+    // Update report status
+    await pool.request()
+      .input('reportId', sql.Int, reportId)
+      .input('status', sql.NVarChar, decision === 'APPROVED' ? 'DA_GIAI_QUYET' : 'BI_TU_CHOI')
+      .input('ghiChu', sql.NVarChar, ghiChu || '')
+      .query(`
+        UPDATE BaoCao 
+        SET TrangThai = @status, GhiChuAdmin = @ghiChu, NgayCapNhat = GETDATE()
+        WHERE MaBaoCao = @reportId
+      `);
+
+    // If approved, take action on reported item
+    if (decision === 'APPROVED' && reportData.LoaiMaThamChieu === 'SAN_PHAM') {
+      await pool.request()
+        .input('productId', sql.Int, reportData.MaThamChieu)
+        .query(`UPDATE SanPham SET TrangThai = N'BI_KHOA', NgayCapNhat = GETDATE() WHERE MaSanPham = @productId`);
+    }
+
+    res.json({ success: true, message: 'Report resolved' });
+  } catch (error) {
+    console.error('Resolve report error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// ==========================================
+// GIẢI QUYẾT TRANH CHẤP (Dispute Resolution)
+// ==========================================
+
+router.get('/disputes', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { page = 1, limit = 20, status = '' } = req.query;
+    const pool = await getPool();
+    const offset = (page - 1) * limit;
+
+    let query = `
+      SELECT MaTrancChap, MaDonHang, MaNguoiDungKhieu, MaNguoiDungDoiPhuong, 
+             LoaiTrancChap, MoTaChiTiet, TrangThai, NgayTao
+      FROM GiaiQuyetTrancChap
+    `;
+    
+    if (status) {
+      query += ` WHERE TrangThai = @status`;
+    }
+
+    query += ` ORDER BY NgayTao DESC OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY`;
+
+    const request = pool.request();
+    if (status) request.input('status', sql.NVarChar, status);
+    request.input('offset', sql.Int, offset).input('limit', sql.Int, parseInt(limit));
+
+    const result = await request.query(query);
+    res.json({ success: true, data: result.recordset });
+  } catch (error) {
+    console.error('Get disputes error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+router.put('/disputes/:disputeId/resolve', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { disputeId } = req.params;
+    const { decision, ghiChu } = req.body;
+    const pool = await getPool();
+
+    await pool.request()
+      .input('disputeId', sql.Int, disputeId)
+      .input('decision', sql.NVarChar, ghiChu)
+      .input('executorId', sql.Int, req.userId)
+      .query(`
+        UPDATE GiaiQuyetTrancChap
+        SET TrangThai = N'DA_GIAI_QUYET', QuyetDinhCuaAdmin = @decision, 
+            MaNguoiDungXuLy = @executorId, NgayCapNhat = GETDATE()
+        WHERE MaTrancChap = @disputeId
+      `);
+
+    res.json({ success: true, message: 'Dispute resolved' });
+  } catch (error) {
+    console.error('Resolve dispute error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// ==========================================
+// CHÍNH SÁCH HỆ THỐNG (System Policies)
+// ==========================================
+
+router.get('/policies', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const pool = await getPool();
+    const policies = await pool.request()
+      .query(`SELECT * FROM ChinhSachHeThong ORDER BY NgayTao DESC`);
+    
+    res.json({ success: true, data: policies.recordset });
+  } catch (error) {
+    console.error('Get policies error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+router.post('/policies', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { tenChinhSach, noiDung, loaiChinhSach } = req.body;
+    const pool = await getPool();
+
+    await pool.request()
+      .input('tenChinhSach', sql.NVarChar, tenChinhSach)
+      .input('noiDung', sql.NVarChar(sql.MAX), noiDung)
+      .input('loaiChinhSach', sql.NVarChar, loaiChinhSach)
+      .query(`
+        INSERT INTO ChinhSachHeThong (TenChinhSach, NoiDung, LoaiChinhSach)
+        VALUES (@tenChinhSach, @noiDung, @loaiChinhSach)
+      `);
+
+    res.json({ success: true, message: 'Policy created' });
+  } catch (error) {
+    console.error('Create policy error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+router.put('/policies/:policyId', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { policyId } = req.params;
+    const { tenChinhSach, noiDung, loaiChinhSach } = req.body;
+    const pool = await getPool();
+
+    await pool.request()
+      .input('policyId', sql.Int, policyId)
+      .input('tenChinhSach', sql.NVarChar, tenChinhSach)
+      .input('noiDung', sql.NVarChar(sql.MAX), noiDung)
+      .input('loaiChinhSach', sql.NVarChar, loaiChinhSach)
+      .query(`
+        UPDATE ChinhSachHeThong
+        SET TenChinhSach = @tenChinhSach, NoiDung = @noiDung,
+            LoaiChinhSach = @loaiChinhSach, NgayCapNhat = GETDATE()
+        WHERE MaChinhSach = @policyId
+      `);
+
+    res.json({ success: true, message: 'Policy updated' });
+  } catch (error) {
+    console.error('Update policy error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// ==========================================
+// QUẢN LÝ RÚT TIỀN (Settlement & Withdrawals)
+// ==========================================
+
+router.get('/withdrawals', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { status = '' } = req.query;
+    const pool = await getPool();
+
+    let query = `
+      SELECT yr.MaYeuCau, yr.MaCuaHang, yr.SoTien, yr.TenTaiKhoanNganHang,
+             yr.SoTaiKhoan, yr.TenNganHang, yr.TrangThai, yr.NgayTao,
+             ch.TenCuaHang, nd.HoTen, nd.Email
+      FROM YeuCauRutTien yr
+      JOIN CuaHang ch ON yr.MaCuaHang = ch.MaCuaHang
+      JOIN NguoiDung nd ON ch.MaNguoiDung = nd.MaNguoiDung
+    `;
+
+    if (status) {
+      query += ` WHERE yr.TrangThai = @status`;
+    }
+
+    query += ` ORDER BY yr.NgayTao DESC`;
+
+    const request = pool.request();
+    if (status) request.input('status', sql.NVarChar, status);
+
+    const result = await request.query(query);
+    res.json({ success: true, data: result.recordset });
+  } catch (error) {
+    console.error('Get withdrawals error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+router.put('/withdrawals/:withdrawalId/approve', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { withdrawalId } = req.params;
+    const pool = await getPool();
+
+    await pool.request()
+      .input('withdrawalId', sql.Int, withdrawalId)
+      .query(`
+        UPDATE YeuCauRutTien 
+        SET TrangThai = N'DA_DUYET'
+        WHERE MaYeuCau = @withdrawalId
+      `);
+
+    res.json({ success: true, message: 'Withdrawal approved' });
+  } catch (error) {
+    console.error('Approve withdrawal error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+router.put('/withdrawals/:withdrawalId/reject', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { withdrawalId } = req.params;
+    const pool = await getPool();
+
+    await pool.request()
+      .input('withdrawalId', sql.Int, withdrawalId)
+      .query(`
+        UPDATE YeuCauRutTien 
+        SET TrangThai = N'TU_CHOI'
+        WHERE MaYeuCau = @withdrawalId
+      `);
+
+    res.json({ success: true, message: 'Withdrawal rejected' });
+  } catch (error) {
+    console.error('Reject withdrawal error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// ==========================================
+// GỬI THÔNG BÁO (Send Notifications)
+// ==========================================
+
+router.post('/send-notification', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { userId, tieuDe, noiDung, loaiThongBao = 'HE_THONG' } = req.body;
+    const pool = await getPool();
+
+    await pool.request()
+      .input('userId', sql.Int, userId)
+      .input('tieuDe', sql.NVarChar, tieuDe)
+      .input('noiDung', sql.NVarChar(sql.MAX), noiDung)
+      .input('loaiThongBao', sql.NVarChar, loaiThongBao)
+      .query(`
+        INSERT INTO ThongBao (MaNguoiDung, TieuDe, NoiDung, LoaiThongBao)
+        VALUES (@userId, @tieuDe, @noiDung, @loaiThongBao)
+      `);
+
+    res.json({ success: true, message: 'Notification sent' });
+  } catch (error) {
+    console.error('Send notification error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Broadcast notification to all users
+router.post('/broadcast-notification', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { tieuDe, noiDung, loaiThongBao = 'HE_THONG' } = req.body;
+    const pool = await getPool();
+
+    // Lấy tất cả user đang hoạt động
+    const users = await pool.request()
+      .query(`SELECT MaNguoiDung FROM NguoiDung WHERE TrangThai = N'HOAT_DONG'`);
+
+    // Bulk insert thông báo
+    for (const user of users.recordset) {
+      await pool.request()
+        .input('userId', sql.Int, user.MaNguoiDung)
+        .input('tieuDe', sql.NVarChar, tieuDe)
+        .input('noiDung', sql.NVarChar(sql.MAX), noiDung)
+        .input('loaiThongBao', sql.NVarChar, loaiThongBao)
+        .query(`INSERT INTO ThongBao (MaNguoiDung, TieuDe, NoiDung, LoaiThongBao) VALUES (@userId, @tieuDe, @noiDung, @loaiThongBao)`);
+    }
+
+    res.json({ success: true, message: `Đã gửi thông báo đến ${users.recordset.length} người dùng` });
+  } catch (error) {
+    console.error('Broadcast notification error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 });
 

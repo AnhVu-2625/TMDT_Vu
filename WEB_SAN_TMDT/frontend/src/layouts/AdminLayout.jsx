@@ -5,19 +5,20 @@ import { useAuthStore } from '../store/authStore';
 import {
   FiHome, FiUsers, FiShield, FiMenu, FiX, FiLogOut,
   FiAlertTriangle, FiFileText, FiBarChart2, FiDollarSign,
-  FiBell, FiBookOpen, FiCheckCircle, FiRepeat
+  FiBell, FiBookOpen, FiCheckCircle, FiRepeat, FiShoppingBag, FiMessageSquare
 } from 'react-icons/fi';
 
 const sidebarLinks = [
-  { to: '/admin/dashboard',    icon: FiBarChart2,       label: 'Thống kê tổng quan' },
-  { to: '/admin/users',        icon: FiUsers,           label: 'Quản lý tài khoản' },
-  { to: '/admin/shops',        icon: FiCheckCircle,     label: 'Duyệt đăng ký shop' },
-  { to: '/admin/moderation',   icon: FiShield,          label: 'Kiểm duyệt hệ thống' },
-  { to: '/admin/reports',      icon: FiAlertTriangle,   label: 'Báo cáo vi phạm' },
-  { to: '/admin/disputes',     icon: FiRepeat,          label: 'Tranh chấp đổi trả' },
-  { to: '/admin/finance',      icon: FiDollarSign,      label: 'Đối soát & Chia tiền' },
-  { to: '/admin/policy',       icon: FiBookOpen,        label: 'Chính sách sử dụng' },
-  { to: '/admin/notifications', icon: FiBell,           label: 'Thông báo hệ thống' },
+  { to: '/admin/dashboard',     icon: FiBarChart2,       label: 'Thống kê tổng quan' },
+  { to: '/admin/users',         icon: FiUsers,           label: 'Quản lý tài khoản' },
+  { to: '/admin/shops',         icon: FiShoppingBag,     label: 'Duyệt đăng ký shop' },
+  { to: '/admin/moderation',    icon: FiShield,          label: 'Kiểm duyệt hệ thống' },
+  { to: '/admin/reports',       icon: FiAlertTriangle,   label: 'Báo cáo vi phạm' },
+  { to: '/admin/disputes',      icon: FiMessageSquare,   label: 'Tranh chấp đổi trả' },
+  { to: '/admin/settlement',    icon: FiDollarSign,      label: 'Đối soát & Chia tiền' },
+  { to: '/admin/statistics',    icon: FiBarChart2,       label: 'Thống kê chi tiết' },
+  { to: '/admin/policies',      icon: FiBookOpen,        label: 'Chính sách sử dụng' },
+  { to: '/admin/notifications', icon: FiBell,            label: 'Thông báo hệ thống' },
 ];
 
 const AdminLayout = () => {

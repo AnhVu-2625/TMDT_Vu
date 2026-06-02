@@ -85,7 +85,7 @@ CREATE TABLE CuaHang (
     TenCuaHang NVARCHAR(100) NOT NULL,
     MoTa NVARCHAR(MAX),
     Logo NVARCHAR(255),
-    TrangThai NVARCHAR(20) CHECK (TrangThai IN (N'CHO_DUYET', N'HOAT_DONG', N'BI_KHOA')) DEFAULT N'CHO_DUYET',
+    TrangThai NVARCHAR(20) CHECK (TrangThai IN (N'CHO_DUYET', N'HOAT_DONG', N'BI_KHOA', N'NHAP')) DEFAULT N'CHO_DUYET',
     SoDuVi DECIMAL(15,2) DEFAULT 0.00,
     NgayTao DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (MaNguoiDung) REFERENCES NguoiDung(MaNguoiDung)
@@ -311,6 +311,126 @@ CREATE TABLE ThongBao (
 GO
 
 -- ==========================================
+-- NHÓM QUẢN LÝ ADMIN (KIỂM DUYỆT & THỐNG KÊ)
+-- ==========================================
+
+CREATE TABLE BaoCao (
+    MaBaoCao INT IDENTITY(1,1) PRIMARY KEY,
+    MaNguoiDungBaoCao INT NOT NULL,
+    LoaiBaoCao NVARCHAR(50) CHECK (LoaiBaoCao IN (N'SAN_PHAM_KHONG_HOP_LE', N'HANH_VI_KHONG_HOP_LE', N'GIAN_LAN', N'KHAC')) NOT NULL,
+    MoTaChiTiet NVARCHAR(MAX) NOT NULL,
+    TrangThai NVARCHAR(20) CHECK (TrangThai IN (N'CHO_XU_LY', N'DANG_XU_LY', N'DA_GIAI_QUYET', N'BI_TU_CHOI')) DEFAULT N'CHO_XU_LY',
+    GhiChuAdmin NVARCHAR(MAX),
+    MaThamChieu INT,
+    LoaiMaThamChieu NVARCHAR(50) CHECK (LoaiMaThamChieu IN (N'SAN_PHAM', N'DANH_GIA', N'NGUOI_DUNG')),
+    NgayTao DATETIME DEFAULT GETDATE(),
+    NgayCapNhat DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (MaNguoiDungBaoCao) REFERENCES NguoiDung(MaNguoiDung)
+);
+GO
+
+CREATE TABLE ChinhSachHeThong (
+    MaChinhSach INT IDENTITY(1,1) PRIMARY KEY,
+    TenChinhSach NVARCHAR(255) NOT NULL,
+    NoiDung NVARCHAR(MAX) NOT NULL,
+    LoaiChinhSach NVARCHAR(50) CHECK (LoaiChinhSach IN (N'CHI_TRA', N'BAO_MAT', N'KHIEU_NAI', N'KHAC')) NOT NULL,
+    NgayTao DATETIME DEFAULT GETDATE(),
+    NgayCapNhat DATETIME DEFAULT GETDATE()
+);
+GO
+
+CREATE TABLE GiaiQuyetTrancChap (
+    MaTrancChap INT IDENTITY(1,1) PRIMARY KEY,
+    MaDonHang INT NOT NULL,
+    MaNguoiDungKhieu INT NOT NULL,
+    MaNguoiDungDoiPhuong INT NOT NULL,
+    LoaiTrancChap NVARCHAR(100) NOT NULL,
+    MoTaChiTiet NVARCHAR(MAX) NOT NULL,
+    TrangThai NVARCHAR(20) CHECK (TrangThai IN (N'CHO_XU_LY', N'DANG_XU_LY', N'DA_GIAI_QUYET')) DEFAULT N'CHO_XU_LY',
+    QuyetDinhCuaAdmin NVARCHAR(MAX),
+    MaNguoiDungXuLy INT,
+    NgayTao DATETIME DEFAULT GETDATE(),
+    NgayCapNhat DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (MaDonHang) REFERENCES DonHang(MaDonHang),
+    FOREIGN KEY (MaNguoiDungKhieu) REFERENCES NguoiDung(MaNguoiDung),
+    FOREIGN KEY (MaNguoiDungDoiPhuong) REFERENCES NguoiDung(MaNguoiDung),
+    FOREIGN KEY (MaNguoiDungXuLy) REFERENCES NguoiDung(MaNguoiDung)
+);
+GO
+
+-- ==========================================
+-- NHÓM QUẢN LÝ USER VIP & ĐIỂM TÍCH LŨY
+-- ==========================================
+
+CREATE TABLE GiaDichVuVIP (
+    MaGiaDichVu INT IDENTITY(1,1) PRIMARY KEY,
+    TenGoi NVARCHAR(50) NOT NULL,
+    MoTa NVARCHAR(MAX),
+    GiaTien DECIMAL(15,2) NOT NULL,
+    ThoiGianDangKy INT NOT NULL CHECK (ThoiGianDangKy > 0), -- số ngày
+    LoiIch NVARCHAR(MAX),
+    NgayTao DATETIME DEFAULT GETDATE()
+);
+GO
+
+CREATE TABLE DichVuVIPNguoiDung (
+    MaVIP INT IDENTITY(1,1) PRIMARY KEY,
+    MaNguoiDung INT NOT NULL,
+    MaGiaDichVu INT NOT NULL,
+    NgayBatDau DATETIME NOT NULL DEFAULT GETDATE(),
+    NgayKetThuc DATETIME NOT NULL,
+    TrangThai NVARCHAR(20) CHECK (TrangThai IN (N'DANG_HOAT_DONG', N'HET_HAN', N'HUY_BO')) DEFAULT N'DANG_HOAT_DONG',
+    FOREIGN KEY (MaNguoiDung) REFERENCES NguoiDung(MaNguoiDung),
+    FOREIGN KEY (MaGiaDichVu) REFERENCES GiaDichVuVIP(MaGiaDichVu)
+);
+GO
+
+CREATE TABLE LichSuThayDoiDiem (
+    MaLichSu INT IDENTITY(1,1) PRIMARY KEY,
+    MaNguoiDung INT NOT NULL,
+    DiemThanh DECIMAL(15,2) NOT NULL,
+    LoaiThay INT CHECK (LoaiThay IN (1, -1)) NOT NULL, -- 1: cộng, -1: trừ
+    LyDo NVARCHAR(255) NOT NULL,
+    MaThamChieu INT,
+    LoaiMaThamChieu NVARCHAR(50) CHECK (LoaiMaThamChieu IN (N'DON_HANG', N'DANH_GIA', N'HE_THONG')),
+    NgayTao DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (MaNguoiDung) REFERENCES NguoiDung(MaNguoiDung)
+);
+GO
+
+-- ==========================================
+-- NHÓM QUẢN LÝ TÌM KIẾM & KHUYẾN MÃI
+-- ==========================================
+
+CREATE TABLE BoLocDaLuu (
+    MaBoLoc INT IDENTITY(1,1) PRIMARY KEY,
+    MaNguoiDung INT NOT NULL,
+    TenBoLoc NVARCHAR(100) NOT NULL,
+    DanhMucId INT,
+    GiaToiThieu DECIMAL(15,2),
+    GiaToiDa DECIMAL(15,2),
+    DiemDanhGiaToiThieu DECIMAL(3,2),
+    MauSac NVARCHAR(100),
+    KichThuoc NVARCHAR(100),
+    SapXep NVARCHAR(50), -- 'ASC', 'DESC'
+    NgayTao DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (MaNguoiDung) REFERENCES NguoiDung(MaNguoiDung)
+);
+GO
+
+CREATE TABLE KhuyenMaiNguoiDung (
+    MaKhuyenMaiNguoiDung INT IDENTITY(1,1) PRIMARY KEY,
+    MaNguoiDung INT NOT NULL,
+    MaKhuyenMai INT NOT NULL,
+    TrangThai NVARCHAR(20) CHECK (TrangThai IN (N'CHUA_SU_DUNG', N'DA_SU_DUNG', N'HET_HAN')) DEFAULT N'CHUA_SU_DUNG',
+    NgayNhan DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (MaNguoiDung) REFERENCES NguoiDung(MaNguoiDung),
+    FOREIGN KEY (MaKhuyenMai) REFERENCES MaKhuyenMai(MaKhuyenMai),
+    UNIQUE(MaNguoiDung, MaKhuyenMai)
+);
+GO
+
+-- ==========================================
 -- INDEXES (tối ưu hiệu năng)
 -- ==========================================
 CREATE INDEX IX_NguoiDung_Email ON NguoiDung(Email);
@@ -324,7 +444,12 @@ CREATE INDEX IX_DonHang_TrangThaiDonHang ON DonHang(TrangThaiDonHang);
 CREATE INDEX IX_ChiTietGioHang_MaNguoiDung ON ChiTietGioHang(MaNguoiDung);
 CREATE INDEX IX_DanhGiaSanPham_MaSanPham ON DanhGiaSanPham(MaSanPham);
 CREATE INDEX IX_ThongBao_MaNguoiDung ON ThongBao(MaNguoiDung);
+CREATE INDEX IX_BaoCao_MaNguoiDungBaoCao ON BaoCao(MaNguoiDungBaoCao);
+CREATE INDEX IX_BaoCao_TrangThai ON BaoCao(TrangThai);
+CREATE INDEX IX_DichVuVIPNguoiDung_MaNguoiDung ON DichVuVIPNguoiDung(MaNguoiDung);
+CREATE INDEX IX_LichSuThayDoiDiem_MaNguoiDung ON LichSuThayDoiDiem(MaNguoiDung);
+CREATE INDEX IX_BoLocDaLuu_MaNguoiDung ON BoLocDaLuu(MaNguoiDung);
 GO
 
-PRINT 'Schema ThuongMaiDienTu created successfully!'
+PRINT 'Schema ThuongMaiDienTu created successfully with Admin & User features!'
 GO

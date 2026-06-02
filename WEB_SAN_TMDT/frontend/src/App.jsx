@@ -13,6 +13,7 @@ import SellerLayout from './layouts/SellerLayout';
 import Home from './pages/Home';
 import ProductList from './pages/ProductList';
 import ProductDetail from './pages/ProductDetail';
+import ShopDetail from './pages/ShopDetail';
 import Cart from './pages/user/Cart';
 import Checkout from './pages/user/Checkout';
 import Orders from './pages/user/Orders';
@@ -25,7 +26,16 @@ import Register from './pages/auth/Register';
 import VerifyOTP from './pages/auth/VerifyOTP';
 
 // Admin Pages
-import { Dashboard as AdminDashboard } from './pages/admin/Dashboard.jsx';
+import AdminDashboard from './pages/admin/Dashboard.jsx';
+import AdminUsers from './pages/admin/Users.jsx';
+import AdminShops from './pages/admin/Shops.jsx';
+import AdminModeration from './pages/admin/Moderation.jsx';
+import AdminReports from './pages/admin/Reports.jsx';
+import AdminDisputes from './pages/admin/Disputes.jsx';
+import AdminSettlement from './pages/admin/Settlement.jsx';
+import AdminStatistics from './pages/admin/Statistics.jsx';
+import AdminPolicies from './pages/admin/Policies.jsx';
+import AdminNotifications from './pages/admin/Notifications.jsx';
 
 // Seller Pages
 import { Dashboard as SellerDashboard } from './pages/seller/Dashboard.jsx';
@@ -84,13 +94,14 @@ function App() {
   }, []);
 
   return (
-    <Router>
+    <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <Routes>
         {/* ── Public / User Routes ── */}
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<ProductList />} />
           <Route path="/products/:id" element={<ProductDetail />} />
+          <Route path="/shop/:shopId" element={<ShopDetail />} />
           <Route path="/cart" element={<Cart />} />
 
           <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
@@ -111,7 +122,16 @@ function App() {
 
         {/* ── Admin Routes ── */}
         <Route element={<AdminRoute><AdminLayout /></AdminRoute>}>
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/dashboard"     element={<AdminDashboard />} />
+          <Route path="/admin/users"         element={<AdminUsers />} />
+          <Route path="/admin/shops"         element={<AdminShops />} />
+          <Route path="/admin/moderation"    element={<AdminModeration />} />
+          <Route path="/admin/reports"       element={<AdminReports />} />
+          <Route path="/admin/disputes"      element={<AdminDisputes />} />
+          <Route path="/admin/settlement"    element={<AdminSettlement />} />
+          <Route path="/admin/statistics"    element={<AdminStatistics />} />
+          <Route path="/admin/policies"      element={<AdminPolicies />} />
+          <Route path="/admin/notifications" element={<AdminNotifications />} />
           <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
         </Route>
 

@@ -1,101 +1,209 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { FiBell, FiSend, FiUsers, FiShoppingBag } from 'react-icons/fi';
+import { FiBell, FiSend, FiUsers } from 'react-icons/fi';
 import { toast } from 'react-toastify';
+import PageHeader from '../../components/admin/PageHeader';
+import { sendNotification, broadcastNotification } from '../../services/adminApi';
 
-export default function Notifications() {
-  const [form, setForm] = useState({ title: '', content: '', target: 'all' });
-  const [sending, setSending] = useState(false);
+const TYPES = [
+  { value: 'HE_THONG', label: 'Hệ thống' },
+  { value: 'KHUYEN_MAI', label: 'Khuyến mãi' },
+  { value: 'DON_HANG', label: 'Đơn hàng' },
+];
 
-  const [history] = useState([
-    { id: 1, title: 'Cập nhật chính sách mới', target: 'Tất cả', date: '30/05/2026', count: 1250 },
-    { id: 2, title: 'Flash Sale tháng 6', target: 'Người mua', date: '28/05/2026', count: 980 },
-    { id: 3, title: 'Hướng dẫn đăng sản phẩm', target: 'Seller', date: '25/05/2026', count: 156 },
-  ]);
+export default function AdminNotifications() {
+  const [tab, setTab] = useState('single');
+  const [form, setForm] = useState({ userId: '', tieuDe: '', noiDung: '', loaiThongBao: 'HE_THONG' });
+  const [broadcastForm, setBroadcastForm] = useState({ tieuDe: '', noiDung: '', loaiThongBao: 'HE_THONG' });
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSend = (e) => {
-    e.preventDefault();
-    if (!form.title || !form.content) return toast.error('Vui lòng nhập đầy đủ tiêu đề và nội dung');
-    setSending(true);
-    setTimeout(() => {
-      setSending(false);
-      toast.success('Đã gửi thông báo thành công!');
-      setForm({ title: '', content: '', target: 'all' });
-    }, 1000);
+  const handleSingle = async () => {
+    if (!form.userId || !form.tieuDe || !form.noiDung) {
+      toast.warning('Vui lòng điền đầy đủ thông tin');
+      return;
+    }
+    setSubmitting(true);
+    try {
+      await sendNotification({
+        ...form,
+        userId: parseInt(form.userId),
+      });
+      toast.success('Đã gửi thông báo thành công');
+      setForm({ userId: '', tieuDe: '', noiDung: '', loaiThongBao: 'HE_THONG' });
+    } catch {
+      toast.error('Gửi thông báo thất bại');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  const targets = [
-    { value: 'all', label: 'Tất cả', icon: FiUsers },
-    { value: 'buyers', label: 'Người mua', icon: FiShoppingBag },
-    { value: 'sellers', label: 'Seller', icon: FiShoppingBag },
-  ];
+  const handleBroadcast = async () => {
+    if (!broadcastForm.tieuDe || !broadcastForm.noiDung) {
+      toast.warning('Vui lòng điền đầy đủ thông tin');
+      return;
+    }
+    if (!window.confirm('Gửi thông báo đến TẤT CẢ người dùng?')) return;
+    setSubmitting(true);
+    try {
+      await broadcastNotification(broadcastForm);
+      toast.success('Đã gửi thông báo đến tất cả người dùng');
+      setBroadcastForm({ tieuDe: '', noiDung: '', loaiThongBao: 'HE_THONG' });
+    } catch {
+      toast.error('Gửi thông báo thất bại');
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white flex items-center gap-3">
-          <FiBell className="text-yellow-400" /> Thông báo hệ thống
-        </h1>
-        <p className="text-slate-400 text-sm mt-1">Gửi thông báo đến người dùng</p>
+      <PageHeader
+        title="Gửi thông báo hệ thống"
+        subtitle="Gửi thông báo đến người dùng cụ thể hoặc toàn bộ hệ thống"
+      />
+
+      <div className="flex gap-2 mb-6">
+        {[
+          { value: 'single', label: 'Gửi cá nhân', icon: FiBell },
+          { value: 'broadcast', label: 'Gửi toàn hệ thống', icon: FiUsers },
+        ].map((t) => (
+          <button
+            key={t.value}
+            onClick={() => setTab(t.value)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              tab === t.value
+                ? 'bg-red-600 text-white'
+                : 'bg-gray-900 border border-gray-700 text-gray-400 hover:text-white'
+            }`}
+          >
+            <t.icon size={14} /> {t.label}
+          </button>
+        ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Form */}
-        <motion.form onSubmit={handleSend} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-          className="glass-card rounded-2xl p-6 space-y-5">
-          <h2 className="text-lg font-bold text-white">Tạo thông báo mới</h2>
-
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">Tiêu đề</label>
-            <input type="text" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })}
-              placeholder="VD: Cập nhật chính sách mới" className="input-field" required />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">Nội dung</label>
-            <textarea value={form.content} onChange={e => setForm({ ...form, content: e.target.value })}
-              placeholder="Nội dung thông báo..." rows={4} className="input-field resize-none" required />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">Đối tượng nhận</label>
-            <div className="flex gap-2">
-              {targets.map(t => (
-                <button key={t.value} type="button" onClick={() => setForm({ ...form, target: t.value })}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${form.target === t.value ? 'bg-red-600 text-white' : 'bg-white/[0.04] text-slate-400 border border-white/[0.06]'}`}>
-                  <t.icon size={14} /> {t.label}
-                </button>
-              ))}
+      <div className="max-w-xl">
+        {tab === 'single' ? (
+          <motion.div
+            key="single"
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="bg-gray-900 border border-gray-800 rounded-xl p-5 space-y-4"
+          >
+            <div>
+              <label className="text-xs text-gray-400 mb-1 block">ID người dùng</label>
+              <input
+                type="number"
+                value={form.userId}
+                onChange={(e) => setForm((f) => ({ ...f, userId: e.target.value }))}
+                placeholder="Nhập ID người dùng..."
+                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-red-500"
+              />
             </div>
-          </div>
 
-          <button type="submit" disabled={sending}
-            className="btn-primary w-full flex items-center justify-center gap-2">
-            {sending ? <div className="spinner w-5 h-5 border-2" /> : <FiSend size={16} />}
-            {sending ? 'Đang gửi...' : 'Gửi thông báo'}
-          </button>
-        </motion.form>
+            <div>
+              <label className="text-xs text-gray-400 mb-1 block">Loại thông báo</label>
+              <select
+                value={form.loaiThongBao}
+                onChange={(e) => setForm((f) => ({ ...f, loaiThongBao: e.target.value }))}
+                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500"
+              >
+                {TYPES.map((t) => (
+                  <option key={t.value} value={t.value}>
+                    {t.label}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-        {/* History */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-          className="glass-card rounded-2xl p-6">
-          <h2 className="text-lg font-bold text-white mb-4">Lịch sử gửi</h2>
-          <div className="space-y-3">
-            {history.map((n, i) => (
-              <div key={n.id} className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.04]">
-                <div className="flex items-center justify-between mb-1">
-                  <p className="text-white font-medium text-sm">{n.title}</p>
-                  <span className="text-xs text-slate-500">{n.date}</span>
-                </div>
-                <div className="flex items-center gap-3 text-xs text-slate-400">
-                  <span className="badge-blue">{n.target}</span>
-                  <span>📤 {n.count} người nhận</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </motion.div>
+            <div>
+              <label className="text-xs text-gray-400 mb-1 block">Tiêu đề</label>
+              <input
+                value={form.tieuDe}
+                onChange={(e) => setForm((f) => ({ ...f, tieuDe: e.target.value }))}
+                placeholder="Tiêu đề thông báo..."
+                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-red-500"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs text-gray-400 mb-1 block">Nội dung</label>
+              <textarea
+                value={form.noiDung}
+                onChange={(e) => setForm((f) => ({ ...f, noiDung: e.target.value }))}
+                rows={4}
+                placeholder="Nội dung thông báo..."
+                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-red-500 resize-none"
+              />
+            </div>
+
+            <button
+              onClick={handleSingle}
+              disabled={submitting}
+              className="flex items-center gap-2 w-full justify-center py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm rounded-lg transition-colors disabled:opacity-50"
+            >
+              <FiSend size={14} /> {submitting ? 'Đang gửi...' : 'Gửi thông báo'}
+            </button>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="broadcast"
+            initial={{ opacity: 0, x: 10 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="bg-gray-900 border border-gray-800 rounded-xl p-5 space-y-4"
+          >
+            <div className="bg-yellow-600/10 border border-yellow-600/20 rounded-lg p-3">
+              <p className="text-xs text-yellow-400">
+                ⚠️ Thông báo này sẽ được gửi đến <strong>tất cả người dùng</strong> trên hệ thống. Hãy cân nhắc kỹ trước khi gửi.
+              </p>
+            </div>
+
+            <div>
+              <label className="text-xs text-gray-400 mb-1 block">Loại thông báo</label>
+              <select
+                value={broadcastForm.loaiThongBao}
+                onChange={(e) => setBroadcastForm((f) => ({ ...f, loaiThongBao: e.target.value }))}
+                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500"
+              >
+                {TYPES.map((t) => (
+                  <option key={t.value} value={t.value}>
+                    {t.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="text-xs text-gray-400 mb-1 block">Tiêu đề</label>
+              <input
+                value={broadcastForm.tieuDe}
+                onChange={(e) => setBroadcastForm((f) => ({ ...f, tieuDe: e.target.value }))}
+                placeholder="Tiêu đề thông báo..."
+                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-red-500"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs text-gray-400 mb-1 block">Nội dung</label>
+              <textarea
+                value={broadcastForm.noiDung}
+                onChange={(e) => setBroadcastForm((f) => ({ ...f, noiDung: e.target.value }))}
+                rows={4}
+                placeholder="Nội dung thông báo..."
+                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-red-500 resize-none"
+              />
+            </div>
+
+            <button
+              onClick={handleBroadcast}
+              disabled={submitting}
+              className="flex items-center gap-2 w-full justify-center py-2.5 bg-orange-600 hover:bg-orange-700 text-white text-sm rounded-lg transition-colors disabled:opacity-50"
+            >
+              <FiUsers size={14} /> {submitting ? 'Đang gửi...' : 'Gửi đến tất cả người dùng'}
+            </button>
+          </motion.div>
+        )}
       </div>
     </div>
   );
 }
+

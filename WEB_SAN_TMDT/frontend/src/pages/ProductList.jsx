@@ -50,10 +50,12 @@ export default function ProductList() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [viewMode, setViewMode] = useState('grid');
   const [localSearch, setLocalSearch] = useState(searchParams.get('search') || '');
+  const [localShopSearch, setLocalShopSearch] = useState(searchParams.get('shop') || '');
   const [selectedPriceRange, setSelectedPriceRange] = useState(0);
   const [minRating, setMinRating] = useState(0);
 
   const currentSearch = searchParams.get('search') || '';
+  const currentShop = searchParams.get('shop') || '';
   const currentCategory = searchParams.get('category') || '';
   const currentSort = searchParams.get('sort') || 'newest';
 
@@ -61,14 +63,15 @@ export default function ProductList() {
   const displayProducts = products.length > 0 ? products : mockProducts;
 
   useEffect(() => {
-    fetchProducts({ search: currentSearch, category: currentCategory, sort: currentSort, limit: 20 });
-  }, [currentSearch, currentCategory, currentSort, fetchProducts]);
+    fetchProducts({ search: currentSearch, shop: currentShop, category: currentCategory, sort: currentSort, limit: 20 });
+  }, [currentSearch, currentShop, currentCategory, currentSort, fetchProducts]);
 
 
   const handleSearch = (e) => {
     e.preventDefault();
     const p = new URLSearchParams(searchParams);
     if (localSearch) p.set('search', localSearch); else p.delete('search');
+    if (localShopSearch) p.set('shop', localShopSearch); else p.delete('shop');
     setSearchParams(p);
   };
 
@@ -89,6 +92,38 @@ export default function ProductList() {
 
   const FilterPanel = () => (
     <div className="space-y-6">
+      {/* Shop Search */}
+      <div>
+        <h3 className="text-sm font-bold text-white mb-3 uppercase tracking-wider">Tìm cửa hàng</h3>
+        <input 
+          type="text"
+          value={localShopSearch}
+          onChange={(e) => setLocalShopSearch(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              const p = new URLSearchParams(searchParams);
+              if (localShopSearch) p.set('shop', localShopSearch); else p.delete('shop');
+              setSearchParams(p);
+            }
+          }}
+          placeholder="Nhập tên cửa hàng..."
+          className="w-full px-3 py-2 rounded-lg bg-slate-700 border border-slate-600 text-white text-sm placeholder-slate-400 focus:border-red-500 focus:outline-none transition"
+        />
+        {localShopSearch && (
+          <button
+            onClick={() => {
+              setLocalShopSearch('');
+              const p = new URLSearchParams(searchParams);
+              p.delete('shop');
+              setSearchParams(p);
+            }}
+            className="w-full mt-2 text-left px-3 py-2 rounded-lg text-sm text-slate-400 hover:bg-white/5 hover:text-white transition-all"
+          >
+            Xóa bộ lọc cửa hàng
+          </button>
+        )}
+      </div>
+
       {/* Category */}
       <div>
         <h3 className="text-sm font-bold text-white mb-3 uppercase tracking-wider">Danh mục</h3>

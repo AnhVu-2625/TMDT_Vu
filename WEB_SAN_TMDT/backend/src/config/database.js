@@ -40,8 +40,8 @@ const buildConfig = () => {
         trustServerCertificate: process.env.DB_TRUST_SERVER_CERTIFICATE !== 'false',
         enableArithAbort: true
       },
-      connectionTimeout: 30000,
-      requestTimeout: 30000
+      connectionTimeout: 15000,
+      requestTimeout: 15000
     };
   }
 

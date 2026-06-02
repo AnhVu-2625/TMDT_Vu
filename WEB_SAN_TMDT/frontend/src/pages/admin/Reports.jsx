@@ -1,73 +1,184 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { FiAlertTriangle, FiCheck, FiX, FiMessageSquare } from 'react-icons/fi';
+import { FiAlertTriangle, FiCheck, FiX, FiRefreshCw } from 'react-icons/fi';
 import { toast } from 'react-toastify';
+import PageHeader from '../../components/admin/PageHeader';
+import Badge from '../../components/admin/Badge';
+import { getReports, resolveReport } from '../../services/adminApi';
 
-export default function Reports() {
-  const [filter, setFilter] = useState('pending');
+const TYPES = {
+  SAN_PHAM_KHONG_HOP_LE: 'Sản phẩm không hợp lệ',
+  HANH_VI_KHONG_HOP_LE: 'Hành vi không hợp lệ',
+  GIAN_LAN: 'Gian lận',
+  KHAC: 'Khác',
+};
 
-  const reports = [
-    { id: 1, type: 'Sản phẩm', target: 'Áo giả Nike', reporter: 'Trần Văn B', reason: 'Hàng giả, hàng nhái', date: '30/05/2026', status: 'pending' },
-    { id: 2, type: 'Shop', target: 'Shop FakeGoods', reporter: 'Nguyễn C', reason: 'Lừa đảo khách hàng', date: '29/05/2026', status: 'pending' },
-    { id: 3, type: 'Đánh giá', target: 'Review #123', reporter: 'Lê D', reason: 'Ngôn ngữ không phù hợp', date: '28/05/2026', status: 'resolved' },
-  ];
+const TABS = [
+  { value: 'CHO_XU_LY', label: 'Chờ xử lý' },
+  { value: 'DANG_XU_LY', label: 'Đang xử lý' },
+  { value: 'DA_GIAI_QUYET', label: 'Đã giải quyết' },
+  { value: '', label: 'Tất cả' },
+];
 
-  const filtered = filter === 'all' ? reports : reports.filter(r => r.status === filter);
+export default function AdminReports() {
+  const [reports, setReports] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [tab, setTab] = useState('CHO_XU_LY');
+  const [modal, setModal] = useState(null);
+  const [note, setNote] = useState('');
 
-  const handleAction = (id, action) => {
-    toast.success(action === 'resolve' ? 'Đã xử lý báo cáo #' + id : 'Đã bỏ qua báo cáo #' + id);
+  const load = useCallback(() => {
+    setLoading(true);
+    getReports({ status: tab })
+      .then((r) => setReports(r.data.data || []))
+      .catch(() => toast.error('Không thể tải báo cáo'))
+      .finally(() => setLoading(false));
+  }, [tab]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const handleResolve = async (decision) => {
+    if (!modal) return;
+    try {
+      await resolveReport(modal.MaBaoCao, { decision, ghiChu: note });
+      toast.success(decision === 'APPROVED' ? 'Đã xử lý và gỡ nội dung vi phạm' : 'Đã từ chối báo cáo');
+      setModal(null);
+      setNote('');
+      load();
+    } catch {
+      toast.error('Thao tác thất bại');
+    }
   };
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white flex items-center gap-3">
-          <FiAlertTriangle className="text-orange-400" /> Báo cáo vi phạm
-        </h1>
-        <p className="text-slate-400 text-sm mt-1">Xem và xử lý các báo cáo từ người dùng</p>
-      </div>
+      <PageHeader
+        title="Báo cáo vi phạm"
+        subtitle="Xem và xử lý các báo cáo từ người dùng"
+        action={
+          <button
+            onClick={load}
+            className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors"
+          >
+            <FiRefreshCw size={14} /> Làm mới
+          </button>
+        }
+      />
 
-      <div className="flex gap-2 mb-6">
-        {[{ v: 'pending', l: 'Chờ xử lý' }, { v: 'resolved', l: 'Đã xử lý' }, { v: 'all', l: 'Tất cả' }].map(t => (
-          <button key={t.v} onClick={() => setFilter(t.v)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${filter === t.v ? 'bg-red-600 text-white' : 'bg-white/[0.04] text-slate-400 hover:text-white border border-white/[0.06]'}`}>
-            {t.l}
+      <div className="flex gap-2 mb-5">
+        {TABS.map((t) => (
+          <button
+            key={t.value || 'all'}
+            onClick={() => setTab(t.value)}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              tab === t.value
+                ? 'bg-red-600 text-white'
+                : 'bg-gray-900 border border-gray-700 text-gray-400 hover:text-white'
+            }`}
+          >
+            {t.label}
           </button>
         ))}
       </div>
 
-      <div className="space-y-3">
-        {filtered.map((r, i) => (
-          <motion.div key={r.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-            className="glass-card rounded-xl p-5">
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="badge-yellow text-xs">{r.type}</span>
-                  <h3 className="text-white font-semibold">{r.target}</h3>
-                  <span className={r.status === 'pending' ? 'badge-red' : 'badge-green'}>
-                    {r.status === 'pending' ? 'Chờ xử lý' : 'Đã xử lý'}
-                  </span>
+      {loading ? (
+        <div className="text-center py-16 text-gray-500">Đang tải...</div>
+      ) : reports.length === 0 ? (
+        <div className="text-center py-16">
+          <FiAlertTriangle size={40} className="mx-auto text-gray-700 mb-3" />
+          <p className="text-gray-500">Không có báo cáo nào</p>
+        </div>
+      ) : (
+        <div className="grid gap-3">
+          {reports.map((r) => (
+            <motion.div
+              key={r.MaBaoCao}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="bg-gray-900 border border-gray-800 rounded-xl p-4"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-xs bg-orange-600/20 text-orange-400 px-2 py-0.5 rounded-full">
+                      {TYPES[r.LoaiBaoCao] || r.LoaiBaoCao}
+                    </span>
+                    <Badge status={r.TrangThai} />
+                    <span className="text-xs text-gray-600">#{r.MaBaoCao}</span>
+                  </div>
+
+                  <p className="text-sm text-gray-300 mb-1 line-clamp-2">{r.MoTaChiTiet}</p>
+                  {r.GhiChuAdmin && <p className="text-xs text-gray-500 italic">Ghi chú: {r.GhiChuAdmin}</p>}
+
+                  <p className="text-xs text-gray-600 mt-1">
+                    {r.NgayTao ? new Date(r.NgayTao).toLocaleString('vi-VN') : ''}
+                    {r.LoaiMaThamChieu ? ` · ${r.LoaiMaThamChieu} #${r.MaThamChieu}` : ''}
+                  </p>
                 </div>
-                <p className="text-sm text-slate-400">📌 Lý do: <span className="text-slate-300">{r.reason}</span></p>
-                <p className="text-sm text-slate-500 mt-1">👤 Người báo cáo: {r.reporter} • 📅 {r.date}</p>
+
+                {r.TrangThai === 'CHO_XU_LY' && (
+                  <button
+                    onClick={() => setModal(r)}
+                    className="shrink-0 px-3 py-1.5 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 text-xs rounded-lg transition-colors"
+                  >
+                    Xử lý
+                  </button>
+                )}
               </div>
-              {r.status === 'pending' && (
-                <div className="flex gap-2">
-                  <button onClick={() => handleAction(r.id, 'resolve')}
-                    className="flex items-center gap-1 px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm rounded-lg transition">
-                    <FiCheck size={14} /> Xử lý
-                  </button>
-                  <button onClick={() => handleAction(r.id, 'dismiss')}
-                    className="flex items-center gap-1 px-3 py-2 bg-white/5 hover:bg-white/10 text-slate-400 text-sm rounded-lg transition border border-white/[0.06]">
-                    <FiX size={14} /> Bỏ qua
-                  </button>
-                </div>
-              )}
+            </motion.div>
+          ))}
+        </div>
+      )}
+
+      {modal && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-gray-900 border border-gray-700 rounded-xl p-6 w-full max-w-lg"
+          >
+            <h3 className="text-white font-semibold mb-1">Xử lý báo cáo #{modal.MaBaoCao}</h3>
+            <p className="text-sm text-gray-400 mb-3">{modal.MoTaChiTiet}</p>
+
+            <textarea
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="Ghi chú xử lý..."
+              rows={3}
+              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-red-500 mb-4 resize-none"
+            />
+
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => {
+                  setModal(null);
+                  setNote('');
+                }}
+                className="px-4 py-2 text-sm text-gray-400 hover:text-white transition-colors"
+              >
+                Hủy
+              </button>
+
+              <button
+                onClick={() => handleResolve('REJECTED')}
+                className="flex items-center gap-1.5 px-4 py-2 text-sm bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
+              >
+                <FiX size={13} /> Từ chối
+              </button>
+
+              <button
+                onClick={() => handleResolve('APPROVED')}
+                className="flex items-center gap-1.5 px-4 py-2 text-sm bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+              >
+                <FiCheck size={13} /> Gỡ vi phạm
+              </button>
             </div>
           </motion.div>
-        ))}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
+

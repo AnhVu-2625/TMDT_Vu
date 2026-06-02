@@ -1,0 +1,174 @@
+### ============================================
+### DISPUTE RESOLUTION & SETTLEMENT API TESTS
+### ============================================
+
+@baseUrl = http://localhost:5000/api
+@adminToken = YOUR_ADMIN_TOKEN_HERE
+@userToken = YOUR_USER_TOKEN_HERE
+
+### ============================================
+### 1. DISPUTE RESOLUTION APIs
+### ============================================
+
+### 1.1 Lấy danh sách tranh chấp (Admin)
+GET {{baseUrl}}/disputes
+Authorization: Bearer {{adminToken}}
+
+### 1.2 Lấy tranh chấp theo trạng thái
+GET {{baseUrl}}/disputes?trangThai=KHIEU_NAI_ADMIN&page=1&limit=10
+Authorization: Bearer {{adminToken}}
+
+### 1.3 Xem chi tiết tranh chấp
+GET {{baseUrl}}/disputes/1
+Authorization: Bearer {{adminToken}}
+
+### 1.4 Admin giải quyết tranh chấp - Đồng ý hoàn tiền
+POST {{baseUrl}}/disputes/1/resolve
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "quyetDinh": "DONG_Y_HOAN_TIEN",
+  "lyDo": "Sau khi xem video đóng hàng và mở hàng, xác nhận sản phẩm không đúng với mô tả. Đồng ý hoàn tiền cho người mua."
+}
+
+### 1.5 Admin giải quyết tranh chấp - Từ chối hoàn tiền
+POST {{baseUrl}}/disputes/2/resolve
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "quyetDinh": "TU_CHOI_HOAN_TIEN",
+  "lyDo": "Video cho thấy sản phẩm đúng như mô tả. Người mua đã sử dụng sản phẩm. Từ chối hoàn tiền."
+}
+
+### 1.6 Người mua khiếu nại lên Admin
+POST {{baseUrl}}/disputes/3/escalate
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "lyDoKhieuNai": "Shop từ chối hoàn tiền nhưng sản phẩm thực sự bị lỗi. Tôi có video mở hàng chứng minh."
+}
+
+### ============================================
+### 2. SETTLEMENT APIs
+### ============================================
+
+### 2.1 Lấy đơn hàng đủ điều kiện đối soát
+GET {{baseUrl}}/settlements/eligible-orders
+Authorization: Bearer {{adminToken}}
+
+### 2.2 Lấy đơn hàng đủ điều kiện theo thời gian
+GET {{baseUrl}}/settlements/eligible-orders?tuNgay=2026-05-01&denNgay=2026-05-31
+Authorization: Bearer {{adminToken}}
+
+### 2.3 Lấy đơn hàng đủ điều kiện theo cửa hàng
+GET {{baseUrl}}/settlements/eligible-orders?maCuaHang=5
+Authorization: Bearer {{adminToken}}
+
+### 2.4 Tạo phiên đối soát mới
+POST {{baseUrl}}/settlements
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "tenPhien": "Đối soát tháng 5/2026",
+  "tuNgay": "2026-05-01T00:00:00",
+  "denNgay": "2026-05-31T23:59:59",
+  "ghiChu": "Đối soát định kỳ cuối tháng"
+}
+
+### 2.5 Lấy danh sách phiên đối soát
+GET {{baseUrl}}/settlements
+Authorization: Bearer {{adminToken}}
+
+### 2.6 Lấy phiên đối soát theo trạng thái
+GET {{baseUrl}}/settlements?trangThai=DANG_XU_LY&page=1&limit=20
+Authorization: Bearer {{adminToken}}
+
+### 2.7 Xem chi tiết phiên đối soát
+GET {{baseUrl}}/settlements/1
+Authorization: Bearer {{adminToken}}
+
+### 2.8 Thực hiện chi trả (Xác nhận đối soát)
+POST {{baseUrl}}/settlements/1/execute
+Authorization: Bearer {{adminToken}}
+
+### ============================================
+### 3. SYSTEM CONFIG APIs
+### ============================================
+
+### 3.1 Lấy cấu hình hệ thống
+GET {{baseUrl}}/settlements/config/system
+Authorization: Bearer {{adminToken}}
+
+### 3.2 Cập nhật phí sàn
+PUT {{baseUrl}}/settlements/config/system
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "tenCauHinh": "PHI_SAN_PHAN_TRAM",
+  "giaTri": "7"
+}
+
+### 3.3 Cập nhật số ngày đổi trả
+PUT {{baseUrl}}/settlements/config/system
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "tenCauHinh": "SO_NGAY_DOI_TRA",
+  "giaTri": "10"
+}
+
+### 3.4 Bật/tắt tự động đối soát
+PUT {{baseUrl}}/settlements/config/system
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "tenCauHinh": "TU_DONG_DOI_SOAT",
+  "giaTri": "true"
+}
+
+### ============================================
+### 4. TEST SCENARIOS
+### ============================================
+
+### Scenario 1: Flow tranh chấp hoàn chỉnh
+# 1. Người mua tạo yêu cầu đổi trả (dùng API order)
+# 2. Shop từ chối
+# 3. Người mua khiếu nại lên Admin (1.6)
+# 4. Admin xem chi tiết (1.3)
+# 5. Admin giải quyết (1.4 hoặc 1.5)
+
+### Scenario 2: Flow đối soát hoàn chỉnh
+# 1. Xem đơn hàng đủ điều kiện (2.1)
+# 2. Tạo phiên đối soát (2.4)
+# 3. Xem chi tiết phiên (2.7)
+# 4. Thực hiện chi trả (2.8)
+
+### Scenario 3: Kiểm tra lỗi số âm
+# 1. Tạo đơn hàng có giảm giá > 100%
+# 2. Đợi hết hạn đổi trả
+# 3. Tạo phiên đối soát (2.4)
+# 4. Thực hiện chi trả (2.8) → Sẽ bị chặn với lỗi
+
+### ============================================
+### NOTES
+### ============================================
+
+# Để test, bạn cần:
+# 1. Chạy script SQL extension trước
+# 2. Có tài khoản admin và lấy token
+# 3. Có đơn hàng đã giao và hết hạn đổi trả
+# 4. Thay thế {{adminToken}} và {{userToken}} bằng token thực
+
+# Lấy admin token:
+# POST {{baseUrl}}/auth/login
+# {
+#   "email": "admin@example.com",
+#   "password": "admin123"
+# }

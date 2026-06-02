@@ -1,8 +1,33 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 const { getPool, sql } = require('../config/database');
 const { authenticateToken, requireSeller } = require('../middleware/auth');
 const { validateProduct, validateProductVariant } = require('../utils/validators');
+
+// ─── Multer config: upload ảnh sản phẩm ──────────────────────────────────
+const productImageDir = path.join(__dirname, '..', '..', 'uploads', 'products');
+if (!fs.existsSync(productImageDir)) fs.mkdirSync(productImageDir, { recursive: true });
+
+const productImageStorage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, productImageDir),
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    cb(null, `product_${Date.now()}_${Math.random().toString(36).substr(2, 9)}${ext}`);
+  }
+});
+const uploadProductImage = multer({
+  storage: productImageStorage,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+  fileFilter: (req, file, cb) => {
+    const allowed = /jpeg|jpg|png|webp/;
+    const ext = allowed.test(path.extname(file.originalname).toLowerCase());
+    const mime = allowed.test(file.mimetype);
+    cb(ext && mime ? null : new Error('Chỉ chấp nhận file ảnh (jpg/png/webp)'), ext && mime);
+  }
+});
 
 /**
  * @swagger
@@ -46,6 +71,7 @@ router.get('/', async (req, res) => {
             page = 1,
             limit = 20,
             search = '',
+            shop = '',
             category = '',
             minPrice = 0,
             maxPrice = 999999999,
@@ -53,17 +79,27 @@ router.get('/', async (req, res) => {
             sortOrder = 'DESC'
         } = req.query;
 
-        const offset = (page - 1) * limit;
+        const offset = (parseInt(page) - 1) * parseInt(limit);
         const pool = await getPool();
+
+        // Whitelist sort columns to prevent SQL injection
+        const allowedSortColumns = ['NgayTao', 'GiaGoc', 'DanhGiaTrungBinh', 'TenSanPham'];
+        const safeSortBy = allowedSortColumns.includes(sortBy) ? sortBy : 'NgayTao';
+        const safeSortOrder = sortOrder === 'ASC' ? 'ASC' : 'DESC';
 
         let whereClause = "WHERE sp.TrangThai = N'HOAT_DONG'";
         
         if (search) {
-            whereClause += ` AND sp.TenSanPham LIKE N'%${search}%'`;
+            whereClause += ` AND sp.TenSanPham LIKE N'%' + @search + N'%'`;
+        }
+
+        if (shop) {
+            // Support both shop ID and shop name
+            whereClause += ` AND (ch.MaCuaHang = @shopId OR ch.TenCuaHang LIKE N'%' + @shopName + N'%')`;
         }
         
         if (category) {
-            whereClause += ` AND sp.MaDanhMuc = ${category}`;
+            whereClause += ` AND sp.MaDanhMuc = @category`;
         }
 
         const query = `
@@ -86,22 +122,41 @@ router.get('/', async (req, res) => {
             LEFT JOIN CuaHang ch ON sp.MaCuaHang = ch.MaCuaHang
             LEFT JOIN DanhMucSanPham dm ON sp.MaDanhMuc = dm.MaDanhMuc
             ${whereClause}
-            HAVING (SELECT MIN(GiaBan) FROM PhienBanSanPham WHERE MaSanPham = sp.MaSanPham) >= ${minPrice}
-                AND (SELECT MAX(GiaBan) FROM PhienBanSanPham WHERE MaSanPham = sp.MaSanPham) <= ${maxPrice}
-            ORDER BY sp.${sortBy} ${sortOrder}
-            OFFSET ${offset} ROWS
-            FETCH NEXT ${limit} ROWS ONLY
+            AND EXISTS (
+                SELECT 1 FROM PhienBanSanPham WHERE MaSanPham = sp.MaSanPham 
+                AND GiaBan >= @minPrice AND GiaBan <= @maxPrice
+            )
+            ORDER BY sp.${safeSortBy} ${safeSortOrder}
+            OFFSET @offset ROWS
+            FETCH NEXT @limit ROWS ONLY
         `;
 
-        const result = await pool.request().query(query);
+        const request = pool.request()
+            .input('minPrice', sql.Decimal(15, 2), parseFloat(minPrice))
+            .input('maxPrice', sql.Decimal(15, 2), parseFloat(maxPrice))
+            .input('offset', sql.Int, offset)
+            .input('limit', sql.Int, parseInt(limit));
+        
+        if (search) request.input('search', sql.NVarChar, search);
+        if (shop) {
+            request.input('shopId', sql.Int, isNaN(parseInt(shop)) ? 0 : parseInt(shop));
+            request.input('shopName', sql.NVarChar, shop);
+        }
+        if (category) request.input('category', sql.Int, parseInt(category));
+
+        const result = await request.query(query);
 
         // Đếm tổng số sản phẩm
+        const countRequest = pool.request();
+        if (search) countRequest.input('search', sql.NVarChar, search);
+        if (category) countRequest.input('category', sql.Int, parseInt(category));
+
         const countQuery = `
             SELECT COUNT(*) as Total
             FROM SanPham sp
             ${whereClause}
         `;
-        const countResult = await pool.request().query(countQuery);
+        const countResult = await countRequest.query(countQuery);
         const total = countResult.recordset[0].Total;
 
         res.json({
@@ -112,7 +167,7 @@ router.get('/', async (req, res) => {
                     page: parseInt(page),
                     limit: parseInt(limit),
                     total,
-                    totalPages: Math.ceil(total / limit)
+                    totalPages: Math.ceil(total / parseInt(limit))
                 }
             }
         });
@@ -127,6 +182,60 @@ router.get('/', async (req, res) => {
 
 /**
  * @swagger
+ * /api/products/shops/{shopId}:
+ *   get:
+ *     tags: [Products]
+ *     summary: Lấy thông tin cửa hàng
+ *     security: []
+ *     parameters:
+ *       - in: path
+ *         name: shopId
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: Thông tin cửa hàng
+ *       404:
+ *         description: Không tìm thấy cửa hàng
+ */
+router.get('/shops/:shopId', async (req, res) => {
+    try {
+        const { shopId } = req.params;
+        const pool = await getPool();
+
+        const result = await pool.request()
+            .input('MaCuaHang', sql.Int, parseInt(shopId))
+            .query(`
+                SELECT 
+                    MaCuaHang,
+                    TenCuaHang,
+                    MoTa,
+                    Logo,
+                    SoDuVi,
+                    DiaChiCuaHang,
+                    TrangThai,
+                    NgayDangKy,
+                    MaNguoiDung
+                FROM CuaHang
+                WHERE MaCuaHang = @MaCuaHang AND TrangThai = N'HOAT_DONG'
+            `);
+
+        if (result.recordset.length === 0) {
+            return res.status(404).json({ success: false, message: 'Không tìm thấy cửa hàng' });
+        }
+
+        res.json({
+            success: true,
+            data: result.recordset[0]
+        });
+    } catch (error) {
+        console.error('Get shop error:', error);
+        res.status(500).json({ success: false, message: 'Lỗi lấy thông tin cửa hàng' });
+    }
+});
+
+/**
+ * @swagger
  * /api/products/categories/all:
  *   get:
  *     tags: [Products]
@@ -136,6 +245,28 @@ router.get('/', async (req, res) => {
  *       200:
  *         description: Danh sách danh mục
  */
+// GET /api/products/categories/all - Lấy danh mục (PHẢI đặt TRƯỚC /:id)
+router.get('/categories/all', async (req, res) => {
+    try {
+        const pool = await getPool();
+        const result = await pool.request().query(`
+            SELECT * FROM DanhMucSanPham
+            ORDER BY TenDanhMuc
+        `);
+
+        res.json({
+            success: true,
+            data: result.recordset
+        });
+    } catch (error) {
+        console.error('Lỗi lấy danh mục:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Lỗi lấy danh mục'
+        });
+    }
+});
+
 /**
  * @swagger
  * /api/products/{id}:
@@ -442,24 +573,100 @@ router.post('/:id/variants', authenticateToken, requireSeller, validateProductVa
     }
 });
 
-// GET /api/products/categories - Lấy danh mục
-router.get('/categories/all', async (req, res) => {
+// POST /api/products/:id/upload-image - Upload ảnh sản phẩm
+/**
+ * @swagger
+ * /api/products/{id}/upload-image:
+ *   post:
+ *     tags: [Products]
+ *     summary: Upload ảnh sản phẩm
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required: [file]
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *               laAnhChinh:
+ *                 type: boolean
+ *                 default: false
+ *     responses:
+ *       201:
+ *         description: Upload ảnh thành công
+ */
+router.post('/:id/upload-image', authenticateToken, requireSeller, uploadProductImage.single('file'), async (req, res) => {
     try {
-        const pool = await getPool();
-        const result = await pool.request().query(`
-            SELECT * FROM DanhMucSanPham
-            ORDER BY TenDanhMuc
-        `);
+        const { id } = req.params;
+        const { laAnhChinh } = req.body;
+        const maCuaHang = req.shop.MaCuaHang;
 
-        res.json({
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                message: 'Vui lòng chọn file ảnh'
+            });
+        }
+
+        const pool = await getPool();
+
+        // Kiểm tra quyền sở hữu
+        const checkResult = await pool.request()
+            .input('MaSanPham', sql.Int, id)
+            .input('MaCuaHang', sql.Int, maCuaHang)
+            .query('SELECT MaSanPham FROM SanPham WHERE MaSanPham = @MaSanPham AND MaCuaHang = @MaCuaHang');
+
+        if (checkResult.recordset.length === 0) {
+            return res.status(403).json({
+                success: false,
+                message: 'Bạn không có quyền upload ảnh cho sản phẩm này'
+            });
+        }
+
+        const imageUrl = `/uploads/products/${req.file.filename}`;
+        const isMainImage = laAnhChinh === 'true' || laAnhChinh === true;
+
+        // Nếu là ảnh chính, set các ảnh khác không phải chính
+        if (isMainImage) {
+            await pool.request()
+                .input('MaSanPham', sql.Int, id)
+                .query('UPDATE HinhAnhSanPham SET LaAnhChinh = 0 WHERE MaSanPham = @MaSanPham');
+        }
+
+        // Thêm ảnh mới
+        const result = await pool.request()
+            .input('MaSanPham', sql.Int, id)
+            .input('DuongDanAnh', sql.NVarChar, imageUrl)
+            .input('LaAnhChinh', sql.Bit, isMainImage ? 1 : 0)
+            .query(`
+                INSERT INTO HinhAnhSanPham (MaSanPham, DuongDanAnh, LaAnhChinh)
+                OUTPUT INSERTED.MaHinhAnh
+                VALUES (@MaSanPham, @DuongDanAnh, @LaAnhChinh)
+            `);
+
+        res.status(201).json({
             success: true,
-            data: result.recordset
+            message: 'Upload ảnh thành công',
+            data: {
+                maHinhAnh: result.recordset[0].MaHinhAnh,
+                urlAnh: imageUrl
+            }
         });
     } catch (error) {
-        console.error('Lỗi lấy danh mục:', error);
+        console.error('Lỗi upload ảnh:', error);
         res.status(500).json({
             success: false,
-            message: 'Lỗi lấy danh mục'
+            message: 'Lỗi upload ảnh sản phẩm'
         });
     }
 });

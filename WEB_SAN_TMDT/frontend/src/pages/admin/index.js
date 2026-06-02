@@ -1,4 +1,11 @@
-export { default } from '../user/Profile';
-export { default as Dashboard } from '../user/Profile';
-export { default as Users } from '../user/Profile';
-export { default as Reports } from '../user/Profile';
+export { default } from './Dashboard';
+export { default as Dashboard } from './Dashboard';
+export { default as Users } from './Users';
+export { default as Shops } from './Shops';
+export { default as Moderation } from './Moderation';
+export { default as Reports } from './Reports';
+export { default as Disputes } from './Disputes';
+export { default as Settlement } from './Settlement';
+export { default as Statistics } from './Statistics';
+export { default as Policies } from './Policies';
+export { default as Notifications } from './Notifications';

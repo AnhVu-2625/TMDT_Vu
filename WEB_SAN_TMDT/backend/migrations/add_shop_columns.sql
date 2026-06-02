@@ -28,6 +28,19 @@ END
 GO
 
 -- Đảm bảo cột TrangThai chấp nhận giá trị NHAP (Draft)
--- Các giá trị TrangThai: HOAT_DONG, CHO_DUYET, BI_KHOA, NHAP
+-- Xóa constraint cũ và tạo mới với NHAP
+DECLARE @constraintName NVARCHAR(200);
+SELECT @constraintName = name FROM sys.check_constraints 
+WHERE parent_object_id = OBJECT_ID('CuaHang') AND definition LIKE '%CHO_DUYET%';
+
+IF @constraintName IS NOT NULL
+BEGIN
+    EXEC('ALTER TABLE CuaHang DROP CONSTRAINT [' + @constraintName + ']');
+    ALTER TABLE CuaHang ADD CONSTRAINT CK_CuaHang_TrangThai 
+        CHECK (TrangThai IN (N'CHO_DUYET', N'HOAT_DONG', N'BI_KHOA', N'NHAP'));
+    PRINT N'Đã cập nhật constraint TrangThai để hỗ trợ NHAP (Draft)';
+END
+GO
+
 PRINT N'Cập nhật hoàn tất. Các cột DiaChiKho, SDTCuaHang, AnhGiayTo đã sẵn sàng.';
 GO

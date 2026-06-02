@@ -39,7 +39,7 @@ export default function Cart() {
       <div className="text-7xl mb-6">🛒</div>
       <h2 className="text-2xl font-bold text-white mb-3">Giỏ hàng trống</h2>
       <p className="text-slate-400 mb-8">Thêm sản phẩm vào giỏ để bắt đầu mua sắm</p>
-      <Link to="/products"><button className="btn-primary">Khám phá sản phẩm</button></Link>
+      <Link to="/products"><button className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition shadow-lg">Khám phá sản phẩm</button></Link>
     </div>
   );
 

@@ -1,74 +1,168 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { FiShield, FiSearch, FiTrash2, FiEye, FiAlertTriangle } from 'react-icons/fi';
+import { FiShield, FiEyeOff, FiCheck, FiRefreshCw, FiExternalLink } from 'react-icons/fi';
 import { toast } from 'react-toastify';
+import PageHeader from '../../components/admin/PageHeader';
+import Badge from '../../components/admin/Badge';
+import { getReports, resolveReport } from '../../services/adminApi';
 
-export default function Moderation() {
-  const [activeTab, setActiveTab] = useState('products');
+export default function AdminModeration() {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [modal, setModal] = useState(null);
+  const [note, setNote] = useState('');
 
-  const tabs = [
-    { id: 'products', label: 'Sản phẩm vi phạm' },
-    { id: 'reviews', label: 'Đánh giá vi phạm' },
-    { id: 'shops', label: 'Shop vi phạm' },
-  ];
+  const load = useCallback(() => {
+    setLoading(true);
+    // Lấy các report đang chờ xử lý (dùng chung API reports)
+    getReports({ status: 'CHO_XU_LY' })
+      .then((r) => {
+        const data = r.data.data || [];
+        // Lọc những report có tham chiếu tới SAN_PHAM (tương thích phần UI)
+        setItems(
+          data.filter(
+            (i) => i.LoaiMaThamChieu === 'SAN_PHAM' || i.LoaiBaoCao === 'SAN_PHAM_KHONG_HOP_LE',
+          ),
+        );
+      })
+      .catch(() => toast.error('Không thể tải dữ liệu'))
+      .finally(() => setLoading(false));
+  }, []);
 
-  // Mock data — thay bằng API thực tế sau
-  const items = [
-    { id: 1, name: 'Sản phẩm giả mạo thương hiệu', shop: 'Shop ABC', reportCount: 5, status: 'pending' },
-    { id: 2, name: 'Sản phẩm mô tả sai lệch', shop: 'Shop XYZ', reportCount: 3, status: 'pending' },
-    { id: 3, name: 'Hình ảnh không phù hợp', shop: 'Shop DEF', reportCount: 8, status: 'resolved' },
-  ];
+  useEffect(() => {
+    load();
+  }, [load]);
 
-  const handleRemove = (id) => {
-    toast.success('Đã gỡ bài vi phạm #' + id);
+  const handleAction = async (decision) => {
+    if (!modal) return;
+    try {
+      await resolveReport(modal.MaBaoCao, { decision, ghiChu: note });
+      toast.success(decision === 'APPROVED' ? 'Đã gỡ nội dung vi phạm' : 'Đã bỏ qua báo cáo');
+      setModal(null);
+      setNote('');
+      load();
+    } catch {
+      toast.error('Thao tác thất bại');
+    }
   };
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white flex items-center gap-3">
-          <FiShield className="text-purple-400" /> Kiểm duyệt hệ thống
-        </h1>
-        <p className="text-slate-400 text-sm mt-1">Kiểm duyệt nội dung & gỡ bài vi phạm</p>
-      </div>
-
-      <div className="flex gap-2 mb-6">
-        {tabs.map(t => (
-          <button key={t.id} onClick={() => setActiveTab(t.id)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === t.id ? 'bg-red-600 text-white' : 'bg-white/[0.04] text-slate-400 hover:text-white border border-white/[0.06]'}`}>
-            {t.label}
+      <PageHeader
+        title="Kiểm duyệt hệ thống"
+        subtitle="Xem xét và gỡ bỏ nội dung vi phạm"
+        action={
+          <button
+            onClick={load}
+            className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors"
+          >
+            <FiRefreshCw size={14} /> Làm mới
           </button>
-        ))}
-      </div>
+        }
+      />
 
-      <div className="space-y-3">
-        {items.map((item, i) => (
-          <motion.div key={item.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-            className="glass-card rounded-xl p-4 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-lg bg-red-500/10 flex items-center justify-center">
-                <FiAlertTriangle className="text-red-400" />
+      {loading ? (
+        <div className="text-center py-16 text-gray-500">Đang tải...</div>
+      ) : items.length === 0 ? (
+        <div className="text-center py-16">
+          <FiShield size={40} className="mx-auto text-gray-700 mb-3" />
+          <p className="text-gray-500">Không có nội dung nào cần kiểm duyệt</p>
+        </div>
+      ) : (
+        <div className="grid gap-3">
+          {items.map((item) => (
+            <motion.div
+              key={item.MaBaoCao}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="bg-gray-900 border border-gray-800 rounded-xl p-4"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-xs bg-red-600/20 text-red-400 px-2 py-0.5 rounded-full">
+                      Sản phẩm #{item.MaThamChieu}
+                    </span>
+                    <Badge status={item.TrangThai} />
+                  </div>
+                  <p className="text-sm text-gray-300 mb-1 line-clamp-2">{item.MoTaChiTiet}</p>
+                  <p className="text-xs text-gray-600">
+                    {item.NgayTao ? new Date(item.NgayTao).toLocaleString('vi-VN') : ''}
+                  </p>
+                </div>
+
+                <div className="flex gap-2 shrink-0">
+                  {item.MaThamChieu && (
+                    <a
+                      href={`/products/${item.MaThamChieu}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs rounded-lg transition-colors"
+                    >
+                      <FiExternalLink size={12} /> Xem
+                    </a>
+                  )}
+
+                  <button
+                    onClick={() => setModal(item)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-red-600/20 hover:bg-red-600/30 text-red-400 text-xs rounded-lg transition-colors"
+                  >
+                    <FiEyeOff size={12} /> Gỡ vi phạm
+                  </button>
+                </div>
               </div>
-              <div>
-                <p className="text-white font-medium">{item.name}</p>
-                <p className="text-sm text-slate-400">Shop: {item.shop} • {item.reportCount} báo cáo</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className={item.status === 'pending' ? 'badge-yellow' : 'badge-green'}>
-                {item.status === 'pending' ? 'Chờ xử lý' : 'Đã xử lý'}
-              </span>
-              <button className="p-2 hover:bg-white/5 rounded-lg text-slate-400 hover:text-white transition" title="Xem chi tiết">
-                <FiEye size={16} />
+            </motion.div>
+          ))}
+        </div>
+      )}
+
+      {modal && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-gray-900 border border-gray-700 rounded-xl p-6 w-full max-w-md"
+          >
+            <h3 className="text-white font-semibold mb-1">Xử lý nội dung vi phạm</h3>
+            <p className="text-sm text-gray-400 mb-3">{modal.MoTaChiTiet}</p>
+
+            <textarea
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="Ghi chú xử lý..."
+              rows={3}
+              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-red-500 mb-4 resize-none"
+            />
+
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => {
+                  setModal(null);
+                  setNote('');
+                }}
+                className="px-4 py-2 text-sm text-gray-400 hover:text-white transition-colors"
+              >
+                Hủy
               </button>
-              <button onClick={() => handleRemove(item.id)}
-                className="p-2 hover:bg-red-500/20 rounded-lg text-red-400 transition" title="Gỡ bài">
-                <FiTrash2 size={16} />
+
+              <button
+                onClick={() => handleAction('REJECTED')}
+                className="flex items-center gap-1.5 px-4 py-2 text-sm bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
+              >
+                <FiEyeOff size={13} /> Bỏ qua
+              </button>
+
+              <button
+                onClick={() => handleAction('APPROVED')}
+                className="flex items-center gap-1.5 px-4 py-2 text-sm bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+              >
+                <FiCheck size={13} /> Gỡ bài
               </button>
             </div>
           </motion.div>
-        ))}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
+
