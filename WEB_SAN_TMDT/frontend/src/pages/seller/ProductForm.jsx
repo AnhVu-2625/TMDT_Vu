@@ -12,7 +12,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 export default function ProductForm() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { createProduct, loading } = useSellerStore();
+  const { createProduct, updateProduct, loading } = useSellerStore();
   const { token } = useAuthStore();
   const isEdit = Boolean(id);
   const fileInputRef = useRef(null);
@@ -25,6 +25,47 @@ export default function ProductForm() {
   ]);
   const [images, setImages] = useState([]);
   const [uploading, setUploading] = useState(false);
+  const [fetching, setFetching] = useState(false);
+
+  // Load existing product for editing
+  useEffect(() => {
+    if (!isEdit) return;
+    const fetchProduct = async () => {
+      setFetching(true);
+      try {
+        const res = await axios.get(`${API_URL}/products/${id}`);
+        const p = res.data.data;
+        setForm({
+          tenSanPham: p.TenSanPham || '',
+          moTa: p.MoTa || '',
+          giaGoc: p.GiaGoc?.toString() || '',
+          maDanhMuc: p.MaDanhMuc?.toString() || ''
+        });
+        if (p.variants && p.variants.length > 0) {
+          setVariants(p.variants.map(v => ({
+            mauSac: v.MauSac || '',
+            kichThuoc: v.KichThuoc || '',
+            giaBan: v.GiaBan?.toString() || '',
+            soLuongTonKho: v.SoLuongTonKho?.toString() || ''
+          })));
+        }
+        if (p.images && p.images.length > 0) {
+          setImages(p.images.map(img => ({
+            id: img.MaHinhAnh || Date.now() + Math.random(),
+            preview: img.DuongDanAnh ? `http://localhost:5000${img.DuongDanAnh}` : '',
+            isMain: img.LaAnhChinh === 1,
+            existing: true,
+            duongDan: img.DuongDanAnh
+          })));
+        }
+      } catch (err) {
+        toast.error('Không thể tải thông tin sản phẩm');
+        navigate('/seller/products');
+      }
+      setFetching(false);
+    };
+    fetchProduct();
+  }, [id]);
 
   const addVariant = () => setVariants([...variants, { mauSac: '', kichThuoc: '', giaBan: '', soLuongTonKho: '' }]);
   const removeVariant = (i) => setVariants(variants.filter((_, idx) => idx !== i));
@@ -39,7 +80,6 @@ export default function ProductForm() {
     if (files.length === 0) return;
 
     for (const file of files) {
-      // Preview ảnh trước khi upload
       const reader = new FileReader();
       reader.onload = (evt) => {
         setImages(prev => [...prev, {
@@ -83,85 +123,101 @@ export default function ProductForm() {
     if (!form.tenSanPham || !form.giaGoc) {
       return toast.error('Vui lòng điền tên và giá sản phẩm');
     }
-    if (images.length === 0) {
+    if (!isEdit && images.length === 0) {
       return toast.error('Vui lòng thêm ít nhất 1 ảnh sản phẩm');
     }
-    
+
     try {
       setUploading(true);
-      console.log('📤 Submitting product:', {
-        tenSanPham: form.tenSanPham,
-        moTa: form.moTa,
-        giaGoc: parseFloat(form.giaGoc),
-        maDanhMuc: form.maDanhMuc ? parseInt(form.maDanhMuc) : null
-      });
 
-      const result = await createProduct({
-        tenSanPham: form.tenSanPham,
-        moTa: form.moTa,
-        giaGoc: parseFloat(form.giaGoc),
-        maDanhMuc: form.maDanhMuc ? parseInt(form.maDanhMuc) : null
-      });
+      if (isEdit) {
+        await updateProduct(id, {
+          tenSanPham: form.tenSanPham,
+          moTa: form.moTa,
+          giaGoc: parseFloat(form.giaGoc),
+          maDanhMuc: form.maDanhMuc ? parseInt(form.maDanhMuc) : null
+        });
 
-      const productId = result.data.maSanPham;
-      console.log('✅ Product created:', productId);
-
-      // Upload ảnh
-      for (const img of images) {
-        if (img.file) {
-          try {
-            console.log('📸 Uploading image:', img.file.name);
-            await uploadImage(img, productId);
-          } catch (err) {
-            console.error('Upload ảnh thất bại:', err);
+        // Upload new images if any
+        for (const img of images) {
+          if (img.file) {
+            try {
+              await uploadImage(img, id);
+            } catch (err) {
+              console.error('Upload ảnh thất bại:', err);
+            }
           }
         }
-      }
 
-      // Upload phiên bản (variants)
-      for (const variant of variants) {
-        if (variant.giaBan && variant.soLuongTonKho) {
-          try {
-            console.log('📝 Creating variant:', variant);
-            await axios.post(
-              `${API_URL}/products/${productId}/variants`,
-              {
-                mauSac: variant.mauSac || null,
-                kichThuoc: variant.kichThuoc || null,
-                giaBan: parseFloat(variant.giaBan),
-                soLuongTonKho: parseInt(variant.soLuongTonKho)
-              },
-              {
-                headers: {
-                  Authorization: `Bearer ${token}`
+        setUploading(false);
+        toast.success('Cập nhật sản phẩm thành công!');
+        navigate('/seller/products');
+      } else {
+        const result = await createProduct({
+          tenSanPham: form.tenSanPham,
+          moTa: form.moTa,
+          giaGoc: parseFloat(form.giaGoc),
+          maDanhMuc: form.maDanhMuc ? parseInt(form.maDanhMuc) : null
+        });
+
+        const productId = result.data.maSanPham;
+
+        // Upload images
+        for (const img of images) {
+          if (img.file) {
+            try {
+              await uploadImage(img, productId);
+            } catch (err) {
+              console.error('Upload ảnh thất bại:', err);
+            }
+          }
+        }
+
+        // Create variants
+        for (const variant of variants) {
+          if (variant.giaBan && variant.soLuongTonKho) {
+            try {
+              await axios.post(
+                `${API_URL}/products/${productId}/variants`,
+                {
+                  mauSac: variant.mauSac || null,
+                  kichThuoc: variant.kichThuoc || null,
+                  giaBan: parseFloat(variant.giaBan),
+                  soLuongTonKho: parseInt(variant.soLuongTonKho)
+                },
+                {
+                  headers: { Authorization: `Bearer ${token}` }
                 }
-              }
-            );
-          } catch (err) {
-            console.error('Tạo phiên bản thất bại:', err);
+              );
+            } catch (err) {
+              console.error('Tạo phiên bản thất bại:', err);
+            }
           }
         }
-      }
 
-      setUploading(false);
-      toast.success('Tạo sản phẩm thành công!');
-      navigate('/seller/products');
+        setUploading(false);
+        toast.success('Tạo sản phẩm thành công!');
+        navigate('/seller/products');
+      }
     } catch (err) {
-      console.error('❌ Submit error details:', {
-        status: err.response?.status,
-        message: err.response?.data?.message,
-        errors: err.response?.data?.errors,
-        fullError: err.response?.data
-      });
+      console.error('Submit error:', err);
       setUploading(false);
       if (err.response?.data?.errors) {
         const errorMsg = err.response.data.errors.map(e => `${e.param}: ${e.msg}`).join(', ');
         toast.error(errorMsg);
       } else {
-        toast.error(err.response?.data?.message || 'Lỗi tạo sản phẩm');
+        toast.error(err.response?.data?.message || 'Lỗi lưu sản phẩm');
       }
     }
   };
+
+  if (fetching) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -207,7 +263,6 @@ export default function ProductForm() {
           <div className="glass-card rounded-2xl p-6 space-y-4">
             <h2 className="text-lg font-semibold text-white">Hình ảnh sản phẩm</h2>
 
-            {/* Upload area */}
             <div
               onClick={() => fileInputRef.current?.click()}
               className="relative border-2 border-dashed border-slate-600 hover:border-emerald-500 rounded-xl p-8 text-center cursor-pointer transition-colors"
@@ -229,7 +284,6 @@ export default function ProductForm() {
               </div>
             </div>
 
-            {/* Image preview grid */}
             {images.length > 0 && (
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {images.map((img) => (
@@ -248,17 +302,24 @@ export default function ProductForm() {
                         />
                         <span className="text-xs text-white font-medium">Ảnh chính</span>
                       </label>
-                      <button
-                        type="button"
-                        onClick={() => setImages(images.filter(i => i.id !== img.id))}
-                        className="text-red-400 hover:text-red-300"
-                      >
-                        <FiX size={16} />
-                      </button>
+                      {!img.existing && (
+                        <button
+                          type="button"
+                          onClick={() => setImages(images.filter(i => i.id !== img.id))}
+                          className="text-red-400 hover:text-red-300"
+                        >
+                          <FiX size={16} />
+                        </button>
+                      )}
                     </div>
                     {img.isMain && (
                       <div className="absolute top-1 right-1 bg-emerald-500 text-white text-xs px-2 py-1 rounded">
                         Chính
+                      </div>
+                    )}
+                    {img.existing && (
+                      <div className="absolute bottom-1 left-1 bg-blue-500/80 text-white text-xs px-2 py-0.5 rounded">
+                        Đã lưu
                       </div>
                     )}
                   </div>

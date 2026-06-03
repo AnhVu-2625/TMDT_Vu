@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuthStore } from '../store/authStore';
+import BackButton from '../components/BackButton';
 import {
   FiHome, FiUsers, FiShield, FiMenu, FiX, FiLogOut,
   FiAlertTriangle, FiFileText, FiBarChart2, FiDollarSign,
@@ -108,6 +109,7 @@ const AdminLayout = () => {
       <main className="flex-1 transition-all duration-300"
         style={{ marginLeft: sidebarOpen ? 270 : 72 }}>
         <div className="p-6">
+          <BackButton />
           <Outlet />
         </div>
       </main>

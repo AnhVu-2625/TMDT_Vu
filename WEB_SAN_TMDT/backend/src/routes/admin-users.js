@@ -113,7 +113,7 @@ router.put('/:id/unlock', authenticateToken, isAdmin, async (req, res) => {
       .input('userId', sql.Int, id)
       .query(`
         INSERT INTO ThongBao (MaNguoiDung, TieuDe, NoiDung, LoaiThongBao)
-        VALUES (@userId, N'Tài khoản đã được mở khóa', N'Tài khoản của bạn đã được mở khóa hoạt động trở lại.', N'HE_THONG')
+        VALUES (@userId, N'Tài khoản đã mở khóa', N'Tài khoản của bạn đã được mở khóa hoạt động trở lại.', N'HE_THONG')
       `);
 
     res.json({ success: true, message: 'Mở khóa tài khoản thành công' });

@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   FiPackage, FiTruck, FiCheck, FiX, FiClock, FiShoppingBag, FiChevronDown, FiChevronUp, FiRefreshCw, FiStar, FiMapPin, FiCreditCard, FiHome, FiPhone, FiMessageSquare
 } from 'react-icons/fi';
-import { FaStar, FaTimes, FaStore, FaShoppingCart, FaUndo } from 'react-icons/fa';
+import { FaStar, FaTimes, FaStore, FaShoppingCart, FaUndo, FaImage } from 'react-icons/fa';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useAuthStore } from '../../store/authStore';
@@ -60,36 +60,38 @@ function ReviewModal({ orderId, product, onClose, onSuccess }) {
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
   const [comment, setComment] = useState('');
+  const [mediaFiles, setMediaFiles] = useState([]);
   const [submitting, setSubmitting] = useState(false);
+
+  const handleMediaSelect = (e) => {
+    const files = Array.from(e.target.files || []);
+    setMediaFiles(prev => [...prev, ...files].slice(0, 5));
+  };
+
+  const removeMedia = (index) => {
+    setMediaFiles(prev => prev.filter((_, i) => i !== index));
+  };
 
   const handleSubmit = async () => {
     if (rating === 0) { toast.warning('Vui lòng chọn số sao'); return; }
     setSubmitting(true);
     try {
-      await axios.post(`${API_URL}/reviews`, {
-        maSanPham: product.MaSanPham,
-        maDonHang: orderId,
-        diemDanhGia: rating,
-        binhLuan: comment
-      }, { headers: { Authorization: `Bearer ${token}` } });
-      toast.success('Đánh giá thành công! ⭐');
-      onSuccess();
-      onClose();
-    } catch {
-      // Demo mode: save to localStorage
-      const localReviews = JSON.parse(localStorage.getItem('demo_reviews') || '[]');
-      localReviews.push({
-        MaDanhGia: Date.now(),
-        MaSanPham: product.MaSanPham,
-        HoTen: 'Bạn',
-        DiemDanhGia: rating,
-        BinhLuan: comment,
-        NgayTao: new Date().toISOString(),
+      const formData = new FormData();
+      formData.append('maSanPham', product.MaSanPham);
+      formData.append('maDonHang', orderId);
+      formData.append('diemDanhGia', rating);
+      formData.append('binhLuan', comment);
+      mediaFiles.forEach(f => formData.append('media', f));
+
+      await axios.post(`${API_URL}/reviews`, formData, {
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
       });
-      localStorage.setItem('demo_reviews', JSON.stringify(localReviews));
-      toast.success('Đánh giá thành công! ⭐ (Demo)');
+      toast.success('Đánh giá thành công!');
       onSuccess();
       onClose();
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Không thể gửi đánh giá';
+      toast.error(msg);
     } finally { setSubmitting(false); }
   };
 
@@ -120,6 +122,32 @@ function ReviewModal({ orderId, product, onClose, onSuccess }) {
           <textarea value={comment} onChange={e => setComment(e.target.value)}
             placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm..."
             className="w-full bg-slate-800 border border-slate-700 text-white rounded-xl px-4 py-3 text-sm h-24 resize-none outline-none focus:border-red-500 transition" />
+
+          {/* Media upload */}
+          <div>
+            <input type="file" accept="image/*,video/*" multiple onChange={handleMediaSelect} hidden id="review-media-input" />
+            <label htmlFor="review-media-input" className="inline-flex items-center gap-2 text-xs text-slate-400 hover:text-white cursor-pointer transition">
+              <FaImage size={14} /> Thêm ảnh/video (tối đa 5)
+            </label>
+            {mediaFiles.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-2">
+                {mediaFiles.map((f, i) => (
+                  <div key={i} className="relative w-16 h-16 rounded-lg overflow-hidden border border-slate-700">
+                    {f.type.startsWith('video/') ? (
+                      <video src={URL.createObjectURL(f)} className="w-full h-full object-cover" />
+                    ) : (
+                      <img src={URL.createObjectURL(f)} className="w-full h-full object-cover" />
+                    )}
+                    <button onClick={() => removeMedia(i)}
+                      className="absolute top-0.5 right-0.5 w-4 h-4 bg-black/70 rounded-full text-white flex items-center justify-center text-[10px]">
+                      <FaTimes />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
           <button onClick={handleSubmit} disabled={submitting}
             className="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition disabled:opacity-50">
             {submitting ? 'Đang gửi...' : 'Gửi đánh giá'}
@@ -136,6 +164,21 @@ function OrderCard({ order, onCancel, onReview }) {
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [reviewProduct, setReviewProduct] = useState(null);
   const { token } = useAuthStore();
+  const navigate = useNavigate();
+
+  const handleChatWithShop = async () => {
+    const maCuaHang = order.MaCuaHang || detail?.MaCuaHang;
+    if (!maCuaHang) { toast.error('Không tìm thấy cửa hàng'); return; }
+    try {
+      const res = await axios.post(`${API_URL}/chat/shop/start`, {
+        maCuaHang,
+        loiNhan: `Xin chào, tôi cần hỗ trợ về đơn hàng #${order.MaDonHang}`
+      }, { headers: { Authorization: `Bearer ${token}` } });
+      navigate(`/chat?room=${res.data.data.MaPhongChat}`);
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Không thể kết nối với cửa hàng');
+    }
+  };
 
   const status = STATUS_MAP[order.TrangThaiDonHang] || STATUS_MAP['CHO_XAC_NHAN'];
   const StatusIcon = status.icon;
@@ -203,11 +246,17 @@ function OrderCard({ order, onCancel, onReview }) {
             <button onClick={async () => {
               const d = detail || await fetchDetail();
               const firstItem = d?.items?.[0] || null;
-              if (firstItem) onReview(order.MaDonHang, firstItem);
+              if (firstItem) {
+                if (firstItem.DaDanhGia) {
+                  toast.info('Bạn đã đánh giá sản phẩm này rồi');
+                  return;
+                }
+                onReview(order.MaDonHang, firstItem);
+              }
               else toast.warning('Không tìm thấy sản phẩm để đánh giá');
             }}
               className="px-3 py-1.5 text-xs font-bold text-yellow-400 hover:text-white bg-yellow-400/10 hover:bg-yellow-600 border border-yellow-400/30 hover:border-yellow-600 rounded-lg transition flex items-center gap-1">
-              <FiStar size={10} /> Đánh giá
+              <FiStar size={10} /> {detail?.items?.some(i => i.DaDanhGia) ? 'Đã đánh giá' : 'Đánh giá'}
             </button>
           )}
           <button
@@ -399,11 +448,13 @@ function OrderCard({ order, onCancel, onReview }) {
                     </button>
                   </Link>
                   {detail.TenCuaHang && (
-                    <button className="flex items-center gap-1.5 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl border border-slate-700 transition-all">
-                      <FaStore size={11} /> Xem shop
-                    </button>
+                    <Link to={`/shop/${detail.MaCuaHang || order.MaCuaHang}`}>
+                      <button className="flex items-center gap-1.5 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl border border-slate-700 transition-all">
+                        <FaStore size={11} /> Xem shop
+                      </button>
+                    </Link>
                   )}
-                  <button className="flex items-center gap-1.5 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl border border-slate-700 transition-all">
+                  <button onClick={handleChatWithShop} className="flex items-center gap-1.5 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl border border-slate-700 transition-all">
                     <FiMessageSquare size={11} /> Liên hệ
                   </button>
                 </div>

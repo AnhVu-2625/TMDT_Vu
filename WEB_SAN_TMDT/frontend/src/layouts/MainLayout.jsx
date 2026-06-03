@@ -1,85 +1,33 @@
-<<<<<<< HEAD
-import React from 'react';
-import { Outlet, Link } from 'react-router-dom';
-import { FaStore, FaPlusCircle, FaShoppingBag, FaHome } from 'react-icons/fa';
-import { motion } from 'framer-motion';
-=======
-import React, { useState, useEffect, useCallback } from 'react';
-import { Outlet } from 'react-router-dom';
->>>>>>> 6b22ddd7f1495a754e75169ea503240ad3039d09
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { Outlet, Link, useLocation } from 'react-router-dom';
+import { FaStore, FaPlusCircle, FaShoppingBag, FaHome, FaShoppingCart, FaComments, FaHeadset, FaTimes, FaBox } from 'react-icons/fa';
+import { motion, AnimatePresence } from 'framer-motion';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import BackButton from '../components/BackButton';
 import { useAuthStore } from '../store/authStore';
 
 const MainLayout = () => {
-<<<<<<< HEAD
   const { user, isAuthenticated } = useAuthStore();
+  const location = useLocation();
+  const isChatPage = location.pathname === '/chat';
   const hasShop = isAuthenticated && user?.shop?.MaCuaHang && user?.shop?.TrangThai === 'HOAT_DONG';
-
-  return (
-    <div className="flex flex-col min-h-screen bg-[#050507]">
-      <Header />
-
-      {/* Seller Quick Menu - show when user has active shop */}
-      {hasShop && (
-        <motion.div 
-          initial={{ y: -10, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          className="bg-gradient-to-r from-orange-900/30 to-red-900/30 border-b border-orange-500/30"
-        >
-          <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <FaStore className="text-orange-400" size={16} />
-                <span className="text-sm font-semibold text-white">
-                  Kênh bán hàng: <span className="text-orange-400">{user?.shop?.TenCuaHang}</span>
-                </span>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-3">
-              <Link
-                to="/"
-                className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-white/10 text-slate-300 hover:text-white transition text-sm font-medium"
-                title="Về trang chủ để mua hàng"
-              >
-                <FaHome size={14} />
-                <span className="hidden sm:inline">Mua hàng</span>
-              </Link>
-
-              <Link
-                to="/seller/products/new"
-                className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-orange-600/30 hover:bg-orange-600/50 text-orange-300 hover:text-orange-200 transition text-sm font-medium"
-              >
-                <FaPlusCircle size={14} />
-                <span className="hidden sm:inline">Thêm SP</span>
-              </Link>
-
-              <Link
-                to="/seller/orders"
-                className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-white/10 text-slate-300 hover:text-white transition text-sm font-medium"
-              >
-                <FaShoppingBag size={14} />
-                <span className="hidden sm:inline">Đơn hàng</span>
-              </Link>
-
-              <Link
-                to="/seller/dashboard"
-                className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-white/10 text-slate-300 hover:text-white transition text-sm font-medium"
-              >
-                <span className="text-lg">📊</span>
-                <span className="hidden sm:inline">Dashboard</span>
-              </Link>
-            </div>
-          </div>
-        </motion.div>
-      )}
-
-      <main className="flex-1">
-=======
   const [scrollProgress, setScrollProgress] = useState(0);
   const [mouse, setMouse] = useState({ x: 0.5, y: 0.5, px: window.innerWidth / 2, py: window.innerHeight / 2 });
   const [ripples, setRipples] = useState([]);
+  const [fabOpen, setFabOpen] = useState(false);
+  const fabRef = useRef(null);
+
+  // Close FAB on click outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (fabRef.current && !fabRef.current.contains(e.target)) setFabOpen(false);
+    };
+    if (fabOpen) {
+      setTimeout(() => document.addEventListener('click', handleClickOutside), 0);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [fabOpen]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -184,19 +132,7 @@ const MainLayout = () => {
           style={{ animationDelay: '2.5s', transform: `translate(${(mouse.x - 0.5) * -18}px, ${(mouse.y - 0.5) * -8}px)`, transition: 'transform 0.14s ease-out' }}
         />
 
-        {/* Vòng tròn trang trí (decorative rings) */}
-        <div className="absolute top-[15%] left-[5%] w-[200px] h-[200px] rounded-full border border-red-500/10 border-t-orange-500/20 animate-orbit"
-          style={{ transform: `translate(${(mouse.x - 0.5) * 20}px, ${(mouse.y - 0.5) * 12}px)`, transition: 'transform 0.15s ease-out' }}
-        />
-        <div className="absolute top-[15%] left-[5%] w-[280px] h-[280px] rounded-full border border-orange-500/6 border-t-red-500/12 animate-orbit-slow"
-          style={{ transform: `translate(${(mouse.x - 0.5) * 20}px, ${(mouse.y - 0.5) * 12}px)`, transition: 'transform 0.15s ease-out' }}
-        />
-        <div className="absolute bottom-[20%] right-[8%] w-[180px] h-[180px] rounded-full border border-blue-500/8 border-t-cyan-500/15 animate-orbit-slow"
-          style={{ transform: `translate(${(mouse.x - 0.5) * -20}px, ${(mouse.y - 0.5) * -10}px)`, transition: 'transform 0.18s ease-out' }}
-        />
-        <div className="absolute bottom-[20%] right-[8%] w-[250px] h-[250px] rounded-full border border-cyan-500/5 border-t-blue-500/10 animate-orbit"
-          style={{ transform: `translate(${(mouse.x - 0.5) * -20}px, ${(mouse.y - 0.5) * -10}px)`, transition: 'transform 0.18s ease-out' }}
-        />
+
 
         {/* Dải aurora (sóng lượn) */}
         <div className="absolute top-[40%] left-0 w-[400px] h-px bg-gradient-to-r from-transparent via-green-500/10 via-cyan-500/8 to-transparent blur-[3px] rotate-12"
@@ -631,11 +567,97 @@ const MainLayout = () => {
       </div>
 
       <Header />
-      <main className="flex-1 relative z-10">
->>>>>>> 6b22ddd7f1495a754e75169ea503240ad3039d09
+
+      {/* Seller Quick Menu - show when user has active shop */}
+      {hasShop && (
+        <motion.div
+          initial={{ y: -10, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="bg-gradient-to-r from-orange-900/30 to-red-900/30 border-b border-orange-500/30 relative z-20"
+        >
+          <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <FaStore className="text-orange-400" size={16} />
+                <span className="text-sm font-semibold text-white">
+                  Kênh bán hàng: <span className="text-orange-400">{user?.shop?.TenCuaHang}</span>
+                </span>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <Link to="/products" className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-white/10 text-slate-300 hover:text-white transition text-sm font-medium" title="Mua hàng">
+                <FaHome size={14} /> <span className="hidden sm:inline">Mua hàng</span>
+              </Link>
+              <Link to="/seller/products/new" className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-orange-600/30 hover:bg-orange-600/50 text-orange-300 hover:text-orange-200 transition text-sm font-medium">
+                <FaPlusCircle size={14} /> <span className="hidden sm:inline">Thêm SP</span>
+              </Link>
+              <Link to="/seller/orders" className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-white/10 text-slate-300 hover:text-white transition text-sm font-medium">
+                <FaShoppingBag size={14} /> <span className="hidden sm:inline">Đơn hàng</span>
+              </Link>
+              <Link to="/seller/dashboard" className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-white/10 text-slate-300 hover:text-white transition text-sm font-medium">
+                <span className="text-lg">📊</span> <span className="hidden sm:inline">Dashboard</span>
+              </Link>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      <main className={`flex-1 relative z-10 ${isChatPage ? 'flex flex-col' : ''}`}>
+        {!isChatPage && (
+          <div className="px-4 sm:px-8 lg:px-16 pt-4">
+            <BackButton />
+          </div>
+        )}
         <Outlet />
       </main>
-      <Footer />
+      {!isChatPage && <Footer />}
+
+      {/* Speed-dial FAB - an khi ? chat */}
+      {!isChatPage && (
+      <div ref={fabRef} className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+        <AnimatePresence>
+          {fabOpen && (
+            <>
+              {[
+                { to: '/chat', icon: FaComments, label: 'Chat hỗ trợ', color: 'from-blue-600 to-blue-700', shadow: 'shadow-blue-600/30' },
+                { to: '/notifications', icon: FaHeadset, label: 'Trung tâm hỗ trợ', color: 'from-emerald-600 to-emerald-700', shadow: 'shadow-emerald-600/30' },
+                { to: '/products', icon: FaBox, label: 'Sản phẩm', color: 'from-red-600 to-orange-600', shadow: 'shadow-red-600/30' },
+              ].map(({ to, icon: Icon, label, color, shadow }, i) => (
+                <motion.div
+                  key={to}
+                  initial={{ opacity: 0, y: 20, scale: 0.5 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.5 }}
+                  transition={{ delay: i * 0.05, type: 'spring', stiffness: 400, damping: 25 }}
+                  className="relative"
+                >
+                  <Link to={to} onClick={() => setFabOpen(false)}
+                    className={`flex items-center gap-3 bg-gradient-to-br ${color} hover:from-slate-800 hover:to-slate-900 rounded-2xl shadow-xl ${shadow} text-white transition-all duration-200 hover:scale-105 active:scale-95 group`}
+                  >
+                    <span className="absolute right-full mr-3 bg-slate-900 text-white text-xs font-medium px-3 py-1.5 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity shadow-lg border border-slate-700/50 pointer-events-none">
+                      {label}
+                    </span>
+                    <div className="w-12 h-12 flex items-center justify-center">
+                      <Icon size={18} />
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </>
+          )}
+        </AnimatePresence>
+
+        {/* Main toggle button */}
+        <motion.button
+          onClick={() => setFabOpen(!fabOpen)}
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.92 }}
+          className={`w-14 h-14 bg-gradient-to-br ${fabOpen ? 'from-slate-800 to-slate-900 rotate-45' : 'from-red-600 to-orange-600'} rounded-2xl shadow-xl shadow-red-600/30 flex items-center justify-center text-white transition-all duration-300`}
+        >
+          {fabOpen ? <FaTimes size={20} /> : <FaBox size={20} />}
+        </motion.button>
+      </div>
+      )}
     </div>
   );
 };

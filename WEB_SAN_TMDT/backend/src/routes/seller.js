@@ -370,6 +370,31 @@ router.put('/orders/:id/status', authenticateToken, requireSeller, async (req, r
       .input('TrangThai', sql.NVarChar, trangThai)
       .query('UPDATE DonHang SET TrangThaiDonHang = @TrangThai WHERE MaDonHang = @MaDonHang');
 
+    // Notify buyer about status change
+    const orderInfo = await pool.request()
+      .input('MaDonHang', sql.Int, req.params.id)
+      .query('SELECT MaNguoiDung FROM DonHang WHERE MaDonHang = @MaDonHang');
+
+    if (orderInfo.recordset.length > 0) {
+      const statusLabels = {
+        DA_XAC_NHAN: 'da xac nhan',
+        DANG_GIAO: 'dang duoc giao',
+        DA_GIAO: 'da giao thanh cong',
+        DA_HUY: 'da bi huy',
+      };
+
+      await pool.request()
+        .input('maNguoiDung', sql.Int, orderInfo.recordset[0].MaNguoiDung)
+        .input('tieuDe', sql.NVarChar, 'Cap nhat don hang')
+        .input('noiDung', sql.NVarChar, 'Don hang #' + req.params.id + ' cua ban ' + (statusLabels[trangThai] || trangThai))
+        .input('loaiThongBao', sql.NVarChar, 'DON_HANG')
+        .input('maThamChieu', sql.Int, parseInt(req.params.id))
+        .query(`
+          INSERT INTO ThongBao (MaNguoiDung, TieuDe, NoiDung, LoaiThongBao, MaThamChieu)
+          VALUES (@maNguoiDung, @tieuDe, @noiDung, @loaiThongBao, @maThamChieu)
+        `);
+    }
+
     res.json({ success: true, message: 'Cập nhật trạng thái thành công' });
   } catch (error) {
     console.error('Lỗi cập nhật đơn hàng:', error);
@@ -399,6 +424,237 @@ router.get('/stats', authenticateToken, requireSeller, async (req, res) => {
   } catch (error) {
     console.error('Lỗi lấy thống kê:', error);
     res.status(500).json({ success: false, message: 'Lỗi lấy thống kê' });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// VOUCHER MANAGEMENT — Quản lý khuyến mãi
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// GET /api/sellers/vouchers — Danh sách mã khuyến mãi của shop
+router.get('/vouchers', authenticateToken, requireSeller, async (req, res) => {
+  try {
+    const pool = await getPool();
+    const result = await pool.request()
+      .input('MaCuaHang', sql.Int, req.shop.MaCuaHang)
+      .query(`
+        SELECT *, (CASE WHEN GETDATE() >= TuNgay AND GETDATE() <= DenNgay THEN 1 ELSE 0 END) as DangHoatDong
+        FROM MaKhuyenMai
+        WHERE MaCuaHang = @MaCuaHang
+        ORDER BY MaKhuyenMai DESC
+      `);
+    res.json({ success: true, data: result.recordset });
+  } catch (error) {
+    console.error('Lỗi lấy voucher:', error);
+    res.status(500).json({ success: false, message: 'Lỗi lấy danh sách khuyến mãi' });
+  }
+});
+
+// POST /api/sellers/vouchers — Tạo mã khuyến mãi mới
+router.post('/vouchers', authenticateToken, requireSeller, async (req, res) => {
+  try {
+    const { maCode, loaiGiamGia, giaTriGiam, donHangToiThieu, giamToiDa, tuNgay, denNgay, gioiHanSuDung } = req.body;
+    if (!maCode || !loaiGiamGia || !giaTriGiam || !tuNgay || !denNgay || !gioiHanSuDung) {
+      return res.status(400).json({ success: false, message: 'Vui lòng điền đầy đủ thông tin bắt buộc' });
+    }
+    const pool = await getPool();
+
+    // Check trùng mã code trong shop
+    const existing = await pool.request()
+      .input('MaCuaHang', sql.Int, req.shop.MaCuaHang)
+      .input('MaCode', sql.NVarChar, maCode)
+      .query('SELECT MaKhuyenMai FROM MaKhuyenMai WHERE MaCuaHang = @MaCuaHang AND MaCode = @MaCode');
+    if (existing.recordset.length > 0) {
+      return res.status(409).json({ success: false, message: 'Mã code này đã tồn tại trong shop của bạn' });
+    }
+
+    const result = await pool.request()
+      .input('MaCuaHang', sql.Int, req.shop.MaCuaHang)
+      .input('MaCode', sql.NVarChar, maCode)
+      .input('LoaiGiamGia', sql.NVarChar, loaiGiamGia)
+      .input('GiaTriGiam', sql.Decimal(15, 2), giaTriGiam)
+      .input('DonHangToiThieu', sql.Decimal(15, 2), donHangToiThieu || 0)
+      .input('GiamToiDa', sql.Decimal(15, 2), giamToiDa || null)
+      .input('TuNgay', sql.DateTime, new Date(tuNgay))
+      .input('DenNgay', sql.DateTime, new Date(denNgay))
+      .input('GioiHanSuDung', sql.Int, gioiHanSuDung)
+      .query(`
+        INSERT INTO MaKhuyenMai (MaCuaHang, MaCode, LoaiGiamGia, GiaTriGiam, DonHangToiThieu, GiamToiDa, TuNgay, DenNgay, GioiHanSuDung, DaSuDung)
+        OUTPUT INSERTED.MaKhuyenMai
+        VALUES (@MaCuaHang, @MaCode, @LoaiGiamGia, @GiaTriGiam, @DonHangToiThieu, @GiamToiDa, @TuNgay, @DenNgay, @GioiHanSuDung, 0)
+      `);
+    res.status(201).json({ success: true, message: 'Tạo mã khuyến mãi thành công', data: { maKhuyenMai: result.recordset[0].MaKhuyenMai } });
+  } catch (error) {
+    console.error('Lỗi tạo voucher:', error);
+    res.status(500).json({ success: false, message: 'Lỗi tạo mã khuyến mãi' });
+  }
+});
+
+// PUT /api/sellers/vouchers/:id — Cập nhật (chủ yếu toggle hoặc sửa)
+router.put('/vouchers/:id', authenticateToken, requireSeller, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { tuNgay, denNgay, gioiHanSuDung, donHangToiThieu, giamToiDa } = req.body;
+    const pool = await getPool();
+
+    const check = await pool.request()
+      .input('MaKhuyenMai', sql.Int, id)
+      .input('MaCuaHang', sql.Int, req.shop.MaCuaHang)
+      .query('SELECT MaKhuyenMai FROM MaKhuyenMai WHERE MaKhuyenMai = @MaKhuyenMai AND MaCuaHang = @MaCuaHang');
+    if (check.recordset.length === 0) {
+      return res.status(404).json({ success: false, message: 'Không tìm thấy mã khuyến mãi' });
+    }
+
+    await pool.request()
+      .input('MaKhuyenMai', sql.Int, id)
+      .input('TuNgay', sql.DateTime, tuNgay ? new Date(tuNgay) : null)
+      .input('DenNgay', sql.DateTime, denNgay ? new Date(denNgay) : null)
+      .input('GioiHanSuDung', sql.Int, gioiHanSuDung || null)
+      .input('DonHangToiThieu', sql.Decimal(15, 2), donHangToiThieu || null)
+      .input('GiamToiDa', sql.Decimal(15, 2), giamToiDa || null)
+      .query(`
+        UPDATE MaKhuyenMai SET
+          TuNgay = COALESCE(@TuNgay, TuNgay),
+          DenNgay = COALESCE(@DenNgay, DenNgay),
+          GioiHanSuDung = COALESCE(@GioiHanSuDung, GioiHanSuDung),
+          DonHangToiThieu = COALESCE(@DonHangToiThieu, DonHangToiThieu),
+          GiamToiDa = COALESCE(@GiamToiDa, GiamToiDa)
+        WHERE MaKhuyenMai = @MaKhuyenMai
+      `);
+    res.json({ success: true, message: 'Cập nhật thành công' });
+  } catch (error) {
+    console.error('Lỗi cập nhật voucher:', error);
+    res.status(500).json({ success: false, message: 'Lỗi cập nhật mã khuyến mãi' });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// FINANCE — Quản lý tài chính
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// GET /api/sellers/finance — Thông tin tài chính tổng quan
+router.get('/finance', authenticateToken, requireSeller, async (req, res) => {
+  try {
+    const pool = await getPool();
+    const shopId = req.shop.MaCuaHang;
+
+    // Số dư ví
+    const balanceResult = await pool.request()
+      .input('MaCuaHang', sql.Int, shopId)
+      .query('SELECT SoDuVi FROM CuaHang WHERE MaCuaHang = @MaCuaHang');
+    const soDuVi = balanceResult.recordset[0]?.SoDuVi || 0;
+
+    // Doanh thu đã giao
+    const revenueResult = await pool.request()
+      .input('MaCuaHang', sql.Int, shopId)
+      .query("SELECT ISNULL(SUM(TienThanhToan), 0) as doanhThu FROM DonHang WHERE MaCuaHang = @MaCuaHang AND TrangThaiDonHang = N'DA_GIAO'");
+    const doanhThu = revenueResult.recordset[0]?.doanhThu || 0;
+
+    // Đang chờ xử lý (đơn đã xác nhận nhưng chưa giao)
+    const pendingResult = await pool.request()
+      .input('MaCuaHang', sql.Int, shopId)
+      .query("SELECT ISNULL(SUM(TienThanhToan), 0) as pending FROM DonHang WHERE MaCuaHang = @MaCuaHang AND TrangThaiDonHang IN (N'CHO_XAC_NHAN', N'DA_XAC_NHAN', N'DANG_GIAO')");
+    const dangCho = pendingResult.recordset[0]?.pending || 0;
+
+    // Đã rút
+    const withdrawnResult = await pool.request()
+      .input('MaCuaHang', sql.Int, shopId)
+      .query("SELECT ISNULL(SUM(SoTien), 0) as daRut FROM YeuCauRutTien WHERE MaCuaHang = @MaCuaHang AND TrangThai = N'DA_DUYET'");
+    const daRut = withdrawnResult.recordset[0]?.daRut || 0;
+
+    // Giao dịch gần đây (đơn hàng đã giao)
+    const transactions = await pool.request()
+      .input('MaCuaHang', sql.Int, shopId)
+      .query(`
+        SELECT MaDonHang, TienThanhToan, NgayTao, TrangThaiDonHang
+        FROM DonHang
+        WHERE MaCuaHang = @MaCuaHang AND TrangThaiDonHang = N'DA_GIAO'
+        ORDER BY NgayTao DESC
+      `);
+
+    res.json({
+      success: true,
+      data: {
+        soDuVi,
+        doanhThu,
+        dangCho,
+        daRut,
+        transactions: transactions.recordset
+      }
+    });
+  } catch (error) {
+    console.error('Lỗi lấy tài chính:', error);
+    res.status(500).json({ success: false, message: 'Lỗi lấy thông tin tài chính' });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// WITHDRAWAL — Rút tiền bán hàng
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// POST /api/sellers/withdraw — Yêu cầu rút tiền
+router.post('/withdraw', authenticateToken, requireSeller, async (req, res) => {
+  try {
+    const { soTien, tenTaiKhoan, soTaiKhoan, tenNganHang } = req.body;
+    if (!soTien || !tenTaiKhoan || !soTaiKhoan || !tenNganHang) {
+      return res.status(400).json({ success: false, message: 'Vui lòng điền đầy đủ thông tin' });
+    }
+    if (Number(soTien) <= 0) {
+      return res.status(400).json({ success: false, message: 'Số tiền không hợp lệ' });
+    }
+
+    const pool = await getPool();
+    const shopId = req.shop.MaCuaHang;
+
+    // Kiểm tra số dư
+    const balance = await pool.request()
+      .input('MaCuaHang', sql.Int, shopId)
+      .query('SELECT SoDuVi FROM CuaHang WHERE MaCuaHang = @MaCuaHang');
+    const soDuVi = Number(balance.recordset[0]?.SoDuVi || 0);
+    if (Number(soTien) > soDuVi) {
+      return res.status(400).json({ success: false, message: 'Số dư ví không đủ' });
+    }
+
+    await pool.request()
+      .input('MaCuaHang', sql.Int, shopId)
+      .input('SoTien', sql.Decimal(15, 2), soTien)
+      .input('TenTaiKhoanNganHang', sql.NVarChar, tenTaiKhoan)
+      .input('SoTaiKhoan', sql.NVarChar, soTaiKhoan)
+      .input('TenNganHang', sql.NVarChar, tenNganHang)
+      .input('TrangThai', sql.NVarChar, 'CHO_DUYET')
+      .query(`
+        INSERT INTO YeuCauRutTien (MaCuaHang, SoTien, TenTaiKhoanNganHang, SoTaiKhoan, TenNganHang, TrangThai)
+        VALUES (@MaCuaHang, @SoTien, @TenTaiKhoanNganHang, @SoTaiKhoan, @TenNganHang, @TrangThai)
+      `);
+
+    // Trừ số dư ví tạm thời
+    await pool.request()
+      .input('MaCuaHang', sql.Int, shopId)
+      .input('SoTien', sql.Decimal(15, 2), soTien)
+      .query('UPDATE CuaHang SET SoDuVi = SoDuVi - @SoTien WHERE MaCuaHang = @MaCuaHang');
+
+    res.json({ success: true, message: 'Yêu cầu rút tiền đã được gửi, chờ Admin duyệt' });
+  } catch (error) {
+    console.error('Lỗi rút tiền:', error);
+    res.status(500).json({ success: false, message: 'Lỗi xử lý rút tiền' });
+  }
+});
+
+// GET /api/sellers/withdrawals — Lịch sử rút tiền
+router.get('/withdrawals', authenticateToken, requireSeller, async (req, res) => {
+  try {
+    const pool = await getPool();
+    const result = await pool.request()
+      .input('MaCuaHang', sql.Int, req.shop.MaCuaHang)
+      .query(`
+        SELECT * FROM YeuCauRutTien
+        WHERE MaCuaHang = @MaCuaHang
+        ORDER BY NgayTao DESC
+      `);
+    res.json({ success: true, data: result.recordset });
+  } catch (error) {
+    console.error('Lỗi lấy lịch sử rút tiền:', error);
+    res.status(500).json({ success: false, message: 'Lỗi lấy lịch sử rút tiền' });
   }
 });
 

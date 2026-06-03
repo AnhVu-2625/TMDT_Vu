@@ -1,14 +1,29 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { FiPlus, FiEdit2, FiTrash2, FiEye, FiPackage } from 'react-icons/fi';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FiPlus, FiEdit2, FiTrash2, FiEye, FiPackage, FiShoppingBag, FiAlertTriangle } from 'react-icons/fi';
 import { useSellerStore } from '../../store/sellerStore';
+import { useAuthStore } from '../../store/authStore';
 import { toast } from 'react-toastify';
 
 export default function Products() {
-  const { products, fetchMyProducts, loading } = useSellerStore();
+  const { products, fetchMyProducts, deleteProduct, loading } = useSellerStore();
+  const { user } = useAuthStore();
+  const shopId = user?.shop?.MaCuaHang;
+  const [deleting, setDeleting] = useState(null);
 
   useEffect(() => { fetchMyProducts(); }, []);
+
+  const handleDelete = async (p) => {
+    try {
+      await deleteProduct(p.MaSanPham);
+      toast.success(`Đã xóa "${p.TenSanPham}"`);
+      fetchMyProducts();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Xóa thất bại');
+    }
+    setDeleting(null);
+  };
 
   const statusMap = {
     HOAT_DONG: { label: 'Đang bán', cls: 'badge-green' },
@@ -23,9 +38,16 @@ export default function Products() {
           <h1 className="text-2xl font-bold text-white">Sản phẩm của tôi</h1>
           <p className="text-slate-400 text-sm mt-1">{products.length} sản phẩm</p>
         </div>
-        <Link to="/seller/products/new" className="btn-primary flex items-center gap-2 text-sm">
-          <FiPlus size={16} /> Thêm sản phẩm
-        </Link>
+        <div className="flex gap-2">
+          {shopId && (
+            <Link to={`/shop/${shopId}`} className="btn-outline flex items-center gap-2 text-sm text-red-400 border-red-500/30 hover:bg-red-500/10">
+              <FiShoppingBag size={16} /> Mua hàng
+            </Link>
+          )}
+          <Link to="/seller/products/new" className="btn-primary flex items-center gap-2 text-sm">
+            <FiPlus size={16} /> Thêm sản phẩm
+          </Link>
+        </div>
       </div>
 
       {loading ? (
@@ -80,11 +102,50 @@ export default function Products() {
                 <Link to={`/seller/products/${p.MaSanPham}/edit`} className="p-2 hover:bg-white/5 rounded-lg text-slate-400 hover:text-blue-400 transition" title="Sửa">
                   <FiEdit2 size={16} />
                 </Link>
+                <button onClick={() => setDeleting(p)} className="p-2 hover:bg-white/5 rounded-lg text-slate-400 hover:text-red-400 transition" title="Xóa">
+                  <FiTrash2 size={16} />
+                </button>
               </div>
             </motion.div>
           ))}
         </div>
       )}
+
+      {/* Delete confirmation modal */}
+      <AnimatePresence>
+        {deleting && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+            onClick={() => setDeleting(null)}>
+            <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }}
+              onClick={e => e.stopPropagation()}
+              className="bg-slate-900 border border-red-800/30 rounded-2xl p-6 max-w-sm w-full shadow-2xl">
+              <div className="flex flex-col items-center text-center gap-4">
+                <div className="w-14 h-14 rounded-full bg-red-500/10 flex items-center justify-center">
+                  <FiAlertTriangle size={28} className="text-red-400" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-white">Xác nhận xóa</h3>
+                  <p className="text-sm text-slate-400 mt-1">
+                    Bạn có chắc muốn xóa "<span className="text-white font-semibold">{deleting.TenSanPham}</span>"?
+                  </p>
+                  <p className="text-xs text-red-400 mt-2">Hành động này không thể hoàn tác!</p>
+                </div>
+                <div className="flex gap-3 w-full">
+                  <button onClick={() => setDeleting(null)}
+                    className="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-medium transition">
+                    Hủy
+                  </button>
+                  <button onClick={() => handleDelete(deleting)}
+                    className="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold transition">
+                    Xóa
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

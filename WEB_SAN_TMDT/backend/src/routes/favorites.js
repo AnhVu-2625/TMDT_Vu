@@ -51,7 +51,11 @@ router.get('/', authenticateToken, async (req, res) => {
       .request()
       .input('userId', sql.Int, req.userId)
       .query(`
-        SELECT sp.*, ch.TenCuaHang
+        SELECT sp.*, ch.TenCuaHang,
+          ISNULL(
+            (SELECT TOP 1 DuongDanAnh FROM HinhAnhSanPham WHERE MaSanPham = sp.MaSanPham AND LaAnhChinh = 1),
+            '/placeholder.svg?text=📦'
+          ) as AnhChinh
         FROM DanhSachYeuThich dy
         JOIN SanPham sp ON dy.MaSanPham = sp.MaSanPham
         JOIN CuaHang ch ON sp.MaCuaHang = ch.MaCuaHang

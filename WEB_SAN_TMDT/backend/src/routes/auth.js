@@ -159,7 +159,8 @@ router.post('/register', validateRegister, async (req, res) => {
             message: 'Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.',
             data: {
                 maNguoiDung,
-                email
+                email,
+                otp // demo: trả OTP để test khi email không hoạt động
             }
         });
     } catch (error) {
@@ -337,7 +338,8 @@ router.post('/resend-otp', async (req, res) => {
 
         res.json({
             success: true,
-            message: 'Đã gửi lại mã OTP'
+            message: 'Đã gửi lại mã OTP',
+            data: { otp } // demo: trả OTP để test
         });
     } catch (error) {
         console.error('Lỗi gửi lại OTP:', error);
@@ -510,7 +512,8 @@ router.post('/forgot-password', async (req, res) => {
 
         res.json({
             success: true,
-            message: 'Mã OTP đã được gửi đến email của bạn'
+            message: 'Mã OTP đã được gửi đến email của bạn',
+            data: { otp } // demo
         });
     } catch (error) {
         console.error('Lỗi quên mật khẩu:', error);

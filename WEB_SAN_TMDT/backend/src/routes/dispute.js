@@ -346,12 +346,11 @@ router.post('/:id/resolve',
 
             await transaction.request()
                 .input('maNguoiDung', sql.Int, dispute.MaNguoiDung)
-                .input('tieuDe', sql.NVarChar, 'Tranh chấp đã được giải quyết')
-                .input('noiDung', sql.NVarChar, thongBaoNguoiMua)
+                .input('noiDung', sql.NVarChar, `Tranh chấp đã được giải quyết: ${thongBaoNguoiMua}`)
                 .input('maDonHang', sql.Int, dispute.MaDonHang)
                 .query(`
                     INSERT INTO ThongBao (MaNguoiDung, TieuDe, NoiDung, LoaiThongBao, MaThamChieu)
-                    VALUES (@maNguoiDung, @tieuDe, @noiDung, N'DON_HANG', @maDonHang)
+                    VALUES (@maNguoiDung, N'Tranh chấp đã giải quyết', @noiDung, N'DON_HANG', @maDonHang)
                 `);
 
             await transaction.commit();

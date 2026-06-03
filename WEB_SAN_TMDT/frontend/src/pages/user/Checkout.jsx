@@ -37,15 +37,18 @@ export default function Checkout() {
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [discount, setDiscount] = useState(0);
   const [promotions, setPromotions] = useState([]);
+  const [benefits, setBenefits] = useState(null);
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [processing, setProcessing] = useState(false);
+  const [processingStep, setProcessingStep] = useState(0); // 0=idle, 1=rotating, 2=success
   const [loadingAddr, setLoadingAddr] = useState(true);
 
   useEffect(() => {
     fetchCart();
     fetchAddresses();
     fetchPromotions();
+    fetchBenefits();
   }, []);
 
   // Auto-apply coupon từ URL param sau khi có cả items và promotions
@@ -76,6 +79,15 @@ export default function Checkout() {
     } catch { }
   };
 
+  const fetchBenefits = async () => {
+    try {
+      const res = await axios.get(`${API_URL}/users/benefits`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setBenefits(res.data.data || null);
+    } catch { }
+  };
+
   const fetchAddresses = async () => {
     setLoadingAddr(true);
     try {
@@ -94,8 +106,14 @@ export default function Checkout() {
   };
 
   const subtotal = items.reduce((s, i) => s + (i.GiaBan || 0) * (i.SoLuong || 0), 0);
-  const shipping = subtotal > 500000 || subtotal === 0 ? 0 : 30000;
-  const total = subtotal - discount + shipping;
+  const memberDiscountPct = benefits?.benefits?.giamGia || 0;
+  const memberDiscountCap = benefits?.benefits?.giamGiaCap || 0;
+  const memberDiscountRaw = subtotal > 0 ? Math.round((subtotal * memberDiscountPct) / 100) : 0;
+  const memberDiscount = memberDiscountCap > 0 ? Math.min(memberDiscountRaw, memberDiscountCap) : memberDiscountRaw;
+  const freeShip = benefits?.benefits?.mienPhiVanChuyen || false;
+  const shipping = freeShip ? 0 : (subtotal > 500000 || subtotal === 0 ? 0 : 30000);
+  const bestDiscount = Math.max(memberDiscount, discount);
+  const total = subtotal - bestDiscount + shipping;
 
   const handleOrder = async () => {
     if (!selectedAddr) {
@@ -108,21 +126,24 @@ export default function Checkout() {
       return;
     }
     setProcessing(true);
-    setLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    setProcessingStep(1);
     try {
       await axios.post(`${API_URL}/orders`, {
         maDiaChi: selectedAddr.MaDiaChi,
         maKhuyenMai: appliedCoupon?.MaKhuyenMai || null,
         phuongThucThanhToan: payMethod,
       }, { headers: { Authorization: `Bearer ${token}` } });
+      await new Promise(resolve => setTimeout(resolve, 3500));
+      setProcessingStep(2);
+      await new Promise(resolve => setTimeout(resolve, 1500));
       await clearCart();
       toast.success('\u{1F389} Đặt hàng thành công! Cảm ơn bạn đã mua sắm tại MartHub.');
       navigate('/orders');
     } catch (err) {
+      setProcessing(false);
+      setProcessingStep(0);
       toast.error(err.response?.data?.message || 'Đặt hàng thất bại, vui lòng thử lại');
     } finally {
-      setProcessing(false);
       setLoading(false);
     }
   };
@@ -350,15 +371,27 @@ export default function Checkout() {
                   <span>Tạm tính ({items.length} sản phẩm)</span>
                   <span>₫{subtotal.toLocaleString('vi-VN')}</span>
                 </div>
+                {benefits && memberDiscountPct > 0 && (
+                  <div className="flex justify-between text-green-400">
+                    <span>Giảm {memberDiscountPct}% ({benefits.benefits.nguon === 'VIP' ? 'VIP' : benefits?.rank?.tenHang || ''})</span>
+                    <span>-₫{memberDiscount.toLocaleString('vi-VN')}</span>
+                  </div>
+                )}
                 {discount > 0 && (
                   <div className="flex justify-between text-green-400">
-                    <span>Giảm giá</span>
+                    <span>Giảm giá (Mã: {appliedCoupon?.MaCode || ''})</span>
                     <span>-₫{discount.toLocaleString('vi-VN')}</span>
+                  </div>
+                )}
+                {bestDiscount > 0 && (
+                  <div className="flex justify-between text-green-300 border-t border-slate-700/50 pt-1">
+                    <span className="text-xs">🔹 Ưu đãi áp dụng (cao nhất)</span>
+                    <span className="text-xs font-semibold">-₫{bestDiscount.toLocaleString('vi-VN')}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-slate-300">
                   <span>Vận chuyển</span>
-                  <span>{shipping === 0 ? <span className="text-green-400">Miễn phí</span> : `₫${shipping.toLocaleString('vi-VN')}`}</span>
+                  <span>{shipping === 0 ? <span className="text-green-400">Miễn phí{freeShip ? ' (VIP/Hạng)' : ''}</span> : `₫${shipping.toLocaleString('vi-VN')}`}</span>
                 </div>
                 <div className="border-t border-slate-700 pt-3 flex justify-between font-bold text-lg">
                   <span className="text-white">Tổng cộng</span>
@@ -387,12 +420,44 @@ export default function Checkout() {
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
             <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }}
               className="bg-slate-900 border border-slate-700 rounded-2xl p-8 max-w-sm w-full mx-4 text-center">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-600/20 flex items-center justify-center">
-                <div className="w-8 h-8 border-3 border-red-500 border-t-transparent rounded-full animate-spin" />
-              </div>
-              <h3 className="text-lg font-bold text-white mb-2">Đang xử lý thanh toán</h3>
-              <p className="text-sm text-slate-400 mb-4">Vui lòng không tắt trình duyệt...</p>
-              <div className="bg-slate-800 rounded-xl p-4 space-y-2 text-sm text-left">
+              {processingStep === 1 ? (
+                <>
+                  <div className="relative w-20 h-20 mx-auto mb-4">
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-red-500/30 to-orange-500/30 blur-xl animate-pulse" />
+                    <div className="relative w-full h-full rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center">
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+                        className="w-10 h-10 border-[3px] border-red-500 border-t-transparent rounded-full"
+                      />
+                    </div>
+                  </div>
+                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-2">
+                    <h3 className="text-lg font-bold text-white">Đang xử lý thanh toán</h3>
+                    <div className="space-y-1.5">
+                      <motion.div initial={{ width: 0 }} animate={{ width: "100%" }}
+                        transition={{ duration: 1.5, ease: "easeInOut" }}
+                        className="h-1 bg-gradient-to-r from-red-500 to-orange-400 rounded-full mx-auto max-w-[200px]" />
+                    </div>
+                    <p className="text-sm text-slate-400">Vui lòng không tắt trình duyệt...</p>
+                  </motion.div>
+                </>
+              ) : (
+                <>
+                  <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 300, damping: 15 }}
+                    className="w-20 h-20 mx-auto mb-4 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                    <motion.svg initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.5, delay: 0.2 }}
+                      className="w-10 h-10 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="3">
+                      <motion.path d="M5 13l4 4L19 7" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
+                        transition={{ duration: 0.5, delay: 0.3 }} />
+                    </motion.svg>
+                  </motion.div>
+                  <h3 className="text-lg font-bold text-white mb-2">Thanh toán thành công!</h3>
+                  <p className="text-sm text-emerald-400 font-semibold">🎉 Cảm ơn bạn đã mua sắm!</p>
+                </>
+              )}
+
+              <div className="bg-slate-800 rounded-xl p-4 space-y-2 text-sm text-left mt-5">
                 <div className="flex justify-between text-slate-300">
                   <span>Số tiền</span>
                   <span className="text-white font-semibold">₫{total.toLocaleString('vi-VN')}</span>

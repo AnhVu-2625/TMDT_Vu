@@ -1,0 +1,774 @@
+ ฀ ༀ က ᄀ ሀ ጀ ᐀ ᔀ ᘀ ᜀ ᠀ ᤀ ᨀ ᬀ ᰀ ᴀ Ḁ 
+---
+ẽc - 23115053122333਍ऀऀ
+---
+ẽt Anh Vũ - 23115053122348 ਍ऀऀ
+---
+½ng Kim - 23115053122323਍
+---
+ TOC \o "1-3" \h \z \u 
+---
+ HYPERLINK \l "_Toc228006008" 
+---
+ PAGEREF _Toc228006008 \h 
+---
+ HYPERLINK \l "_Toc228006009" 
+---
+ PAGEREF _Toc228006009 \h 
+---
+ HYPERLINK \l "_Toc228006010" 
+---
+ PAGEREF _Toc228006010 \h 
+---
+ HYPERLINK \l "_Toc228006011" 
+---
+ PAGEREF _Toc228006011 \h 
+---
+ HYPERLINK \l "_Toc228006012" 
+---
+ẽm (Software Requirements)
+---
+ PAGEREF _Toc228006012 \h 
+---
+ HYPERLINK \l "_Toc228006013" 
+---
+ PAGEREF _Toc228006013 \h 
+---
+ HYPERLINK \l "_Toc228006014" 
+---
+ PAGEREF _Toc228006014 \h 
+---
+ HYPERLINK \l "_Toc228006015" 
+---
+ PAGEREF _Toc228006015 \h 
+---
+ HYPERLINK \l "_Toc228006016" 
+---
+ PAGEREF _Toc228006016 \h 
+---
+ HYPERLINK \l "_Toc228006017" 
+---
+ PAGEREF _Toc228006017 \h 
+---
+ HYPERLINK \l "_Toc228006018" 
+---
+ PAGEREF _Toc228006018 \h 
+---
+ HYPERLINK \l "_Toc228006019" 
+---
+ PAGEREF _Toc228006019 \h 
+---
+ HYPERLINK \l "_Toc228006020" 
+---
+ PAGEREF _Toc228006020 \h 
+---
+ HYPERLINK \l "_Toc228006021" 
+---
+ PAGEREF _Toc228006021 \h 
+---
+ HYPERLINK \l "_Toc228006022" 
+---
+ PAGEREF _Toc228006022 \h 
+---
+ HYPERLINK \l "_Toc228006023" 
+---
+ PAGEREF _Toc228006023 \h 
+---
+ HYPERLINK \l "_Toc228006024" 
+---
+ PAGEREF _Toc228006024 \h 
+---
+ HYPERLINK \l "_Toc228006025" 
+---
+ PAGEREF _Toc228006025 \h 
+---
+ HYPERLINK \l "_Toc228006026" 
+---
+ PAGEREF _Toc228006026 \h 
+---
+ HYPERLINK \l "_Toc228006027" 
+---
+ PAGEREF _Toc228006027 \h 
+---
+ HYPERLINK \l "_Toc228006028" 
+---
+ PAGEREF _Toc228006028 \h 
+---
+ HYPERLINK \l "_Toc228006029" 
+---
+ PAGEREF _Toc228006029 \h 
+---
+ HYPERLINK \l "_Toc228006030" 
+---
+ PAGEREF _Toc228006030 \h 
+---
+ HYPERLINK \l "_Toc228006031" 
+---
+ PAGEREF _Toc228006031 \h 
+---
+ HYPERLINK \l "_Toc228006032" 
+---
+ PAGEREF _Toc228006032 \h 
+---
+ TOC \h \z \t "Heading 6,1" \c "B
+---
+ HYPERLINK \l "_Toc228005817"Ġ
+---
+ PAGEREF _Toc228005820 \h 
+---
+ HYPERLINK \l "_Toc228005821" 
+---
+ PAGEREF _Toc228005821 \h 
+---
+ HYPERLINK \l "_Toc228005822" 
+---
+ PAGEREF _Toc228005822 \h 
+---
+ HYPERLINK \l "_Toc228005823" 
+---
+ PAGEREF _Toc228005823 \h 
+---
+ HYPERLINK \l "_Toc228005824" 
+---
+ẽn usecase xem chi ti
+---
+ PAGEREF _Toc228005824 \h 
+---
+ HYPERLINK \l "_Toc228005825" 
+---
+ PAGEREF _Toc228005825 \h 
+---
+ HYPERLINK \l "_Toc228005826" 
+---
+ PAGEREF _Toc228005826 \h 
+---
+ HYPERLINK \l "_Toc228005827" 
+---
+ PAGEREF _Toc228005827 \h 
+---
+ HYPERLINK \l "_Toc228005828" 
+---
+ PAGEREF _Toc228005828 \h 
+---
+ HYPERLINK \l "_Toc228005829" 
+---
+ PAGEREF _Toc228005829 \h 
+---
+ HYPERLINK \l "_Toc228005830" 
+---
+ PAGEREF _Toc228005830 \h 
+---
+ HYPERLINK \l "_Toc228005831" 
+---
+ẽn usecase xem chi ti
+---
+ PAGEREF _Toc228005831 \h 
+---
+ HYPERLINK \l "_Toc228005832" 
+---
+ PAGEREF _Toc228005832 \h 
+---
+ HYPERLINK \l "_Toc228005833" 
+---
+ PAGEREF _Toc228005833 \h 
+---
+ HYPERLINK \l "_Toc228005834" 
+---
+ PAGEREF _Toc228005834 \h 
+---
+ HYPERLINK \l "_Toc228005835" 
+---
+ PAGEREF _Toc228005835 \h 
+---
+ HYPERLINK \l "_Toc228005836" 
+---
+ PAGEREF _Toc228005836 \h 
+---
+ HYPERLINK \l "_Toc228005837" 
+---
+ PAGEREF _Toc228005837 \h 
+---
+ HYPERLINK \l "_Toc228005838" 
+---
+ PAGEREF _Toc228005838 \h 
+---
+ HYPERLINK \l "_Toc228005839" 
+---
+ PAGEREF _Toc228005839 \h 
+---
+ HYPERLINK \l "_Toc228005840" 
+---
+ PAGEREF _Toc228005840 \h 
+---
+ HYPERLINK \l "_Toc228005841" 
+---
+ PAGEREF _Toc228005841 \h 
+---
+ HYPERLINK \l "_Toc228005842" 
+---
+ PAGEREF _Toc228005842 \h 
+---
+ HYPERLINK \l "_Toc228005843" 
+---
+ PAGEREF _Toc228005843 \h 
+---
+ HYPERLINK \l "_Toc228005844" 
+---
+ẽn usecase tham gia ch
+---
+ PAGEREF _Toc228005844 \h 
+---
+ HYPERLINK \l "_Toc228005845" 
+---
+ PAGEREF _Toc228005845 \h 
+---
+ HYPERLINK \l "_Toc228005846" 
+---
+ PAGEREF _Toc228005846 \h 
+---
+ HYPERLINK \l "_Toc228005847" 
+---
+ PAGEREF _Toc228005847 \h 
+---
+ HYPERLINK \l "_Toc228005848" 
+---
+ PAGEREF _Toc228005848 \h 
+---
+ HYPERLINK \l "_Toc228005849" 
+---
+ PAGEREF _Toc228005849 \h 
+---
+ HYPERLINK \l "_Toc228005850" 
+---
+ PAGEREF _Toc228005850 \h 
+---
+ HYPERLINK \l "_Toc228005851" 
+---
+ PAGEREF _Toc228005851 \h 
+---
+ HYPERLINK \l "_Toc228005852" 
+---
+ PAGEREF _Toc228005852 \h 
+---
+ HYPERLINK \l "_Toc228005853" 
+---
+ PAGEREF _Toc228005853 \h 
+---
+ HYPERLINK \l "_Toc228005854" 
+---
+ PAGEREF _Toc228005854 \h 
+---
+ HYPERLINK \l "_Toc228005855" 
+---
+ PAGEREF _Toc228005855 \h 
+---
+ HYPERLINK \l "_Toc228005856" 
+---
+ PAGEREF _Toc228005856 \h 
+---
+ HYPERLINK \l "_Toc228005857" 
+---
+ PAGEREF _Toc228005857 \h 
+---
+ HYPERLINK \l "_Toc228005858" 
+---
+ PAGEREF _Toc228005858 \h 
+---
+ HYPERLINK \l "_Toc228005859" 
+---
+ PAGEREF _Toc228005859 \h 
+---
+ HYPERLINK \l "_Toc228005860" 
+---
+ PAGEREF _Toc228005860 \h 
+---
+ HYPERLINK \l "_Toc228005861" 
+---
+ PAGEREF _Toc228005861 \h 
+---
+ HYPERLINK \l "_Toc228005862" 
+---
+ PAGEREF _Toc228005862 \h 
+---
+ HYPERLINK \l "_Toc228005863" 
+---
+ PAGEREF _Toc228005863 \h 
+---
+ HYPERLINK \l "_Toc228005864" 
+---
+ PAGEREF _Toc228005864 \h 
+---
+ HYPERLINK \l "_Toc228005865" 
+---
+ PAGEREF _Toc228005865 \h 
+---
+ HYPERLINK \l "_Toc228005866" 
+---
+½nh 1. 1: Activity usecase mua h
+---
+ PAGEREF _Toc228005866 \h 
+---
+ HYPERLINK \l "_Toc228005867" 
+---
+½nh 1. 2: Sequence usecase mua h
+---
+ PAGEREF _Toc228005867 \h 
+---
+ HYPERLINK \l "_Toc228005868" 
+---
+ PAGEREF _Toc228005868 \h 
+---
+ HYPERLINK \l "_Toc228005869" 
+---
+ PAGEREF _Toc228005869 \h 
+---
+ HYPERLINK \l "_Toc228005870" 
+---
+ PAGEREF _Toc228005870 \h 
+---
+ HYPERLINK \l "_Toc228005871" 
+---
+ PAGEREF _Toc228005871 \h 
+---
+ HYPERLINK \l "_Toc228005872" 
+---
+ PAGEREF _Toc228005872 \h 
+---
+ HYPERLINK \l "_Toc228005873" 
+---
+ PAGEREF _Toc228005873 \h 
+---
+ HYPERLINK \l "_Toc228005874" 
+---
+½nh 2. 1: Activity usecase đăng s
+---
+ PAGEREF _Toc228005874 \h 
+---
+ HYPERLINK \l "_Toc228005875" 
+---
+½nh 2. 2: Sequence useacase đăng s
+---
+ PAGEREF _Toc228005875 \h 
+---
+ HYPERLINK \l "_Toc228005876" 
+---
+ PAGEREF _Toc228005876 \h 
+---
+ HYPERLINK \l "_Toc228005877" 
+---
+ PAGEREF _Toc228005877 \h 
+---
+ HYPERLINK \l "_Toc228005878" 
+---
+ PAGEREF _Toc228005878 \h 
+---
+ HYPERLINK \l "_Toc228005879" 
+---
+½nh 3. 1: Activity usecase qu
+---
+ PAGEREF _Toc228005879 \h 
+---
+ HYPERLINK \l "_Toc228005880" 
+---
+½nh 3. 2: Sequence usecase qu
+---
+ PAGEREF _Toc228005880 \h 
+---
+ HYPERLINK \l "_Toc228005881" 
+---
+ PAGEREF _Toc228005881 \h 
+---
+ HYPERLINK \l "_Toc228005882" 
+---
+ PAGEREF _Toc228005882 \h 
+---
+ HYPERLINK \l "_Toc228005883" 
+---
+ PAGEREF _Toc228005883 \h 
+---
+ HYPERLINK \l "_Toc228005884" 
+---
+½nh 4. 1: Activity usecase qu
+---
+ PAGEREF _Toc228005884 \h 
+---
+ HYPERLINK \l "_Toc228005885" 
+---
+½nh 4. 2: Sequence usecase qu
+---
+ PAGEREF _Toc228005885 \h 
+---
+ HYPERLINK \l "_Toc228005886" 
+---
+ PAGEREF _Toc228005886 \h 
+---
+ HYPERLINK \l "_Toc228005887" 
+---
+ PAGEREF _Toc228005887 \h 
+---
+ HYPERLINK \l "_Toc228005888" 
+---
+ PAGEREF _Toc228005888 \h 
+---
+ HYPERLINK \l "_Toc228005889" 
+---
+ PAGEREF _Toc228005889 \h 
+---
+ HYPERLINK \l "_Toc228005890" 
+---
+ PAGEREF _Toc228005890 \h 
+---
+ẽm (Software Requirements)਍
+---
+ẽ Access Token/Cookie਍
+---
+½ng tin sai: Backend tr
+---
+ẽm tra field status, tr
+---
+2: Frontend validate d
+---
+ẽi 409 Conflict; Frontend b
+---
+½ng tin (Transaction th
+---
+ẽc (Include) ngay sau khi đăng k
+---
+ẽ 3 (SMS Gateway/SMTP) đ
+---
+½n URL (VD: ?keyword=dien-thoai) v
+---
+ẽc Full-text search) tr
+---
+6: Frontend render danh s
+---
+½ - Auto-suggest): Khi Actor đang g
+---
+ẽng sang trang chi ti
+---
+ẽt (VD: /product/dien-thoai-iphone-15);਍
+---
+ẽi API Get Product by Slug/ID;਍
+---
+ẽng trong DB (Products, Categories, Users/Shop) đ
+---
+6: Frontend render UI (Image Carousel, Text, N
+---
+ẽ (Color, Size): Backend tr
+---
+ẽng Variants; Frontend b
+---
+ẽn (status = inactive): Backend tr
+---
+ẽi 404 Not Found; Frontend đi
+---
+ẽn usecase xem chi ti
+---
+ẽc (parameters) do Actor tick ch
+---
+ẽ thanh Sidebar (VD: Gi
+---
+½o URL (VD: ?keyword=
+---
+&price_max=1000000&rating=4);਍
+---
+ẽi Parameter: Actor c
+---
+ẽ sai logic (VD: price_min > price_max); Backend ch
+---
+½o "Blacklist" (danh s
+---
+½ch đen) trong DB/Redis đ
+---
+ẽi Local Storage/Cookies;਍
+---
+ẽ Token đang active c
+---
+ẽi Backend; Frontend v
+---
+3: Frontend validate d
+---
+ẽng multipart/form-data v
+---
+6: Backend upload file 
+---
+½n Cloud Storage (VD: AWS S3, Cloudinary) v
+---
+ẽi upload, Backend tr
+---
+½ng chat (Room ID / Conversation ID)
+---
+ƽ MongoDB cho log chat);਍
+---
+ẽn (Seller) đang offline: Backend v
+---
+ẽn unread_count; Khi Seller online, h
+---
+ẽng (Socket disconnect): Frontend hi
+---
+ẽn sang "Đang giao");਍
+---
+½o realtime qua WebSocket ho
+---
+ẽc Firebase Cloud Messaging (FCM);਍
+---
+½i is_read = true trong DB v
+---
+ẽc push notification c
+---
+ẽi API Get Product Details (k
+---
+ẽng Wishlists xem User ID n
+---
+6: Frontend render UI; N
+---
+ẽm trong Wishlist, icon Tr
+---
+ẽ (Color, Size): Backend tr
+---
+ẽng Variants; Frontend b
+---
+ẽn (status = inactive): Backend tr
+---
+ẽi 404 Not Found; Frontend đi
+---
+ẽn usecase xem chi ti
+---
+Product ID, Variant ID (M
+---
+ẽt trong DB/Redis; Icon gi
+---
+ẽi API POST /cart/add;਍
+---
+ẽn kho (Stock) trong DB c
+---
+ẽi API PUT /cart/update; Backend check l
+---
+ẽi API DELETE /cart/remove; Backend x
+---
+½ng: Backend check th
+---
+ẽy quantity > stock, tr
+---
+ẽi API POST /wishlist/toggle;਍
+---
+ẽng Cart_Item_IDs, ID Đ
+---
+ẽn sang trang Checkout, g
+---
+ẽi API POST /orders/create;਍
+---
+6: (DB Transaction) Backend b
+---
+ẽng Products/Variants;਍
+---
+- Commit Transaction;਍
+---
+½ng (Race Condition): L
+---
+½ng; Transaction DB th
+---
+ẽi (Rollback); Backend tr
+---
+ẽi 409 Conflict; Frontend b
+---
+ẽi trang Checkout, Actor nh
+---
+ẽi API POST /vouchers/apply;਍
+---
+ẽu 150k"); Frontend hi
+---
+ẽng VNPAY / Momo / Th
+---
+ẽc Checkout, Actor ch
+---
+½i Pending_Payment);਍
+---
+4 Frontend Redirect Actor sang trang Web/App c
+---
+½n trang (Page, Limit) v
+---
+ẽi API GET /orders/history (k
+---
+5: Frontend render danh s
+---
+ẽi API (VD: ?status=pending); Backend query theo tr
+---
+ẽp theo (Lazy loading / Pagination);਍
+---
+ẽi timeout database: Do d
+---
+ẽng sang trang Chi ti
+---
+ẽi API GET /orders/{order_id}/tracking;਍
+---
+ẽi API POST multipart form data l
+---
+4: Backend upload file, l
+---
+ẽng Return_Requests;਍
+---
+½nh Return_Pending; Đ
+---
+ẽi API qua Postman, Backend tr
+---
+ẽi API PUT /orders/cancel;਍
+---
+½ Processing; Backend t
+---
+Product ID, Order ID, S
+---
+ẽi API POST /reviews/create;਍
+---
+ẽy logic Recalculate Rating: T
+---
+½ review trong DB; Backend t
+---
+ẽp (VD: iPhone, Cũ, D
+---
+½n (VD: "Săn iPhone cũ").਍
+---
+ẽi API POST /filters/save.਍
+---
+ẽn (Middleware checkVipTier), l
+---
+½c Voucher (VD: Freeship 100k cho VIP Kim C
+---
+ẽi API POST /vouchers/collect k
+---
+½o (Cross-check): User ID n
+---
+ẽm tra Kho Voucher: Nh
+---
+½o "Kho Voucher", Frontend g
+---
+ẽt Voucher (Race Condition): Voucher VIP ch
+---
+ẽn (Forbidden): Actor d
+---
+ẽn tham gia VIP", click v
+---
+ẽi API POST /vip/enroll਍
+---
+ẽc VIP_Tier trong CSDL.਍
+---
+ƽng Backend check Total_Spent ch
+---
+ẽn usecase tham gia ch
+---
+ẽ (Race Condition): Actor m
+---
+ẽ tab 2, Backend check th
+---
+ẽi API GET /users/vip-status.਍
+---
+ẽn). API timeout, Frontend hi
+---
+ẽi API POST /shops/register.਍
+---
+5. Backend upload file 
+---
+ẽi API POST /products/create.਍
+---
+ẽi API PUT /products/{id}/update.਍
+---
+ẽn". Backend update TrangThai = An. S
+---
+½m (< 0). Frontend ch
+---
+ẽi API qua tool, Backend tr
+---
+½ Code (VD: GIAM10K), Lo
+---
+ẽi API POST /shops/vouchers/create.਍
+---
+½c ngay". Backend update th
+---
+½ trong Shop. Backend tr
+---
+ẽng ĐVVC (VD: GHTK/GHN) truy
+---
+ẽ Tracking_Code. Backend l
+---
+ẽ doanh thu, xem sao k
+---
+ẽi API GET /shops/finance/report.਍
+---
+4. Backend query DB (c
+---
+ẽng LichSuGiaoDich) đ
+---
+6. Frontend render bi
+---
+ẽn 31/03). Frontend g
+---
+ẽt Excel". Backend query d
+---
+ẽi API POST /shops/finance/withdraw.਍
+---
+ẽi API GET /shops/orders/history.਍
+---
+5. Frontend render danh s
+---
+½ TrangThai = HoanThanh.਍܀܀܀
+---
+½a Actor. Frontend hi
+---
+½i ChoXacNhan), Actor nh
+---
+ẽi API PUT /shops/orders/{id}/cancel.਍
+---
+7. Backend ghi log ph
+---
+: Activity usecase mua h
+---
+: Sequence usecase mua h
+---
+: Activity usecase đăng s
+---
+: Sequence useacase đăng s
+---
+: Activity usecase qu
+---
+: Sequence usecase qu
+---
+: Activity usecase qu
+---
+: Sequence usecase qu
+---
+ PAGE   \* MERGEFORMAT 
+---
+classDiagramXoabolopkethop
+---
+½CȃȂȂȃȂ̃̃؄ЄЄࠄ؆؅ࠉ਍਍ࠉउ਍༌ഌଊ଎उ਍഑ชဏᄐഐఊጒဒ༓တ
+---
+½Ń̃ЃЃЈࠄଐଉတတတတတတတတတတတတတတတတတတတတတတတတတ
+---
+½CĂāāĂāȂȂЂȃȂԂЄЃԆ؆Ԇ؆܆ࠉ܆܉؆ଈई਍਍਍਍਍ࠆఋഋఊഉഊഊ
+---
+½ŃȂȂȂ̅ԃ਍؇ഇഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊഊ
+---
+½CȃȂȂȃȂ̃̃؄ЄЄࠄ؆؅ࠉ਍਍ࠉउ਍༌ഌଊ଎उ਍഑ชဏᄐഐఊጒဒ༓တ
+---
+½Ń̃ЃЃЈࠄଐଉတတတတတတတတတတတတတတတတတတတတတတတတတ
+---
+Default Paragraph Font
+---
+Table + In Dam + Le Giua
+---
+Thuat ngu - ngu nghia
+---
+ĀāĀā̀ā؀ā̀Ѐ̀܀̀܀̀܀̀܀̀Ѐ̀܀̀Ѐ̀܀̀Ѐ̀܀̀Ѐ̀܀̀Ѐ̀܀̀Ѐ̀܀̀Ѐ̀܀̀Ѐ̀܀̀Ѐ̀܀̀Ѐ̀܀̀Ѐ̀܀̀Ѐ̀܀̀Ѐ̀܀̀Ѐ̀܀̀Ѐ̀܀̀Ѐ̀܀̀Ѐ̀܀̀Ѐ̀܀̀Ѐ̀܀̀Ѐ̀܀̀Ѐ̀܀̀Ѐ̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ȁ܀Ȁ܀Ȁ܀Ȁ܀ȀЀ܀Ѐ܀܀܀Ѐ܀Ȁ
+---
+؀ā̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀܀
+---
+ĀāĀā̀ā؀ā̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ȁ܀Ȁ܀Ȁ܀Ȁ܀ȀЀ܀Ѐ܀Ѐ܀Ȁ
+---
+̀ā؀ā̀Ѐ̀܀̀܀̀܀̀܀̀Ѐ̀܀̀Ѐ̀܀̀Ѐ̀܀̀Ѐ̀܀̀Ѐ̀܀̀Ѐ̀܀̀Ѐ̀܀̀Ѐ̀܀̀Ѐ̀܀̀Ѐ̀܀̀Ѐ̀܀̀Ѐ̀܀̀Ѐ̀܀̀Ѐ̀܀̀Ѐ̀܀̀Ѐ̀܀̀Ѐ̀܀̀Ѐ̀܀̀Ѐ̀܀̀Ѐ̀܀̀Ѐ̀܀̀Ѐ̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀܀̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀Ѐ̀ȀȀЀ܀ЀȀ܀
+---
+ͩऀԄऀĄऀ̄ऀԄऀĄऀ̄ऀԄऀሄĀऀ̄ऀԄऀĄऀ̄ऀԄऀĄऀ̄ऀԄऀሄ
+---
+ሀ ሀ!ሀ"ሀ$ሀ&ሀ'ሀ(ሀ)ሀ*ሀ+ሀ.ሀ/ሀ1ሀ5ሀ9ሀDሀMሀNሀOሀPሀVሀ]ሀ_ሀbሀeሀhሀlሀyሀ|
+---
+DocumentSummaryInformation
+---

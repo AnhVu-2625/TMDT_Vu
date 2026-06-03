@@ -82,6 +82,22 @@ const useSellerStore = create((set, get) => ({
     return res.data;
   },
 
+  updateProduct: async (id, data) => {
+    const token = JSON.parse(localStorage.getItem('auth-storage'))?.state?.token;
+    const res = await axios.put(`${API_URL}/products/${id}`, data, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return res.data;
+  },
+
+  deleteProduct: async (id) => {
+    const token = JSON.parse(localStorage.getItem('auth-storage'))?.state?.token;
+    const res = await axios.delete(`${API_URL}/products/${id}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return res.data;
+  },
+
   // ─── Orders ───
   fetchMyOrders: async () => {
     set({ loading: true });

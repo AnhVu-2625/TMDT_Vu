@@ -46,9 +46,11 @@ const Register = () => {
 
     try {
       const { xacNhanMatKhau, ...registerData } = formData;
-      await register(registerData);
-      toast.success('Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.');
-      navigate('/verify-otp', { state: { email: formData.email } });
+      const res = await register(registerData);
+      const demoOtp = res?.data?.otp;
+      if (demoOtp) toast.info(`[Demo] Mã OTP của bạn: ${demoOtp}`, { autoClose: 10000 });
+      else toast.success('Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.');
+      navigate('/verify-otp', { state: { email: formData.email, otp: demoOtp } });
     } catch (error) {
       toast.error(error.message);
     }
@@ -215,11 +217,11 @@ const Register = () => {
                 />
                 <span className="text-sm text-slate-300 group-hover:text-white transition-colors">
                   Tôi đồng ý với{' '}
-                  <Link to="/terms" className="text-red-500 hover:text-red-400 font-semibold transition-colors">
+                  <Link to="/" className="text-red-500 hover:text-red-400 font-semibold transition-colors">
                     Điều khoản sử dụng
                   </Link>{' '}
                   và{' '}
-                  <Link to="/privacy" className="text-red-500 hover:text-red-400 font-semibold transition-colors">
+                  <Link to="/" className="text-red-500 hover:text-red-400 font-semibold transition-colors">
                     Chính sách bảo mật
                   </Link>
                 </span>

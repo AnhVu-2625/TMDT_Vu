@@ -147,7 +147,7 @@ const Login = () => {
                 />
                 <span className="text-sm text-gray-300 group-hover:text-white transition">Ghi nhớ tôi</span>
               </label>
-              <Link to="/forgot-password" className="text-sm text-red-500 hover:text-red-400 transition font-medium">
+              <Link to="/" className="text-sm text-red-500 hover:text-red-400 transition font-medium">
                 Quên mật khẩu?
               </Link>
             </motion.div>

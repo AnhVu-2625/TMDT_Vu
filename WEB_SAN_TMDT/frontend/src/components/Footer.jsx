@@ -11,28 +11,28 @@ const features = [
 
 const footerLinks = {
   'Về MartHub': [
-    { label: 'Giới thiệu', to: '/about' },
-    { label: 'Tuyển dụng', to: '/careers' },
-    { label: 'Tin tức', to: '/news' },
-    { label: 'Blog', to: '/blog' },
+    { label: 'Giới thiệu', to: '/' },
+    { label: 'Tuyển dụng', to: '/' },
+    { label: 'Tin tức', to: '/products?sort=newest' },
+    { label: 'Blog', to: '/' },
   ],
   'Dịch vụ': [
     { label: 'Bán hàng trên MartHub', to: '/seller/register' },
-    { label: 'Quảng cáo', to: '/advertise' },
-    { label: 'Affiliate', to: '/affiliate' },
-    { label: 'Flash Sale', to: '/flash-sale' },
+    { label: 'Quảng cáo', to: '/seller/register' },
+    { label: 'Affiliate', to: '/' },
+    { label: 'Flash Sale', to: '/products?sale=true' },
   ],
   'Hỗ trợ': [
-    { label: 'Trung tâm hỗ trợ', to: '/help' },
-    { label: 'Hướng dẫn mua hàng', to: '/guide/buy' },
-    { label: 'Hướng dẫn bán hàng', to: '/guide/sell' },
-    { label: 'Chính sách đổi trả', to: '/returns' },
+    { label: 'Trung tâm hỗ trợ', to: '/' },
+    { label: 'Hướng dẫn mua hàng', to: '/products' },
+    { label: 'Hướng dẫn bán hàng', to: '/seller/register' },
+    { label: 'Chính sách đổi trả', to: '/' },
   ],
   'Chính sách': [
-    { label: 'Điều khoản sử dụng', to: '/terms' },
-    { label: 'Chính sách bảo mật', to: '/privacy' },
-    { label: 'Chính sách vận chuyển', to: '/shipping' },
-    { label: 'Giải quyết tranh chấp', to: '/dispute' },
+    { label: 'Điều khoản sử dụng', to: '/' },
+    { label: 'Chính sách bảo mật', to: '/' },
+    { label: 'Chính sách vận chuyển', to: '/' },
+    { label: 'Giải quyết tranh chấp', to: '/' },
   ],
 };
 

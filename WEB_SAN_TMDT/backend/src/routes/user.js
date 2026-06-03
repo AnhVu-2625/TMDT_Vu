@@ -1,8 +1,12 @@
 const express = require('express');
 const { getPool, sql } = require('../config/database');
 const { authenticateToken } = require('../middleware/auth');
+const { createInvoice, createNotification } = require('./invoice');
 
 const router = express.Router();
+
+// Caps: Hạng TV tối đa 100K, VIP Tháng 200K, VIP Quý 500K, VIP Năm 1M
+const VIP_CAPS = { default: 100000, 1: 200000, 2: 500000, 3: 1000000 };
 
 // Get user profile
 router.get('/profile', authenticateToken, async (req, res) => {
@@ -383,15 +387,18 @@ router.post('/vip/subscribe', authenticateToken, async (req, res) => {
     const ngayKetThuc = new Date(ngayBatDau.getTime() + packageData.ThoiGianDangKy * 24 * 60 * 60 * 1000);
 
     // Add VIP subscription
-    await pool.request()
+    const vipResult = await pool.request()
       .input('userId', sql.Int, req.userId)
       .input('packageId', sql.Int, maGiaDichVu)
       .input('ngayBatDau', sql.DateTime, ngayBatDau)
       .input('ngayKetThuc', sql.DateTime, ngayKetThuc)
       .query(`
         INSERT INTO DichVuVIPNguoiDung (MaNguoiDung, MaGiaDichVu, NgayBatDau, NgayKetThuc, TrangThai)
+        OUTPUT INSERTED.MaVIP
         VALUES (@userId, @packageId, @ngayBatDau, @ngayKetThuc, N'DANG_HOAT_DONG')
       `);
+
+    const maVIP = vipResult.recordset[0].MaVIP;
 
     // Add points bonus for VIP subscription
     await pool.request()
@@ -411,7 +418,90 @@ router.post('/vip/subscribe', authenticateToken, async (req, res) => {
         VALUES (@userId, @diem, 1, @lyDo, 'HE_THONG')
       `);
 
-    res.json({ success: true, message: 'VIP subscription successful' });
+    // Generate vouchers
+    const soLuongVoucher = packageData.SoLuongVoucher || 0;
+    const giaTriVoucher = packageData.GiaTriVoucher || 0;
+    const hanVoucher = packageData.HanVoucher || 30;
+    const voucherCodes = [];
+
+    for (let i = 0; i < soLuongVoucher; i++) {
+      const code = 'VIP' + (packageData.MaGiaDichVu) + ((new Date().getTime()) % 10000) + i + req.userId;
+
+      // Create coupon in MaKhuyenMai
+      const tuNgay = new Date();
+      const denNgay = new Date(tuNgay.getTime() + hanVoucher * 24 * 60 * 60 * 1000);
+
+      // Caps: Tháng=200K, Quý=500K, Năm=1M
+      const giamToiDa = VIP_CAPS[packageData.MaGiaDichVu] || 200000;
+
+      const couponResult = await pool.request()
+        .input('maCode', sql.NVarChar, code)
+        .input('giaTriGiam', sql.Decimal(15,2), giaTriVoucher)
+        .input('donHangToiThieu', sql.Decimal(15,2), 0)
+        .input('giamToiDa', sql.Decimal(15,2), giamToiDa)
+        .input('tuNgay', sql.DateTime, tuNgay)
+        .input('denNgay', sql.DateTime, denNgay)
+        .input('gioiHanSuDung', sql.Int, 1)
+        .query(`
+          INSERT INTO MaKhuyenMai (MaCode, LoaiGiamGia, GiaTriGiam, DonHangToiThieu, GiamToiDa, TuNgay, DenNgay, GioiHanSuDung)
+          OUTPUT INSERTED.MaKhuyenMai
+          VALUES (@maCode, N'PHAN_TRAM', @giaTriGiam, @donHangToiThieu, @giamToiDa, @tuNgay, @denNgay, @gioiHanSuDung)
+        `);
+
+      const maKhuyenMai = couponResult.recordset[0].MaKhuyenMai;
+
+      // Link coupon to user
+      await pool.request()
+        .input('userId', sql.Int, req.userId)
+        .input('maKhuyenMai', sql.Int, maKhuyenMai)
+        .query(`
+          INSERT INTO KhuyenMaiNguoiDung (MaNguoiDung, MaKhuyenMai, TrangThai)
+          VALUES (@userId, @maKhuyenMai, N'CHUA_SU_DUNG')
+        `);
+
+      // Record in VoucherVIP
+      await pool.request()
+        .input('userId', sql.Int, req.userId)
+        .input('maVIP', sql.Int, maVIP)
+        .input('maKhuyenMai', sql.Int, maKhuyenMai)
+        .input('maCode', sql.NVarChar, code)
+        .input('giaTriGiam', sql.Decimal(5,2), giaTriVoucher)
+        .input('donHangToiThieu', sql.Decimal(15,2), 0)
+        .input('ngayHetHan', sql.Date, denNgay)
+        .query(`
+          INSERT INTO VoucherVIP (MaNguoiDung, MaVIP, MaKhuyenMai, MaCode, GiaTriGiam, DonHangToiThieu, NgayHetHan)
+          VALUES (@userId, @maVIP, @maKhuyenMai, @maCode, @giaTriGiam, @donHangToiThieu, @ngayHetHan)
+        `);
+
+      voucherCodes.push(code);
+    }
+
+    // Create invoice for VIP purchase
+    await createInvoice(pool, req.userId, 'VIP', maVIP, packageData.GiaTien, 0, 0, packageData.GiaTien, 'CHUYEN_KHOAN',
+      'Thanh toán gói ' + packageData.TenGoi + ' VIP');
+
+    // Notify user
+    let voucherMsg = '';
+    if (voucherCodes.length > 0) {
+      voucherMsg = ' Bạn nhận được ' + voucherCodes.length + ' voucher giảm ' + giaTriVoucher + '% (mã: ' + voucherCodes.join(', ') + ').';
+    }
+    await createNotification(pool, req.userId,
+      'Đăng ký VIP thành công!',
+      'Chúc mừng bạn đã trở thành thành viên ' + packageData.TenGoi + '!' + voucherMsg + ' Hiệu lực đến ' + ngayKetThuc.toLocaleDateString('vi-VN') + '.',
+      'HE_THONG', maVIP
+    );
+
+    res.json({
+      success: true,
+      message: 'VIP subscription successful',
+      data: {
+        maVIP,
+        voucherCodes,
+        ngayBatDau,
+        ngayKetThuc,
+        packageData
+      }
+    });
   } catch (error) {
     console.error('Subscribe VIP error:', error);
     res.status(500).json({ success: false, message: 'Server error' });
@@ -423,6 +513,15 @@ router.post('/vip/unsubscribe', authenticateToken, async (req, res) => {
   try {
     const pool = await getPool();
 
+    // Get current VIP info before cancel
+    const vipInfo = await pool.request()
+      .input('userId', sql.Int, req.userId)
+      .query(`
+        SELECT dv.MaVIP, gv.TenGoi FROM DichVuVIPNguoiDung dv
+        JOIN GiaDichVuVIP gv ON dv.MaGiaDichVu = gv.MaGiaDichVu
+        WHERE dv.MaNguoiDung = @userId AND dv.TrangThai = N'DANG_HOAT_DONG'
+      `);
+
     await pool.request()
       .input('userId', sql.Int, req.userId)
       .query(`
@@ -430,6 +529,14 @@ router.post('/vip/unsubscribe', authenticateToken, async (req, res) => {
         SET TrangThai = N'HUY_BO'
         WHERE MaNguoiDung = @userId AND TrangThai = N'DANG_HOAT_DONG'
       `);
+
+    if (vipInfo.recordset.length > 0) {
+      await createNotification(pool, req.userId,
+        'Hủy VIP thành công',
+        'Gói ' + vipInfo.recordset[0].TenGoi + ' đã được hủy. Các ưu đãi VIP sẽ không còn hiệu lực.',
+        'HE_THONG', vipInfo.recordset[0].MaVIP
+      );
+    }
 
     res.json({ success: true, message: 'VIP subscription cancelled' });
   } catch (error) {
@@ -512,6 +619,115 @@ router.get('/rank', authenticateToken, async (req, res) => {
     res.json({ success: true, data: user.recordset[0] });
   } catch (error) {
     console.error('Get rank error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Get user's combined benefits (tier + VIP)
+router.get('/benefits', authenticateToken, async (req, res) => {
+  try {
+    const pool = await getPool();
+    const user = await pool.request()
+      .input('userId', sql.Int, req.userId)
+      .query(`SELECT DiemTichLuy, MaHang FROM NguoiDung WHERE MaNguoiDung = @userId`);
+
+    if (user.recordset.length === 0) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    const diemTichLuy = user.recordset[0].DiemTichLuy || 0;
+    const currentRank = user.recordset[0].MaHang || 1;
+
+    // Get rank benefits
+    const rankData = await pool.request()
+      .input('maHang', sql.Int, currentRank)
+      .query(`SELECT * FROM HangThanhVien WHERE MaHang = @maHang`);
+    const rank = rankData.recordset[0] || { PhanTramGiam: 0, MienPhiVanChuyen: 0, HeSoTichDiem: 1.0 };
+
+    // Get next rank info
+    const nextRankData = await pool.request()
+      .input('maHang', sql.Int, currentRank + 1)
+      .query(`SELECT * FROM HangThanhVien WHERE MaHang = @maHang`);
+    const nextRank = nextRankData.recordset[0] || null;
+
+    // Get VIP status
+    const vipData = await pool.request()
+      .input('userId', sql.Int, req.userId)
+      .query(`
+        SELECT dv.*, gdv.TenGoi, gdv.GiaTien, gdv.UuDai
+        FROM DichVuVIPNguoiDung dv
+        JOIN GiaDichVuVIP gdv ON dv.MaGiaDichVu = gdv.MaGiaDichVu
+        WHERE dv.MaNguoiDung = @userId AND dv.TrangThai = N'DANG_HOAT_DONG'
+      `);
+    const vip = vipData.recordset[0] || null;
+
+    // Check if VIP is expired
+    let vipDiscount = 0;
+    let vipFreeShip = false;
+    let vipPointMultiplier = 1;
+    if (vip && new Date(vip.NgayKetThuc) > new Date()) {
+      switch (vip.MaGiaDichVu) {
+        case 1: vipDiscount = 5; vipPointMultiplier = 2; break; // VIP Tháng: 5%
+        case 2: vipDiscount = 8; vipPointMultiplier = 3; break; // VIP Quý: 8%
+        case 3: vipDiscount = 12; vipPointMultiplier = 5; break; // VIP Năm: 12%
+      }
+      vipFreeShip = true;
+    }
+
+    const tierDiscount = rank.PhanTramGiam || 0;
+    const tierFreeShip = rank.MienPhiVanChuyen === 1;
+    const tierPointMultiplier = rank.HeSoTichDiem || 1.0;
+
+    // Best discount: take the higher one (VIP > tier)
+    const finalDiscount = Math.max(vipDiscount, tierDiscount);
+    const finalFreeShip = vipFreeShip || tierFreeShip;
+    const finalPointMultiplier = Math.max(vipPointMultiplier, tierPointMultiplier);
+
+    // Calculate progress to next rank
+    let progress = 100;
+    if (nextRank) {
+      const prevThreshold = rank.DiemToiThieu || 0;
+      const nextThreshold = nextRank.DiemToiThieu;
+      const needed = nextThreshold - prevThreshold;
+      const earned = Math.min(Math.max(diemTichLuy - prevThreshold, 0), needed);
+      progress = needed > 0 ? Math.round((earned / needed) * 100) : 100;
+    }
+
+    res.json({
+      success: true,
+      data: {
+        diemTichLuy,
+        rank: {
+          maHang: currentRank,
+          tenHang: rank.TenHang || '',
+          phanTramGiam: rank.PhanTramGiam || 0,
+          mienPhiVanChuyen: rank.MienPhiVanChuyen === 1,
+          heSoTichDiem: rank.HeSoTichDiem || 1.0,
+          moTaUuDai: rank.MoTaUuDai || '',
+        },
+        nextRank: nextRank ? {
+          maHang: nextRank.MaHang,
+          tenHang: nextRank.TenHang,
+          diemToiThieu: nextRank.DiemToiThieu,
+        } : null,
+        progress,
+        vip: vip ? {
+          maVIP: vip.MaVIP,
+          tenGoi: vip.TenGoi,
+          ngayKetThuc: vip.NgayKetThuc,
+          uuDai: vip.UuDai,
+        } : null,
+        benefits: {
+          giamGia: finalDiscount,
+          giamGiaCap: vip ? VIP_CAPS[vip.MaGiaDichVu] || VIP_CAPS.default : VIP_CAPS.default,
+          mienPhiVanChuyen: finalFreeShip,
+          heSoTichDiem: finalPointMultiplier,
+          nguon: vip ? 'VIP' : 'HangThanhVien',
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Get benefits error:', error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });

@@ -1,0 +1,142 @@
+﻿Changed database context to 'ThuongMaiDienTu'.
+
+(9 rows affected)
+
+(10 rows affected)
+
+(1 rows affected)
+
+(1 rows affected)
+
+(1 rows affected)
+
+(1 rows affected)
+
+(1 rows affected)
+
+(1 rows affected)
+
+(1 rows affected)
+
+(1 rows affected)
+
+(1 rows affected)
+Msg 137, Level 15, State 2, Server LAPTOP-9FMMM0CN, Line 6
+Must declare the scalar variable "@DienThoaiID".
+Msg 137, Level 15, State 2, Server LAPTOP-9FMMM0CN, Line 6
+Must declare the scalar variable "@DienThoaiID".
+Msg 137, Level 15, State 2, Server LAPTOP-9FMMM0CN, Line 6
+Must declare the scalar variable "@TaiNgheID".
+Msg 137, Level 15, State 2, Server LAPTOP-9FMMM0CN, Line 6
+Must declare the scalar variable "@LaptopID".
+Msg 137, Level 15, State 2, Server LAPTOP-9FMMM0CN, Line 10
+Must declare the scalar variable "@ThoiTrangID".
+Msg 137, Level 15, State 2, Server LAPTOP-9FMMM0CN, Line 10
+Must declare the scalar variable "@GiaDungID".
+Msg 137, Level 15, State 2, Server LAPTOP-9FMMM0CN, Line 10
+Must declare the scalar variable "@SachID".
+Msg 137, Level 15, State 2, Server LAPTOP-9FMMM0CN, Line 10
+Must declare the scalar variable "@MyPhamID".
+Msg 137, Level 15, State 2, Server LAPTOP-9FMMM0CN, Line 10
+Must declare the scalar variable "@GamingID".
+Msg 137, Level 15, State 2, Server LAPTOP-9FMMM0CN, Line 10
+Must declare the scalar variable "@ThucPhamID".
+Msg 137, Level 15, State 2, Server LAPTOP-9FMMM0CN, Line 10
+Must declare the scalar variable "@TheThaoID".
+Msg 137, Level 15, State 2, Server LAPTOP-9FMMM0CN, Line 10
+Must declare the scalar variable "@GiaDungID".
+Msg 137, Level 15, State 2, Server LAPTOP-9FMMM0CN, Line 10
+Must declare the scalar variable "@ThucPhamID".
+
+(10 rows affected)
+
+(10 rows affected)
+
+(10 rows affected)
+
+(65 rows affected)
+Msg 1087, Level 15, State 2, Server LAPTOP-9FMMM0CN, Line 54
+Must declare the table variable "@Reviews".
+
+(4 rows affected)
+============================================
+SEED MASSIVE DATA COMPLETED!
+============================================
+ 
+ThongKe             SoLuong    
+------------------- -----------
+T?ng s? ng??i dùng:          25
+
+(1 rows affected)
+ThongKe           SoLuong    
+----------------- -----------
+T?ng s? c?a hàng:          13
+
+(1 rows affected)
+ThongKe           SoLuong    
+----------------- -----------
+T?ng s? s?n ph?m:          65
+
+(1 rows affected)
+ThongKe           SoLuong    
+----------------- -----------
+T?ng s? ?ánh giá:           8
+
+(1 rows affected)
+ThongKe           SoLuong    
+----------------- -----------
+T?ng s? hình ?nh:         114
+
+(1 rows affected)
+ 
+=== DANH SÁCH C?A HÀNG ===
+MaCuaHang   TenCuaHang                                                                                          
+----------- ----------------------------------------------------------------------------------------------------
+          1 Tech Store Official                                                                                 
+          2 Fashion Hub Store                                                                                   
+          3 Home & Living Pro                                                                                   
+          4 Lủng                                                                                                
+          5 Fashion House                                                                                       
+          6 Home Living                                                                                         
+          7 Book Worm                                                                                           
+          8 Beauty Care                                                                                         
+          9 Gear Zone                                                                                           
+         10 Food Market                                                                                         
+         11 Sports Plus                                                                                         
+         12 Digital World                                                                                       
+         13 Pet Love                                                                                            
+
+(13 rows affected)
+ 
+=== S?N PH?M THEO C?A HÀNG ===
+TenCuaHang                                                                                           SoSanPham  
+---------------------------------------------------------------------------------------------------- -----------
+Tech Store Official                                                                                           29
+Fashion Hub Store                                                                                             19
+Home & Living Pro                                                                                             16
+Lủng                                                                                                           1
+Pet Love                                                                                                       0
+Sports Plus                                                                                                    0
+Home Living                                                                                                    0
+Food Market                                                                                                    0
+Gear Zone                                                                                                      0
+Beauty Care                                                                                                    0
+Book Worm                                                                                                      0
+Digital World                                                                                                  0
+Fashion House                                                                                                  0
+
+(13 rows affected)
+ 
+=== 10 REVIEW G?N ?ÂY ===
+HoTen                                                                                                TenSanPham                                                                                                                                                                                                                                                      DiemDanhGia BinhLuan                                                                                                                                                                                                                                                        
+---------------------------------------------------------------------------------------------------- --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- ----------- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Lủng                                                                                                 Lót khe heeeeeeeeeeeeeeeeeeeeeeee                                                                                                                                                                                                                                         3 lồn                                                                                                                                                                                                                                                             
+Nguyễn Văn Quốc                                                                                      Lót khe heeeeeeeeeeeeeeeeeeeeeeee                                                                                                                                                                                                                                         3 q                                                                                                                                                                                                                                                               
+Trần Thị Seller                                                                                      iPad Pro M4 11 inch                                                                                                                                                                                                                                                       5 Tuyệt vời, sẽ mua lại!                                                                                                                                                                                                                                          
+Nguyễn Văn Quốc                                                                                      iPhone 15 Pro Max                                                                                                                                                                                                                                                         4 Chất lượng ổn, giao hàng nhanh                                                                                                                                                                                                                                  
+Nguyễn Văn Quốc                                                                                      Samsung Galaxy S24 Ultra                                                                                                                                                                                                                                                  5 Sản phẩm rất tốt, đúng như mô tả!                                                                                                                                                                                                                               
+Trần Thị Seller                                                                                      iPad Pro M4 11 inch                                                                                                                                                                                                                                                       5 Tuyệt vời, sẽ mua lại!                                                                                                                                                                                                                                          
+Nguyễn Văn Quốc                                                                                      iPhone 15 Pro Max                                                                                                                                                                                                                                                         4 Chất lượng ổn, giao hàng nhanh                                                                                                                                                                                                                                  
+Nguyễn Văn Quốc                                                                                      Samsung Galaxy S24 Ultra                                                                                                                                                                                                                                                  5 Sản phẩm rất tốt, đúng như mô tả!                                                                                                                                                                                                                               
+
+(8 rows affected)

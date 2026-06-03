@@ -1,0 +1,226 @@
+≡ƒöæ Sß╗¡ dß╗Ñng SQL Server Authentication
+   Server: localhost | DB: ThuongMaiDienTu | User: sa
+Γ£à Database connected successfully
+Tables: ChiTietGioHang, DanhSachYeuThich, LichSuTimKiem, MaKhuyenMai, DonHang, ChiTietDonHang, DanhGiaSanPham, YeuCauDoiTra, NHAN_VIEN, DON_VI, PhongChat, TinNhanChat, ThongBao, HangThanhVien, NguoiDung, KhuyenMaiNguoiDung, XacThucNguoiDung, DiaChiGiaoHang, CuaHang, YeuCauRutTien, DanhMucSanPham, SanPham, HinhAnhSanPham, PhienBanSanPham
+
+YeuCauRutTien columns: [
+  {
+    "COLUMN_NAME": "MaYeuCau",
+    "IS_NULLABLE": "NO",
+    "DATA_TYPE": "int"
+  },
+  {
+    "COLUMN_NAME": "MaCuaHang",
+    "IS_NULLABLE": "NO",
+    "DATA_TYPE": "int"
+  },
+  {
+    "COLUMN_NAME": "SoTien",
+    "IS_NULLABLE": "NO",
+    "DATA_TYPE": "decimal"
+  },
+  {
+    "COLUMN_NAME": "TenTaiKhoanNganHang",
+    "IS_NULLABLE": "NO",
+    "DATA_TYPE": "nvarchar"
+  },
+  {
+    "COLUMN_NAME": "SoTaiKhoan",
+    "IS_NULLABLE": "NO",
+    "DATA_TYPE": "nvarchar"
+  },
+  {
+    "COLUMN_NAME": "TenNganHang",
+    "IS_NULLABLE": "NO",
+    "DATA_TYPE": "nvarchar"
+  },
+  {
+    "COLUMN_NAME": "TrangThai",
+    "IS_NULLABLE": "YES",
+    "DATA_TYPE": "nvarchar"
+  },
+  {
+    "COLUMN_NAME": "NgayTao",
+    "IS_NULLABLE": "YES",
+    "DATA_TYPE": "datetime"
+  }
+]
+
+MaKhuyenMai columns: [
+  {
+    "COLUMN_NAME": "MaKhuyenMai",
+    "IS_NULLABLE": "NO",
+    "DATA_TYPE": "int"
+  },
+  {
+    "COLUMN_NAME": "MaCuaHang",
+    "IS_NULLABLE": "YES",
+    "DATA_TYPE": "int"
+  },
+  {
+    "COLUMN_NAME": "MaCode",
+    "IS_NULLABLE": "NO",
+    "DATA_TYPE": "nvarchar"
+  },
+  {
+    "COLUMN_NAME": "LoaiGiamGia",
+    "IS_NULLABLE": "NO",
+    "DATA_TYPE": "nvarchar"
+  },
+  {
+    "COLUMN_NAME": "GiaTriGiam",
+    "IS_NULLABLE": "NO",
+    "DATA_TYPE": "decimal"
+  },
+  {
+    "COLUMN_NAME": "DonHangToiThieu",
+    "IS_NULLABLE": "YES",
+    "DATA_TYPE": "decimal"
+  },
+  {
+    "COLUMN_NAME": "GiamToiDa",
+    "IS_NULLABLE": "YES",
+    "DATA_TYPE": "decimal"
+  },
+  {
+    "COLUMN_NAME": "TuNgay",
+    "IS_NULLABLE": "NO",
+    "DATA_TYPE": "datetime"
+  },
+  {
+    "COLUMN_NAME": "DenNgay",
+    "IS_NULLABLE": "NO",
+    "DATA_TYPE": "datetime"
+  },
+  {
+    "COLUMN_NAME": "GioiHanSuDung",
+    "IS_NULLABLE": "NO",
+    "DATA_TYPE": "int"
+  },
+  {
+    "COLUMN_NAME": "DaSuDung",
+    "IS_NULLABLE": "YES",
+    "DATA_TYPE": "int"
+  }
+]
+
+CuaHang columns: [
+  {
+    "COLUMN_NAME": "MaCuaHang",
+    "IS_NULLABLE": "NO",
+    "DATA_TYPE": "int"
+  },
+  {
+    "COLUMN_NAME": "MaNguoiDung",
+    "IS_NULLABLE": "NO",
+    "DATA_TYPE": "int"
+  },
+  {
+    "COLUMN_NAME": "TenCuaHang",
+    "IS_NULLABLE": "NO",
+    "DATA_TYPE": "nvarchar"
+  },
+  {
+    "COLUMN_NAME": "MoTa",
+    "IS_NULLABLE": "YES",
+    "DATA_TYPE": "nvarchar"
+  },
+  {
+    "COLUMN_NAME": "Logo",
+    "IS_NULLABLE": "YES",
+    "DATA_TYPE": "nvarchar"
+  },
+  {
+    "COLUMN_NAME": "TrangThai",
+    "IS_NULLABLE": "YES",
+    "DATA_TYPE": "nvarchar"
+  },
+  {
+    "COLUMN_NAME": "SoDuVi",
+    "IS_NULLABLE": "YES",
+    "DATA_TYPE": "decimal"
+  },
+  {
+    "COLUMN_NAME": "NgayTao",
+    "IS_NULLABLE": "YES",
+    "DATA_TYPE": "datetime"
+  }
+]
+
+DonHang columns: [
+  {
+    "COLUMN_NAME": "MaDonHang",
+    "IS_NULLABLE": "NO",
+    "DATA_TYPE": "int"
+  },
+  {
+    "COLUMN_NAME": "MaNguoiDung",
+    "IS_NULLABLE": "NO",
+    "DATA_TYPE": "int"
+  },
+  {
+    "COLUMN_NAME": "MaCuaHang",
+    "IS_NULLABLE": "NO",
+    "DATA_TYPE": "int"
+  },
+  {
+    "COLUMN_NAME": "MaDiaChi",
+    "IS_NULLABLE": "NO",
+    "DATA_TYPE": "int"
+  },
+  {
+    "COLUMN_NAME": "MaKhuyenMai",
+    "IS_NULLABLE": "YES",
+    "DATA_TYPE": "int"
+  },
+  {
+    "COLUMN_NAME": "TongTien",
+    "IS_NULLABLE": "NO",
+    "DATA_TYPE": "decimal"
+  },
+  {
+    "COLUMN_NAME": "TienGiamGia",
+    "IS_NULLABLE": "YES",
+    "DATA_TYPE": "decimal"
+  },
+  {
+    "COLUMN_NAME": "TienThanhToan",
+    "IS_NULLABLE": "NO",
+    "DATA_TYPE": "decimal"
+  },
+  {
+    "COLUMN_NAME": "PhuongThucThanhToan",
+    "IS_NULLABLE": "NO",
+    "DATA_TYPE": "nvarchar"
+  },
+  {
+    "COLUMN_NAME": "TrangThaiThanhToan",
+    "IS_NULLABLE": "YES",
+    "DATA_TYPE": "nvarchar"
+  },
+  {
+    "COLUMN_NAME": "TrangThaiDonHang",
+    "IS_NULLABLE": "YES",
+    "DATA_TYPE": "nvarchar"
+  },
+  {
+    "COLUMN_NAME": "PhiVanChuyen",
+    "IS_NULLABLE": "YES",
+    "DATA_TYPE": "decimal"
+  },
+  {
+    "COLUMN_NAME": "NgayTao",
+    "IS_NULLABLE": "YES",
+    "DATA_TYPE": "datetime"
+  },
+  {
+    "COLUMN_NAME": "NgayCapNhat",
+    "IS_NULLABLE": "YES",
+    "DATA_TYPE": "datetime"
+  },
+  {
+    "COLUMN_NAME": "DiemTichLuy",
+    "IS_NULLABLE": "YES",
+    "DATA_TYPE": "int"
+  }
+]

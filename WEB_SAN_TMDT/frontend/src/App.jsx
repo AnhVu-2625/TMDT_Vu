@@ -14,12 +14,14 @@ import Home from './pages/Home';
 import ProductList from './pages/ProductList';
 import ProductDetail from './pages/ProductDetail';
 import ShopDetail from './pages/ShopDetail';
+import VIP from './pages/VIP';
 import Cart from './pages/user/Cart';
 import Checkout from './pages/user/Checkout';
 import Orders from './pages/user/Orders';
 import Profile from './pages/user/Profile';
 import Favorites from './pages/user/Favorites';
 import Notifications from './pages/user/Notifications';
+import Chat from './pages/user/Chat';
 import NotFound from './pages/NotFound';
 
 // Auth Pages
@@ -104,6 +106,7 @@ function App() {
           <Route path="/products" element={<ProductList />} />
           <Route path="/products/:id" element={<ProductDetail />} />
           <Route path="/shop/:shopId" element={<ShopDetail />} />
+          <Route path="/vip" element={<VIP />} />
           <Route path="/cart" element={<Cart />} />
 
           <Route path="/checkout"     element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
@@ -111,6 +114,7 @@ function App() {
           <Route path="/profile"      element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/favorites"    element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
           <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
+          <Route path="/chat"           element={<ProtectedRoute><Chat /></ProtectedRoute>} />
         </Route>
 
         {/* ── Auth Routes ── */}

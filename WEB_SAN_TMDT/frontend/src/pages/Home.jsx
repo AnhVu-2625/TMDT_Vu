@@ -230,18 +230,14 @@ function Home() {
                       transition={{ duration: 0.5, delay: 0.48 }}
                       className="flex gap-4"
                     >
-                      <Link to={slide.ctaLink}>
-                        <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}
-                          className={`px-8 py-3.5 bg-gradient-to-r ${slide.accent} text-white font-bold rounded-xl shadow-2xl flex items-center gap-2 relative overflow-hidden`}>
-                          <span className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0%,rgba(255,255,255,0.15)_50%,transparent_100%)] animate-shimmer-slide" />
-                          <span className="relative z-10 flex items-center gap-2">{slide.cta} <FaArrowRight size={14} /></span>
-                        </motion.button>
-                      </Link>
-                      <Link to="/products">
-                        <button className="px-8 py-3.5 border border-white/20 text-white hover:bg-white/10 font-semibold rounded-xl transition">
-                          Xem tất cả
-                        </button>
-                      </Link>
+                      <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }} onClick={() => navigate(slide.ctaLink)}
+                        className={`px-8 py-3.5 bg-gradient-to-r ${slide.accent} text-white font-bold rounded-xl shadow-2xl flex items-center gap-2 relative overflow-hidden cursor-pointer`}>
+                        <span className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0%,rgba(255,255,255,0.15)_50%,transparent_100%)] animate-shimmer-slide" />
+                        <span className="relative z-10 flex items-center gap-2">{slide.cta} <FaArrowRight size={14} /></span>
+                      </motion.button>
+                      <button onClick={() => navigate('/products')} className="px-8 py-3.5 border border-white/20 text-white hover:bg-white/10 font-semibold rounded-xl transition cursor-pointer">
+                        Xem tất cả
+                      </button>
                     </motion.div>
                   </motion.div>
                   <motion.div
@@ -335,12 +331,14 @@ function Home() {
                         {/* === ACTION BUTTONS === */}
                         <div className="flex gap-2">
                           <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-                            className={`flex-1 py-2.5 bg-gradient-to-r ${slide.accent} text-white text-xs font-bold rounded-xl shadow-lg relative overflow-hidden`}>
+                            onClick={() => navigate(slide.ctaLink)}
+                            className={`flex-1 py-2.5 bg-gradient-to-r ${slide.accent} text-white text-xs font-bold rounded-xl shadow-lg relative overflow-hidden cursor-pointer`}>
                             <span className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0%,rgba(255,255,255,0.12)_50%,transparent_100%)] animate-shimmer-slide" />
                             <span className="relative z-10">Mua ngay</span>
                           </motion.button>
                           <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-                            className="flex-1 py-2.5 border border-white/15 text-white/80 hover:text-white hover:bg-white/10 text-xs font-bold rounded-xl transition-all">
+                            onClick={() => navigate('/products')}
+                            className="flex-1 py-2.5 border border-white/15 text-white/80 hover:text-white hover:bg-white/10 text-xs font-bold rounded-xl transition-all cursor-pointer">
                             Thêm vào giỏ
                           </motion.button>
                         </div>
@@ -461,7 +459,7 @@ function Home() {
             Xem thêm <FaChevronRight size={10} />
           </Link>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-stretch">
           {/* Deal of the Day featured card */}
           <motion.div
             initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }}
@@ -532,14 +530,23 @@ function Home() {
           </motion.div>
 
           {/* Product Swiper */}
-          <div className="lg:col-span-3">
+          <div className="lg:col-span-3 h-full">
             <Swiper
-              modules={[Navigation]} navigation spaceBetween={16}
-              slidesPerView={2} breakpoints={{ 640: { slidesPerView: 2 }, 1024: { slidesPerView: 3 } }}
+              modules={[Navigation]} navigation
+              spaceBetween={16}
+              slidesPerView={2}
+              speed={600}
+              watchSlidesProgress
+              style={{ padding: '0 56px' }}
+              breakpoints={{
+                640: { slidesPerView: 2, speed: 600 },
+                1024: { slidesPerView: 3, speed: 700 }
+              }}
+              className="h-full"
             >
               {displayProducts.slice(0, 10).map((p, i) => (
                 <SwiperSlide key={p.MaSanPham}>
-                  <ProductCard product={p} index={i} />
+                  <ProductCard product={p} index={i} compact />
                 </SwiperSlide>
               ))}
             </Swiper>

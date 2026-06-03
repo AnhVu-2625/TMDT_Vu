@@ -53,7 +53,7 @@ router.put('/shops/:shopId/approve', authenticateToken, requireAdmin, async (req
 
     const shopResult = await pool.request()
       .input('shopId', sql.Int, shopId)
-      .query(`SELECT ch.*, nd.MaNguoiDung FROM CuaHang ch INNER JOIN NguoiDung nd ON ch.MaNguoiDung = nd.MaNguoiDung WHERE ch.MaCuaHang = @shopId`);
+      .query(`SELECT ch.*, nd.MaNguoiDung AS OwnerId FROM CuaHang ch INNER JOIN NguoiDung nd ON ch.MaNguoiDung = nd.MaNguoiDung WHERE ch.MaCuaHang = @shopId`);
 
     if (shopResult.recordset.length === 0)
       return res.status(404).json({ success: false, message: 'Không tìm thấy cửa hàng' });
@@ -64,12 +64,13 @@ router.put('/shops/:shopId/approve', authenticateToken, requireAdmin, async (req
       .input('shopId', sql.Int, shopId)
       .query(`UPDATE CuaHang SET TrangThai = N'HOAT_DONG' WHERE MaCuaHang = @shopId`);
 
-    // Gửi thông báo cho chủ shop
-    await pool.request()
-      .input('userId', sql.Int, shop.MaNguoiDung)
-      .input('tieuDe', sql.NVarChar, 'Cửa hàng đã được duyệt')
-      .input('noiDung', sql.NVarChar, `Cửa hàng "${shop.TenCuaHang}" của bạn đã được Admin duyệt và có thể bắt đầu kinh doanh.`)
-      .query(`INSERT INTO ThongBao (MaNguoiDung, TieuDe, NoiDung, LoaiThongBao) VALUES (@userId, @tieuDe, @noiDung, N'HE_THONG')`);
+    // Gửi thông báo cho chủ shop (không blocking)
+    try {
+      await pool.request()
+        .input('userId', sql.Int, shop.OwnerId)
+        .input('noiDung', sql.NVarChar, `Cửa hàng "${shop.TenCuaHang}" của bạn đã được Admin duyệt và có thể bắt đầu kinh doanh.`)
+        .query(`INSERT INTO ThongBao (MaNguoiDung, TieuDe, NoiDung, LoaiThongBao) VALUES (@userId, N'Cửa hàng đã được duyệt', @noiDung, N'HE_THONG')`);
+    } catch (notifErr) { console.error('Approve notify error (non-fatal):', notifErr.message); }
 
     res.json({ success: true, message: 'Đã duyệt cửa hàng' });
   } catch (error) {
@@ -87,7 +88,7 @@ router.put('/shops/:shopId/reject', authenticateToken, requireAdmin, async (req,
 
     const shopResult = await pool.request()
       .input('shopId', sql.Int, shopId)
-      .query(`SELECT ch.*, nd.MaNguoiDung FROM CuaHang ch INNER JOIN NguoiDung nd ON ch.MaNguoiDung = nd.MaNguoiDung WHERE ch.MaCuaHang = @shopId`);
+      .query(`SELECT ch.*, nd.MaNguoiDung AS OwnerId FROM CuaHang ch INNER JOIN NguoiDung nd ON ch.MaNguoiDung = nd.MaNguoiDung WHERE ch.MaCuaHang = @shopId`);
 
     if (shopResult.recordset.length === 0)
       return res.status(404).json({ success: false, message: 'Không tìm thấy cửa hàng' });
@@ -98,11 +99,12 @@ router.put('/shops/:shopId/reject', authenticateToken, requireAdmin, async (req,
       .input('shopId', sql.Int, shopId)
       .query(`UPDATE CuaHang SET TrangThai = N'BI_KHOA' WHERE MaCuaHang = @shopId`);
 
-    await pool.request()
-      .input('userId', sql.Int, shop.MaNguoiDung)
-      .input('tieuDe', sql.NVarChar, 'Đăng ký cửa hàng bị từ chối')
-      .input('noiDung', sql.NVarChar, `Đăng ký cửa hàng "${shop.TenCuaHang}" bị từ chối. Lý do: ${lyDo}`)
-      .query(`INSERT INTO ThongBao (MaNguoiDung, TieuDe, NoiDung, LoaiThongBao) VALUES (@userId, @tieuDe, @noiDung, N'HE_THONG')`);
+    try {
+      await pool.request()
+        .input('userId', sql.Int, shop.OwnerId)
+        .input('noiDung', sql.NVarChar, `Đăng ký cửa hàng "${shop.TenCuaHang}" của bạn đã bị từ chối. Lý do: ${lyDo}`)
+        .query(`INSERT INTO ThongBao (MaNguoiDung, TieuDe, NoiDung, LoaiThongBao) VALUES (@userId, N'Từ chối đăng ký', @noiDung, N'HE_THONG')`);
+    } catch (notifErr) { console.error('Reject notify error (non-fatal):', notifErr.message); }
 
     res.json({ success: true, message: 'Đã từ chối đăng ký' });
   } catch (error) {
@@ -556,7 +558,7 @@ router.post('/send-notification', authenticateToken, requireAdmin, async (req, r
 
     await pool.request()
       .input('userId', sql.Int, userId)
-      .input('tieuDe', sql.NVarChar, tieuDe)
+      .input('tieuDe', sql.NVarChar, tieuDe || 'Thông báo')
       .input('noiDung', sql.NVarChar(sql.MAX), noiDung)
       .input('loaiThongBao', sql.NVarChar, loaiThongBao)
       .query(`
@@ -585,7 +587,7 @@ router.post('/broadcast-notification', authenticateToken, requireAdmin, async (r
     for (const user of users.recordset) {
       await pool.request()
         .input('userId', sql.Int, user.MaNguoiDung)
-        .input('tieuDe', sql.NVarChar, tieuDe)
+        .input('tieuDe', sql.NVarChar, tieuDe || 'Thông báo')
         .input('noiDung', sql.NVarChar(sql.MAX), noiDung)
         .input('loaiThongBao', sql.NVarChar, loaiThongBao)
         .query(`INSERT INTO ThongBao (MaNguoiDung, TieuDe, NoiDung, LoaiThongBao) VALUES (@userId, @tieuDe, @noiDung, @loaiThongBao)`);

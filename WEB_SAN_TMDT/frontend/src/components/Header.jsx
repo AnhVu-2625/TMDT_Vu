@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   FaShoppingCart, FaUser, FaBars, FaTimes, FaSearch,
@@ -8,6 +8,8 @@ import {
 } from 'react-icons/fa';
 import { useAuthStore } from '../store/authStore';
 import { useCartStore } from '../store/cartStore';
+import axios from 'axios';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const categories = [
   { icon: '📱', label: 'Điện tử', path: '/products?category=dien-tu' },
@@ -23,19 +25,38 @@ function Header() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const { isAuthenticated, user, logout } = useAuthStore();
   const { items, fetchCart } = useCartStore();
   const navigate = useNavigate();
+  const location = useLocation();
   const userMenuRef = useRef(null);
   const categoryRef = useRef(null);
 
   const cartCount = items?.reduce((acc, item) => acc + item.SoLuong, 0) || 0;
+
+  const fetchUnreadCount = async () => {
+    if (!isAuthenticated) return;
+    try {
+      const { token } = useAuthStore.getState();
+      const res = await axios.get(`${API_URL}/notifications/unread/count`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setUnreadCount(res.data.count || 0);
+    } catch {}
+  };
 
   useEffect(() => {
     if (isAuthenticated) {
       fetchCart();
     }
   }, [isAuthenticated, fetchCart]);
+
+  useEffect(() => {
+    fetchUnreadCount();
+    const interval = setInterval(fetchUnreadCount, 30000);
+    return () => clearInterval(interval);
+  }, [isAuthenticated, location.pathname]);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -88,7 +109,7 @@ function Header() {
               </span>
             </Link>
             <span className="text-slate-700/50 select-none">|</span>
-            <Link to="/help" className="hover:text-red-400 transition font-medium relative group">
+            <Link to="/" className="hover:text-red-400 transition font-medium relative group">
               Hỗ trợ
               <span className="absolute -bottom-px left-0 right-0 h-px bg-red-400/0 group-hover:bg-red-400/60 transition-all" />
             </Link>
@@ -208,7 +229,17 @@ function Header() {
                   title="Thông báo"
                 >
                   <FaBell className="text-slate-400 group-hover:text-yellow-400 transition duration-300" size={18} />
-                  <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                  {unreadCount > 0 && (
+                    <motion.span
+                      key={unreadCount}
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: 'spring', stiffness: 500 }}
+                      className="absolute -top-0.5 -right-0.5 bg-red-600 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 shadow-lg shadow-red-600/50"
+                    >
+                      {unreadCount > 99 ? '99+' : unreadCount}
+                    </motion.span>
+                  )}
                   <span className="absolute inset-0 rounded-xl bg-yellow-500/0 group-hover:bg-yellow-500/5 transition-all" />
                 </Link>
               </motion.div>
@@ -308,7 +339,6 @@ function Header() {
                           </Link>
                         )}
 
-<<<<<<< HEAD
                         {(() => {
                           const isAdmin = ['QUAN_TRI_VIEN', 'QuanTriVien', 'Admin', 'admin'].includes(user?.vaiTro);
                           if (user?.shop && user?.shop?.TrangThai === 'HOAT_DONG') {
@@ -337,18 +367,6 @@ function Header() {
                           }
                           return null;
                         })()}
-=======
-                        {user?.shop && user.shop.MaCuaHang && (
-                          <Link
-                            to="/seller/dashboard"
-                            onClick={() => setIsUserMenuOpen(false)}
-                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-orange-400 hover:bg-orange-600/10 hover:text-orange-300 transition-all font-semibold border-t border-slate-800"
-                          >
-                            <FaStore size={14} className="flex-shrink-0" />
-                            <span>Kênh người bán</span>
-                          </Link>
-                        )}
->>>>>>> 6b22ddd7f1495a754e75169ea503240ad3039d09
                       </div>
                       <div className="border-t border-slate-800 py-1 bg-slate-950">
                         <button

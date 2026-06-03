@@ -26,6 +26,8 @@ const favoritesRoutes = require('./routes/favorites');
 const reviewRoutes = require('./routes/review');
 const disputeRoutes = require('./routes/dispute');
 const settlementRoutes = require('./routes/settlement');
+const invoiceRouter = require('./routes/invoice').router;
+const shopRoutes = require('./routes/shop');
 
 const app = express();
 const server = http.createServer(app);
@@ -60,51 +62,18 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
-<<<<<<< HEAD
+// Static files – phục vụ ảnh upload
+app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
+
 // Đảm bảo response API luôn UTF-8 (bỏ qua swagger)
 app.use((req, res, next) => {
   if (!req.path.startsWith('/api-docs')) {
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
   }
-=======
-// Static files – phục vụ ảnh upload (PHẢI trước Content-Type middleware)
-app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
-
-// Đảm bảo response API luôn UTF-8
-app.use('/api', (req, res, next) => {
-  res.setHeader('Content-Type', 'application/json; charset=utf-8');
->>>>>>> 6b22ddd7f1495a754e75169ea503240ad3039d09
   next();
 });
 
-// Fix encoding cho dữ liệu từ SQL Server (mssql v9 bug với Vietnamese)
-const fixEncoding = (obj) => {
-  if (typeof obj === 'string') {
-    try {
-      // Thử decode lại nếu bị lỗi Latin-1 → UTF-8
-      const bytes = Buffer.from(obj, 'latin1');
-      const decoded = bytes.toString('utf8');
-      // Chỉ dùng decoded nếu có ký tự tiếng Việt hợp lệ
-      if (/[àáâãèéêìíòóôõùúýăđơưạảấầẩẫậắằẳẵặẹẻẽếềểễệỉịọỏốồổỗộớờởỡợụủứừửữựỳỵỷỹ]/i.test(decoded)) {
-        return decoded;
-      }
-    } catch {}
-    return obj;
-  }
-  if (Array.isArray(obj)) return obj.map(fixEncoding);
-  if (obj && typeof obj === 'object') {
-    const fixed = {};
-    for (const key of Object.keys(obj)) fixed[key] = fixEncoding(obj[key]);
-    return fixed;
-  }
-  return obj;
-};
-
-app.use((req, res, next) => {
-  const originalJson = res.json.bind(res);
-  res.json = (data) => originalJson(fixEncoding(data));
-  next();
-});
+// Không cần fixEncoding nữa - data đã được lưu đúng UTF-8 trong DB
 
 // Swagger UI
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
@@ -162,17 +131,30 @@ app.use('/api/favorites', favoritesRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/disputes', disputeRoutes);
 app.use('/api/settlements', settlementRoutes);
+app.use('/api/invoices', invoiceRouter);
+app.use('/api/shops', shopRoutes);
 
 // ─── Socket.IO – Real-time Chat & Notifications ─────────────────────────────
 const connectedUsers = new Map(); // userId → socketId
+const userSockets = new Map(); // userId → Set<socketId> (hỗ trợ multi-tab)
 
 io.on('connection', (socket) => {
   console.log('🔌 Socket connected:', socket.id);
 
   // User join với userId để nhận thông báo cá nhân
   socket.on('authenticate', (userId) => {
-    connectedUsers.set(parseInt(userId), socket.id);
-    socket.userId = parseInt(userId);
+    const uid = parseInt(userId);
+    connectedUsers.set(uid, socket.id);
+    socket.userId = uid;
+    socket.join(`user_${uid}`);
+    socket.join('online_users');
+
+    // Track multi-tab
+    if (!userSockets.has(uid)) userSockets.set(uid, new Set());
+    userSockets.get(uid).add(socket.id);
+
+    // Broadcast online trạng thái
+    socket.broadcast.emit('user_online', { userId: uid });
     console.log(`👤 User ${userId} authenticated via socket`);
   });
 
@@ -182,11 +164,18 @@ io.on('connection', (socket) => {
     console.log(`💬 Socket joined chat room: ${data.roomId}`);
   });
 
-  // Gửi tin nhắn real-time
-  socket.on('send_message', (data) => {
-    io.to(`chat_${data.roomId}`).emit('receive_message', {
-      ...data,
-      timestamp: new Date()
+  // Rời phòng chat
+  socket.on('leave_chat', (data) => {
+    socket.leave(`chat_${data.roomId}`);
+  });
+
+  // Đánh dấu tin nhắn đã đọc
+  socket.on('mark_seen', (data) => {
+    const { roomId, userId } = data;
+    io.to(`chat_${roomId}`).emit('messages_seen', {
+      roomId,
+      seenBy: userId,
+      seenAt: new Date().toISOString()
     });
   });
 
@@ -194,13 +183,27 @@ io.on('connection', (socket) => {
   socket.on('typing', (data) => {
     socket.to(`chat_${data.roomId}`).emit('user_typing', {
       roomId: data.roomId,
+      userId: data.userId,
       isTyping: data.isTyping
     });
   });
 
   socket.on('disconnect', () => {
     if (socket.userId) {
-      connectedUsers.delete(socket.userId);
+      const uid = socket.userId;
+      // Xóa khỏi multi-tab tracking
+      if (userSockets.has(uid)) {
+        userSockets.get(uid).delete(socket.id);
+        if (userSockets.get(uid).size === 0) {
+          userSockets.delete(uid);
+          connectedUsers.delete(uid);
+          // Chỉ broadcast offline khi không còn tab nào
+          socket.broadcast.emit('user_offline', { userId: uid });
+        }
+      } else {
+        connectedUsers.delete(uid);
+        socket.broadcast.emit('user_offline', { userId: uid });
+      }
     }
     console.log('🔌 Socket disconnected:', socket.id);
   });
@@ -212,6 +215,16 @@ app.locals.sendNotification = (userId, notification) => {
   if (socketId) {
     io.to(socketId).emit('notification', notification);
   }
+};
+
+// Helper kiểm tra online status
+app.locals.isUserOnline = (userId) => {
+  return connectedUsers.has(parseInt(userId));
+};
+
+// Helper lấy danh sách online users
+app.locals.getOnlineUsers = () => {
+  return Array.from(connectedUsers.keys());
 };
 
 // ─── Error Handling ──────────────────────────────────────────────────────────

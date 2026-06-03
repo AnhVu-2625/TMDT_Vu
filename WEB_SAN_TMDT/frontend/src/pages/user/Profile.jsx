@@ -23,10 +23,10 @@ const MOCK_AVATARS = [
 ];
 
 const MEMBER_TIERS = [
-  { name: 'Đồng (Bronze)', minPoints: 0, discount: 0, color: 'text-amber-600 bg-amber-600/10 border-amber-600/30' },
-  { name: 'Bạc (Silver)', minPoints: 100, discount: 2, color: 'text-slate-400 bg-slate-400/10 border-slate-400/30' },
-  { name: 'Vàng (Gold)', minPoints: 500, discount: 5, color: 'text-yellow-400 bg-yellow-400/10 border-yellow-400/30' },
-  { name: 'Bạch Kim (Platinum)', minPoints: 1000, discount: 10, color: 'text-purple-400 bg-purple-400/10 border-purple-400/30' }
+  { name: 'Thường', minPoints: 0, discount: 0, freeShip: false, bonusPoints: 'x1.0', color: 'text-slate-400 bg-slate-400/10 border-slate-400/30' },
+  { name: 'Bạc', minPoints: 100, discount: 3, freeShip: false, bonusPoints: 'x1.2', color: 'text-slate-300 bg-slate-300/10 border-slate-300/30' },
+  { name: 'Vàng', minPoints: 500, discount: 5, freeShip: true, bonusPoints: 'x1.5', color: 'text-yellow-400 bg-yellow-400/10 border-yellow-400/30' },
+  { name: 'Bạch Kim', minPoints: 1500, discount: 8, freeShip: true, bonusPoints: 'x2.0', color: 'text-purple-400 bg-purple-400/10 border-purple-400/30' }
 ];
 
 // Helper gender normalizers to map friendly Vietnamese name to Database constraint capitals
@@ -827,6 +827,37 @@ export default function Profile() {
           {activeTab === 'vip' && (
             <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
               
+              {/* Current tier + progress */}
+              <div className="bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
+                <h3 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                  🏆 Hạng thành viên
+                </h3>
+                <div className="flex items-center justify-between mb-2">
+                  <div>
+                    <span className="text-sm text-slate-400">Hạng hiện tại:</span>{' '}
+                    <span className={`text-lg font-extrabold ${currentTier.color.split(' ')[0]}`}>{currentTier.name}</span>
+                    <p className="text-xs text-slate-500 mt-0.5">{user?.diemTichLuy || 0} điểm tích lũy</p>
+                  </div>
+                  {nextTier && (
+                    <div className="text-right">
+                      <span className="text-sm text-slate-400">Hạng tiếp:</span>{' '}
+                      <span className={`text-sm font-bold ${nextTier.color.split(' ')[0]}`}>{nextTier.name}</span>
+                    </div>
+                  )}
+                </div>
+                {nextTier && (
+                  <div className="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-yellow-500 to-amber-400 rounded-full transition-all duration-500" style={{ width: `${Math.min(100, ((user?.diemTichLuy || 0) / nextTier.minPoints) * 100)}%` }} />
+                  </div>
+                )}
+                {nextTier && (
+                  <p className="text-xs text-slate-500 mt-1">
+                    Cần thêm {Math.max(0, nextTier.minPoints - (user?.diemTichLuy || 0))} điểm để lên {nextTier.name}
+                    {' — '}Cứ mỗi 10.000₫ = 1 điểm × hệ số thưởng
+                  </p>
+                )}
+              </div>
+
               {/* Active VIP card */}
               <div className="bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-36 h-36 bg-yellow-400/5 rounded-full blur-3xl animate-pulse" />
@@ -894,16 +925,27 @@ export default function Profile() {
                 <h3 className="text-lg font-bold text-white flex items-center gap-2">
                   🎁 Đặc quyền ưu đãi theo cấp bậc
                 </h3>
+                <p className="text-xs text-slate-400 mb-2">Tích điểm đơn hàng để lên hạng — mỗi 10.000₫ = 1 điểm × hệ số thưởng</p>
                 <div className="space-y-3">
                   {MEMBER_TIERS.map((tier, idx) => (
-                    <div key={idx} className="flex justify-between items-center p-3 rounded-xl bg-slate-950/20 border border-slate-850/60">
-                      <div>
-                        <p className="text-sm font-bold text-white">{tier.name.split(' ')[0]}</p>
-                        <p className="text-xs text-slate-500">Mốc đạt được: {tier.minPoints} điểm</p>
+                    <div key={idx} className="flex items-center justify-between p-3 rounded-xl bg-slate-950/20 border border-slate-850/60">
+                      <div className="flex-1">
+                        <p className="text-sm font-bold text-white">{tier.name}</p>
+                        <p className="text-xs text-slate-500">{tier.minPoints === 0 ? 'Mặc định' : `Từ ${tier.minPoints} điểm`}</p>
                       </div>
-                      <span className="text-xs font-bold text-green-400 bg-green-500/10 border border-green-500/20 px-3 py-1 rounded-full">
-                        Giảm {tier.discount}% toàn sản phẩm
-                      </span>
+                      <div className="flex flex-wrap gap-1 justify-end">
+                        <span className="text-xs font-bold text-green-400 bg-green-500/10 border border-green-500/20 px-2.5 py-1 rounded-full whitespace-nowrap">
+                          -{tier.discount}%
+                        </span>
+                        {tier.freeShip && (
+                          <span className="text-xs font-bold text-blue-400 bg-blue-500/10 border border-blue-500/20 px-2.5 py-1 rounded-full whitespace-nowrap">
+                            Free ship
+                          </span>
+                        )}
+                        <span className="text-xs font-bold text-yellow-400 bg-yellow-500/10 border border-yellow-500/20 px-2.5 py-1 rounded-full whitespace-nowrap">
+                          {tier.bonusPoints} điểm
+                        </span>
+                      </div>
                     </div>
                   ))}
                 </div>

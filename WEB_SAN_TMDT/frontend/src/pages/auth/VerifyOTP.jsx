@@ -9,10 +9,12 @@ const VerifyOTP = () => {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [countdown, setCountdown] = useState(60);
   const [canResend, setCanResend] = useState(false);
+  const [displayOtp, setDisplayOtp] = useState(location.state?.otp);
   const { verifyOTP, resendOTP, loading } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
   const email = location.state?.email;
+  const demoOtp = location.state?.otp;
 
   useEffect(() => {
     if (!email) {
@@ -86,8 +88,10 @@ const VerifyOTP = () => {
     if (!canResend) return;
 
     try {
-      await resendOTP(email);
-      toast.success('Đã gửi lại mã OTP');
+      const res = await resendOTP(email);
+      const newOtp = res?.data?.otp;
+      if (newOtp) { setDisplayOtp(newOtp); toast.info(`[Demo] Mã OTP mới: ${newOtp}`, { autoClose: 10000 }); }
+      else toast.success('Đã gửi lại mã OTP');
       setCountdown(60);
       setCanResend(false);
       
@@ -145,6 +149,14 @@ const VerifyOTP = () => {
           <h1 className="text-4xl font-black text-white mb-2">Xác thực tài khoản</h1>
           <p className="text-slate-300 mb-1">Chúng tôi đã gửi mã OTP đến email:</p>
           <p className="text-red-500 font-bold text-lg break-all">{email}</p>
+          {displayOtp && (
+            <motion.div key={displayOtp} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+              className="mt-4 mx-auto max-w-sm p-3 bg-yellow-500/10 border-2 border-dashed border-yellow-500/40 rounded-xl">
+              <p className="text-yellow-400 font-bold text-xs uppercase tracking-wider mb-1">🔧 Chế độ Demo</p>
+              <p className="text-white font-bold text-2xl tracking-[0.3em]">{displayOtp}</p>
+              <p className="text-yellow-500/60 text-[10px] mt-1">Sao chép mã này để xác thực (email không hoạt động)</p>
+            </motion.div>
+          )}
         </motion.div>
 
         {/* OTP Card */}
@@ -248,16 +260,18 @@ const VerifyOTP = () => {
         </motion.div>
 
         {/* Help Text */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.9 }}
-          className="mt-8 p-4 bg-slate-900/50 border border-slate-800 rounded-xl text-center"
-        >
-          <p className="text-sm text-slate-400">
-            ❓ Không nhận được email? Kiểm tra thư mục <span className="text-yellow-500 font-semibold">Spam</span> hoặc liên hệ hỗ trợ khách hàng
-          </p>
-        </motion.div>
+        {!displayOtp && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.9 }}
+            className="mt-8 p-4 bg-slate-900/50 border border-slate-800 rounded-xl text-center"
+          >
+            <p className="text-sm text-slate-400">
+              ❓ Không nhận được email? Kiểm tra thư mục <span className="text-yellow-500 font-semibold">Spam</span> hoặc liên hệ hỗ trợ khách hàng
+            </p>
+          </motion.div>
+        )}
 
         {/* Security Message */}
         <motion.p

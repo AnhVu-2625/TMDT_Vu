@@ -73,8 +73,8 @@ router.get('/', async (req, res) => {
             search = '',
             shop = '',
             category = '',
-            minPrice = 0,
-            maxPrice = 999999999,
+            minPrice = '',
+            maxPrice = '',
             sortBy = 'NgayTao',
             sortOrder = 'DESC'
         } = req.query;
@@ -99,14 +99,21 @@ router.get('/', async (req, res) => {
         }
         
         if (category) {
-<<<<<<< HEAD
-            whereClause += ` AND sp.MaDanhMuc = @category`;
-=======
             const catId = parseInt(category);
             if (!isNaN(catId)) {
                 whereClause += ` AND (sp.MaDanhMuc = ${catId} OR sp.MaDanhMuc IN (SELECT MaDanhMuc FROM DanhMucSanPham WHERE MaDanhMucCha = ${catId}))`;
             }
->>>>>>> 6b22ddd7f1495a754e75169ea503240ad3039d09
+        }
+
+        if (minPrice !== '' && maxPrice !== '') {
+            const pMin = parseFloat(minPrice);
+            const pMax = parseFloat(maxPrice);
+            if (pMin > 0 || pMax < 999999999) {
+                whereClause += ` AND EXISTS (
+                    SELECT 1 FROM PhienBanSanPham WHERE MaSanPham = sp.MaSanPham 
+                    AND GiaBan >= ${pMin} AND GiaBan <= ${pMax}
+                )`;
+            }
         }
 
         const query = `
@@ -132,18 +139,12 @@ router.get('/', async (req, res) => {
             LEFT JOIN CuaHang ch ON sp.MaCuaHang = ch.MaCuaHang
             LEFT JOIN DanhMucSanPham dm ON sp.MaDanhMuc = dm.MaDanhMuc
             ${whereClause}
-            AND EXISTS (
-                SELECT 1 FROM PhienBanSanPham WHERE MaSanPham = sp.MaSanPham 
-                AND GiaBan >= @minPrice AND GiaBan <= @maxPrice
-            )
             ORDER BY sp.${safeSortBy} ${safeSortOrder}
             OFFSET @offset ROWS
             FETCH NEXT @limit ROWS ONLY
         `;
 
         const request = pool.request()
-            .input('minPrice', sql.Decimal(15, 2), parseFloat(minPrice))
-            .input('maxPrice', sql.Decimal(15, 2), parseFloat(maxPrice))
             .input('offset', sql.Int, offset)
             .input('limit', sql.Int, parseInt(limit));
         
@@ -159,11 +160,15 @@ router.get('/', async (req, res) => {
         // Đếm tổng số sản phẩm
         const countRequest = pool.request();
         if (search) countRequest.input('search', sql.NVarChar, search);
-        if (category) countRequest.input('category', sql.Int, parseInt(category));
+        if (shop) {
+            countRequest.input('shopId', sql.Int, isNaN(parseInt(shop)) ? 0 : parseInt(shop));
+            countRequest.input('shopName', sql.NVarChar, shop);
+        }
 
         const countQuery = `
             SELECT COUNT(*) as Total
             FROM SanPham sp
+            LEFT JOIN CuaHang ch ON sp.MaCuaHang = ch.MaCuaHang
             ${whereClause}
         `;
         const countResult = await countRequest.query(countQuery);
@@ -255,11 +260,7 @@ router.get('/shops/:shopId', async (req, res) => {
  *       200:
  *         description: Danh sách danh mục
  */
-<<<<<<< HEAD
-// GET /api/products/categories/all - Lấy danh mục (PHẢI đặt TRƯỚC /:id)
-=======
 // GET /api/products/categories/all - Lấy danh mục
->>>>>>> 6b22ddd7f1495a754e75169ea503240ad3039d09
 router.get('/categories/all', async (req, res) => {
     try {
         const pool = await getPool();
@@ -281,10 +282,7 @@ router.get('/categories/all', async (req, res) => {
     }
 });
 
-<<<<<<< HEAD
-=======
 // GET /api/products/seller - Lấy sản phẩm thuộc shop của seller
-// (giúp UI quản lý đúng phạm vi quyền)
 router.get('/seller', authenticateToken, requireSeller, async (req, res) => {
     try {
         const pool = await getPool();
@@ -293,22 +291,10 @@ router.get('/seller', authenticateToken, requireSeller, async (req, res) => {
         const result = await pool.request()
             .input('MaCuaHang', sql.Int, maCuaHang)
             .query(`
-                SELECT
-                    sp.MaSanPham,
-                    sp.TenSanPham,
-                    sp.DuongDan,
-                    sp.MoTa,
-                    sp.GiaGoc,
-                    sp.DanhGiaTrungBinh,
-                    sp.NgayTao,
-                    sp.TrangThai,
-                    ch.TenCuaHang,
-                    dm.TenDanhMuc,
-                    dm.MaDanhMuc,
-                    ISNULL(
-                        (SELECT TOP 1 DuongDanAnh FROM HinhAnhSanPham WHERE MaSanPham = sp.MaSanPham AND LaAnhChinh = 1),
-                        '/placeholder.svg?text=📦'
-                    ) as AnhChinh
+                SELECT sp.MaSanPham, sp.TenSanPham, sp.DuongDan, sp.MoTa, sp.GiaGoc,
+                       sp.DanhGiaTrungBinh, sp.NgayTao, sp.TrangThai,
+                       ch.TenCuaHang, dm.TenDanhMuc, dm.MaDanhMuc,
+                       ISNULL((SELECT TOP 1 DuongDanAnh FROM HinhAnhSanPham WHERE MaSanPham = sp.MaSanPham AND LaAnhChinh = 1), '') as AnhChinh
                 FROM SanPham sp
                 LEFT JOIN CuaHang ch ON sp.MaCuaHang = ch.MaCuaHang
                 LEFT JOIN DanhMucSanPham dm ON sp.MaDanhMuc = dm.MaDanhMuc
@@ -316,22 +302,12 @@ router.get('/seller', authenticateToken, requireSeller, async (req, res) => {
                 ORDER BY sp.NgayTao DESC
             `);
 
-        res.json({
-            success: true,
-            data: {
-                products: result.recordset
-            }
-        });
+        res.json({ success: true, data: { products: result.recordset } });
     } catch (error) {
         console.error('Lỗi lấy sản phẩm của seller:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Lỗi lấy sản phẩm của seller'
-        });
+        res.status(500).json({ success: false, message: 'Lỗi lấy sản phẩm của seller' });
     }
 });
-
->>>>>>> 6b22ddd7f1495a754e75169ea503240ad3039d09
 /**
  * @swagger
  * /api/products/{id}:
@@ -564,7 +540,7 @@ router.put('/:id', authenticateToken, requireSeller, validateProduct, async (req
     }
 });
 
-// DELETE /api/products/:id - Xóa sản phẩm (ẩn)
+// DELETE /api/products/:id - Xóa sản phẩm (vĩnh viễn)
 router.delete('/:id', authenticateToken, requireSeller, async (req, res) => {
     try {
         const { id } = req.params;
@@ -584,9 +560,23 @@ router.delete('/:id', authenticateToken, requireSeller, async (req, res) => {
             });
         }
 
+        // Xóa các bảng liên quan trước
         await pool.request()
             .input('MaSanPham', sql.Int, id)
-            .query("UPDATE SanPham SET TrangThai = N'AN' WHERE MaSanPham = @MaSanPham");
+            .query('DELETE FROM HinhAnhSanPham WHERE MaSanPham = @MaSanPham');
+
+        await pool.request()
+            .input('MaSanPham', sql.Int, id)
+            .query('DELETE FROM PhienBanSanPham WHERE MaSanPham = @MaSanPham');
+
+        await pool.request()
+            .input('MaSanPham', sql.Int, id)
+            .query('DELETE FROM DanhGiaSanPham WHERE MaSanPham = @MaSanPham');
+
+        // Xóa sản phẩm
+        await pool.request()
+            .input('MaSanPham', sql.Int, id)
+            .query('DELETE FROM SanPham WHERE MaSanPham = @MaSanPham');
 
         res.json({
             success: true,
@@ -650,7 +640,6 @@ router.post('/:id/variants', authenticateToken, requireSeller, validateProductVa
     }
 });
 
-<<<<<<< HEAD
 // POST /api/products/:id/upload-image - Upload ảnh sản phẩm
 /**
  * @swagger
@@ -748,11 +737,5 @@ router.post('/:id/upload-image', authenticateToken, requireSeller, uploadProduct
         });
     }
 });
-=======
-
-
-
-
->>>>>>> 6b22ddd7f1495a754e75169ea503240ad3039d09
 
 module.exports = router;

@@ -134,17 +134,35 @@ export default function ProductList() {
   };
   const currentCategoryId = categorySlugToId[currentCategory] || currentCategory;
 
+  const sortMap = {
+    'newest': { sortBy: 'NgayTao', sortOrder: 'DESC' },
+    'bestseller': { sortBy: 'NgayTao', sortOrder: 'DESC' },
+    'price-asc': { sortBy: 'GiaGoc', sortOrder: 'ASC' },
+    'price-desc': { sortBy: 'GiaGoc', sortOrder: 'DESC' },
+    'rating': { sortBy: 'DanhGiaTrungBinh', sortOrder: 'DESC' },
+  };
+  const currentSortObj = sortMap[currentSort] || sortMap['newest'];
+
+  const pr = priceRanges[selectedPriceRange];
+  const apiMinPrice = pr?.min || 0;
+  const apiMaxPrice = pr?.max || 999999999;
+
   const { products, fetchProducts, loading } = useProductStore();
-  const displayProducts = products.length > 0 ? products : mockProducts;
+  const hasActiveSearch = currentSearch || currentShop || currentCategoryId;
+  const displayProducts = products.length > 0 ? products : (hasActiveSearch ? [] : mockProducts);
 
   useEffect(() => {
-<<<<<<< HEAD
-    fetchProducts({ search: currentSearch, shop: currentShop, category: currentCategory, sort: currentSort, limit: 20 });
-  }, [currentSearch, currentShop, currentCategory, currentSort, fetchProducts]);
-=======
-    fetchProducts({ search: currentSearch, category: currentCategoryId, sort: currentSort, limit: 20 });
-  }, [currentSearch, currentCategory, currentSort, fetchProducts]);
->>>>>>> 6b22ddd7f1495a754e75169ea503240ad3039d09
+    fetchProducts({
+      search: currentSearch || undefined,
+      shop: currentShop || undefined,
+      category: currentCategoryId || undefined,
+      sortBy: currentSortObj.sortBy,
+      sortOrder: currentSortObj.sortOrder,
+      minPrice: apiMinPrice,
+      maxPrice: apiMaxPrice,
+      limit: 20
+    });
+  }, [currentSearch, currentShop, currentCategoryId, currentSortObj.sortBy, currentSortObj.sortOrder, apiMinPrice, apiMaxPrice, fetchProducts]);
 
 
   const handleSearch = (e) => {
@@ -162,6 +180,11 @@ export default function ProductList() {
   };
 
   const filtered = displayProducts.filter(p => {
+    if (currentSearch) {
+      const name = (p.TenSanPham || '').toLowerCase();
+      const term = currentSearch.toLowerCase();
+      if (!name.includes(term)) return false;
+    }
     const pr = priceRanges[selectedPriceRange];
     const price = p.variants?.[0]?.GiaBan || p.GiaGoc;
     if (pr.min > 0 && price < pr.min) return false;
@@ -272,11 +295,9 @@ export default function ProductList() {
 
   return (
     <div className="relative min-h-screen">
-      {/* Background decorative elements */}
+      {/* Simple background grain */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] rounded-full bg-red-500/[0.03] blur-[120px]" />
-        <div className="absolute bottom-1/3 right-1/4 w-[400px] h-[400px] rounded-full bg-orange-500/[0.03] blur-[120px]" />
-        <div className="absolute top-2/3 left-1/2 w-[300px] h-[300px] rounded-full bg-blue-500/[0.02] blur-[100px]" />
+        <div className="absolute inset-0 opacity-[0.015] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJmIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjc0IiBudW1PY3RhdmVzPSIzIiAvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbHRlcj0idXJsKCNmKSIgb3BhY2l0eT0iMCIvPjwvc3ZnPg==')]" />
       </div>
 
       {/* Page Header Banner */}
@@ -285,7 +306,7 @@ export default function ProductList() {
           <div className="absolute top-0 left-1/4 w-60 h-px bg-gradient-to-r from-transparent via-red-500/30 to-transparent" />
           <div className="absolute top-0 right-1/4 w-40 h-px bg-gradient-to-r from-transparent via-orange-500/20 to-transparent" />
         </div>
-        <div className="relative max-w-7xl mx-auto px-4 py-10 md:py-14">
+        <div className="relative max-w-7xl mx-auto px-6 py-10 md:py-14">
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -336,7 +357,7 @@ export default function ProductList() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-6">
+      <div className="max-w-7xl mx-auto px-6 py-6">
         {/* Sort + View controls */}
         <div className="flex items-center justify-between mb-6 gap-4">
           <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
@@ -358,9 +379,9 @@ export default function ProductList() {
           </div>
         </div>
 
-        <div className="flex gap-6">
+        <div className="flex gap-8">
           {/* Desktop Filter Sidebar */}
-          <aside className="hidden md:block w-56 flex-shrink-0">
+          <aside className="hidden md:block w-64 flex-shrink-0">
             <div className="sticky top-24 bg-gradient-to-b from-slate-900/80 to-slate-900/40 backdrop-blur-xl rounded-2xl p-5 border border-slate-800/50 shadow-xl">
               <div className="flex items-center gap-2 mb-5 pb-4 border-b border-slate-800/50">
                 <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-red-500/20 to-orange-500/10 flex items-center justify-center">
@@ -402,9 +423,20 @@ export default function ProductList() {
           {/* Product Grid */}
           <main className="flex-1 min-w-0">
             {loading ? (
-              <div className={`grid gap-4 ${viewMode === 'grid' ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4' : 'grid-cols-1'}`}>
+              <div className={`grid gap-4 ${viewMode === 'grid' ? 'grid-cols-2 sm:grid-cols-3 xl:grid-cols-4' : 'grid-cols-1'}`}>
                 {[...Array(8)].map((_, i) => (
-                  <div key={i} className="bg-slate-800/40 rounded-xl h-[340px] shimmer animate-pulse" />
+                  <div key={i} className="bg-slate-900/60 rounded-2xl border border-slate-800/50 overflow-hidden shimmer">
+                    <div className="bg-slate-800/60 h-36 animate-pulse" />
+                    <div className="p-3 space-y-2.5">
+                      <div className="h-3 bg-slate-800/80 rounded animate-pulse w-3/4" />
+                      <div className="h-2.5 bg-slate-800/80 rounded animate-pulse w-1/2" />
+                      <div className="flex gap-1">
+                        {[...Array(5)].map((_, si) => <div key={si} className="h-2 w-2 bg-slate-800/80 rounded animate-pulse" />)}
+                      </div>
+                      <div className="h-4 bg-slate-800/80 rounded animate-pulse w-1/3 mt-2" />
+                      <div className="h-8 bg-slate-800/80 rounded-xl animate-pulse mt-2" />
+                    </div>
+                  </div>
                 ))}
               </div>
             ) : filtered.length === 0 ? (
@@ -424,7 +456,7 @@ export default function ProductList() {
               </div>
             ) : (
               <>
-                <div className={`grid gap-4 ${viewMode === 'grid' ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4' : 'grid-cols-1 sm:grid-cols-2'}`}>
+                <div className={`grid gap-4 ${viewMode === 'grid' ? 'grid-cols-2 sm:grid-cols-3 xl:grid-cols-4' : 'grid-cols-1 sm:grid-cols-2'}`}>
                   {filtered.map((p, i) => <ProductCard key={p.MaSanPham} product={p} index={i} />)}
                 </div>
                 {/* Decorative bottom fade */}

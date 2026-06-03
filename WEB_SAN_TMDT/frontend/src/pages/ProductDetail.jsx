@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaStar, FaShoppingCart, FaHeart, FaRegHeart, FaShare, FaStore, FaCheckCircle, FaArrowLeft, FaTruck, FaShieldAlt, FaUndo } from 'react-icons/fa';
+import { FaStar, FaShoppingCart, FaHeart, FaRegHeart, FaShare, FaStore, FaCheckCircle, FaArrowLeft, FaTruck, FaShieldAlt, FaUndo, FaComments } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { useCartStore } from '../store/cartStore';
@@ -49,7 +49,7 @@ const mockProduct = {
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, token } = useAuthStore();
   const { addItem } = useCartStore();
 
   const [product, setProduct] = useState(null);
@@ -57,9 +57,12 @@ export default function ProductDetail() {
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [isFav, setIsFav] = useState(false);
+  const [favLoading, setFavLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('description');
   const [activeImg, setActiveImg] = useState(0);
   const [related, setRelated] = useState([]);
+  const [filterStar, setFilterStar] = useState(0);
+  const [userReviewed, setUserReviewed] = useState(null);
 
 
   useEffect(() => {
@@ -68,10 +71,9 @@ export default function ProductDetail() {
       try {
         const res = await axios.get(`${API}/products/${id}`);
         const p = res.data.data;
-        setProduct({ ...p, variants: p.phienBan || [], images: p.hinhAnh || [] });
+        setProduct({ ...p, variants: p.phienBan || [], images: p.hinhAnh || [], reviews: p.danhGia || [] });
         setSelectedVariant((p.phienBan || [])[0] || null);
       } catch {
-        // Merge demo reviews from localStorage into mockProduct
         const localReviews = JSON.parse(localStorage.getItem('demo_reviews') || '[]');
         const productReviews = localReviews.filter(r => r.MaSanPham === Number(id));
         const merged = {
@@ -86,6 +88,21 @@ export default function ProductDetail() {
     load();
   }, [id]);
 
+  useEffect(() => {
+    if (!isAuthenticated || !id) return;
+    axios.get(`${API}/reviews/check/${id}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    }).then(res => {
+      setUserReviewed(res.data.data || null);
+    }).catch(() => {});
+    axios.get(`${API}/favorites`, {
+      headers: { Authorization: `Bearer ${token}` }
+    }).then(res => {
+      const favs = res.data.data || [];
+      setIsFav(favs.some(f => f.MaSanPham === Number(id)));
+    }).catch(() => {});
+  }, [isAuthenticated, id, token]);
+
   const handleAddToCart = async () => {
     if (!isAuthenticated) { toast.info('Vui lòng đăng nhập'); navigate('/login'); return false; }
     if (!selectedVariant) { toast.warning('Chọn phiên bản sản phẩm'); return false; }
@@ -93,8 +110,8 @@ export default function ProductDetail() {
       await addItem(selectedVariant.MaPhienBan, quantity);
       toast.success('Đã thêm vào giỏ hàng!');
       return true;
-    } catch {
-      toast.error('Lỗi thêm vào giỏ hàng');
+    } catch (err) {
+      toast.error(err?.message || 'Lỗi thêm vào giỏ hàng');
       return false;
     }
   };
@@ -102,6 +119,21 @@ export default function ProductDetail() {
   const handleBuyNow = async () => {
     const ok = await handleAddToCart();
     if (ok) navigate('/cart');
+  };
+
+  const handleChatWithShop = async (maCuaHang, tenSanPham) => {
+    if (!isAuthenticated) { toast.info('Vui long dang nhap'); navigate('/login'); return; }
+    try {
+      const price = selectedVariant?.Gia || p.GiaGoc || 0;
+      const res = await axios.post(`${API}/chat/shop/start`, {
+        maCuaHang,
+        maSanPham: p.MaSanPham,
+        loiNhan: `Xin chao, toi quan tam den san pham: ${tenSanPham}`
+      }, { headers: { Authorization: `Bearer ${token}` } });
+      navigate(`/chat?room=${res.data.data.MaPhongChat}`);
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Loi');
+    }
   };
 
   const colors = [...new Set(product?.variants?.map(v => v.MauSac).filter(Boolean))];
@@ -180,10 +212,18 @@ export default function ProductDetail() {
         {/* Info */}
         <div>
           {/* Shop */}
-          <Link to={`/shop/${p.MaCuaHang}`}
-            className="inline-flex items-center gap-1.5 text-sm text-red-400 hover:text-red-300 mb-3 transition">
-            <FaStore size={12} /> {p.TenCuaHang}
-          </Link>
+          <div className="flex items-center gap-3 mb-3">
+            <Link to={`/shop/${p.MaCuaHang}`}
+              className="inline-flex items-center gap-1.5 text-sm text-red-400 hover:text-red-300 transition">
+              <FaStore size={12} /> {p.TenCuaHang}
+            </Link>
+            {isAuthenticated && (
+              <button onClick={() => handleChatWithShop(p.MaCuaHang, p.TenSanPham)}
+                className="inline-flex items-center gap-1.5 text-xs text-blue-400 hover:text-blue-300 transition bg-blue-500/10 hover:bg-blue-500/20 px-2.5 py-1 rounded-lg border border-blue-500/20">
+                <FaComments size={12} /> Chat voi shop
+              </button>
+            )}
+          </div>
 
           <h1 className="text-2xl font-bold text-white mb-4 leading-snug">{p.TenSanPham}</h1>
 
@@ -268,7 +308,28 @@ export default function ProductDetail() {
               Mua ngay
             </motion.button>
             <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-              onClick={() => setIsFav(!isFav)}
+              onClick={async () => {
+                if (favLoading || !id) return;
+                if (!isAuthenticated) { toast.info('Vui lòng đăng nhập'); navigate('/login'); return; }
+                setFavLoading(true);
+                try {
+                  if (isFav) {
+                    await axios.delete(`${API}/favorites/${id}`, {
+                      headers: { Authorization: `Bearer ${token}` }
+                    });
+                    setIsFav(false);
+                    toast.success('Đã xóa khỏi yêu thích');
+                  } else {
+                    await axios.post(`${API}/favorites/add`, { maSanPham: Number(id) }, {
+                      headers: { Authorization: `Bearer ${token}` }
+                    });
+                    setIsFav(true);
+                    toast.success('Đã thêm vào yêu thích');
+                  }
+                } catch (err) {
+                  toast.error(err.response?.data?.message || 'Không thể cập nhật yêu thích');
+                } finally { setFavLoading(false); }
+              }}
               className={`w-12 h-12 rounded-xl border flex items-center justify-center transition-all ${isFav ? 'bg-red-600/20 border-red-500 text-red-400' : 'border-slate-700 text-slate-400 hover:border-red-500/50'}`}>
               {isFav ? <FaHeart /> : <FaRegHeart />}
             </motion.button>
@@ -314,9 +375,24 @@ export default function ProductDetail() {
           )}
           {activeTab === 'reviews' && (
             <motion.div key="reviews" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-4">
-              {(p.reviews || []).length === 0
+              {/* Star filter */}
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-xs text-slate-400 font-medium">Lọc theo sao:</span>
+                {[0, 5, 4, 3, 2, 1].map(star => (
+                  <button key={star} onClick={() => setFilterStar(filterStar === star ? 0 : star)}
+                    className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ${
+                      filterStar === star
+                        ? 'bg-yellow-400/10 border-yellow-400/40 text-yellow-400'
+                        : 'border-slate-700/50 text-slate-400 hover:border-slate-500'
+                    }`}>
+                    {star === 0 ? 'Tất cả' : `${star} ⭐`}
+                  </button>
+                ))}
+              </div>
+              {/* Reviews list */}
+              {(p.reviews || []).filter(r => filterStar === 0 || r.DiemDanhGia === filterStar).length === 0
                 ? <p className="text-center text-slate-400 py-8">Chưa có đánh giá nào</p>
-                : (p.reviews || []).slice().reverse().map(r => (
+                : (p.reviews || []).filter(r => filterStar === 0 || r.DiemDanhGia === filterStar).slice().reverse().map(r => (
                   <div key={r.MaDanhGia} className="bg-slate-900/50 rounded-xl p-5 border border-slate-800/50">
                     <div className="flex items-center gap-3 mb-2">
                       <div className="w-9 h-9 rounded-full bg-gradient-to-br from-red-500 to-red-800 flex items-center justify-center font-bold text-sm">{r.HoTen?.[0]}</div>
@@ -327,17 +403,46 @@ export default function ProductDetail() {
                       <span className="ml-auto text-xs text-slate-500">{new Date(r.NgayTao).toLocaleDateString('vi-VN')}</span>
                     </div>
                     <p className="text-sm text-slate-300">{r.BinhLuan}</p>
+                    {r.media && r.media.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mt-3">
+                        {r.media.map(m => (
+                          m.Loai === 'video' ? (
+                            <video key={m.MaHinhAnh} controls className="w-32 h-24 rounded-lg object-cover border border-slate-700 bg-black">
+                              <source src={'http://localhost:5000' + m.DuongDan} />
+                            </video>
+                          ) : (
+                            <img key={m.MaHinhAnh} src={'http://localhost:5000' + m.DuongDan}
+                              className="w-16 h-16 rounded-lg object-cover border border-slate-700 cursor-pointer hover:opacity-80 transition"
+                              onClick={() => window.open('http://localhost:5000' + m.DuongDan, '_blank')} />
+                          )
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ))}
-              {/* Purchase required for review */}
+              {/* User's review status */}
               <div className="bg-gradient-to-b from-slate-900/70 to-slate-900/40 rounded-xl p-6 border border-slate-700/50 text-center">
-                <FaStar className="text-yellow-400/50 mx-auto mb-3" size={32} />
-                <h4 className="text-sm font-bold text-white mb-2">Bạn muốn đánh giá sản phẩm này?</h4>
-                <p className="text-xs text-slate-400 mb-4">Chỉ khách hàng đã mua sản phẩm mới có thể gửi đánh giá.</p>
-                <Link to={isAuthenticated ? '/user/orders' : '/login'}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-red-600 to-orange-600 text-white text-xs font-bold rounded-xl hover:shadow-lg hover:shadow-red-600/20 transition-all">
-                  <FaShoppingCart size={11} /> {isAuthenticated ? 'Đến đơn hàng của tôi' : 'Đăng nhập để đánh giá'}
-                </Link>
+                {userReviewed ? (
+                  <>
+                    <FaStar className="text-yellow-400 mx-auto mb-3" size={32} />
+                    <h4 className="text-sm font-bold text-green-400 mb-2">✅ Bạn đã đánh giá sản phẩm này</h4>
+                    <div className="flex justify-center gap-1 mb-2">
+                      {[...Array(5)].map((_, i) => <FaStar key={i} size={16} className={i < userReviewed.DiemDanhGia ? 'text-yellow-400' : 'text-slate-700'} />)}
+                    </div>
+                    <p className="text-xs text-slate-400 mb-1 italic">"{userReviewed.BinhLuan}"</p>
+                    <p className="text-xs text-slate-500">{new Date(userReviewed.NgayTao).toLocaleDateString('vi-VN')}</p>
+                  </>
+                ) : (
+                  <>
+                    <FaStar className="text-yellow-400/50 mx-auto mb-3" size={32} />
+                    <h4 className="text-sm font-bold text-white mb-2">Bạn muốn đánh giá sản phẩm này?</h4>
+                    <p className="text-xs text-slate-400 mb-4">Chỉ khách hàng đã mua sản phẩm mới có thể gửi đánh giá.</p>
+                    <Link to={isAuthenticated ? '/orders' : '/login'}
+                      className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-red-600 to-orange-600 text-white text-xs font-bold rounded-xl hover:shadow-lg hover:shadow-red-600/20 transition-all">
+                      <FaShoppingCart size={11} /> {isAuthenticated ? 'Đến đơn hàng của tôi' : 'Đăng nhập để đánh giá'}
+                    </Link>
+                  </>
+                )}
               </div>
             </motion.div>
           )}
